@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Informativo Diário Brascof</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f2; color: #1a1a1a; min-height: 100vh; }
+  .page-wrap { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem; }
+  .hdr { background: #2d4a3e; border-radius: 12px; padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .hdr-title { font-size: 16px; font-weight: 600; color: #e8f0ec; letter-spacing: .01em; }
+  .hdr-sub { font-size: 11px; color: #8aab97; margin-top: 1px; }
+  .hdr-right { display: flex; align-items: center; gap: 10px; }
+  .btn-export { background: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 12.5px; font-family: inherit; color: #2d4a3e; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .btn-export:hover { background: #d4e8dc; }
+  .btn-export svg { width: 15px; height: 15px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #8aab97; flex-shrink: 0; }
+  .status-dot.ok { background: #4caf7d; }
+  .status-dot.err { background: #e05252; }
+  .status-txt { font-size: 11px; color: #8aab97; }
+  .metrics-bar { background: #fff; display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #dde8e2; border-radius: 12px; margin-bottom: 1rem; overflow: hidden; }
+  .mbar-item { padding: 14px 1.5rem; border-right: 1px solid #dde8e2; }
+  .mbar-item:last-child { border-right: none; }
+  .mbar-label { font-size: 10px; color: #6b8c7a; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+  .mbar-val { font-size: 24px; font-weight: 600; color: #1a1a1a; }
+  .mbar-val.neg { color: #922020; }
+  .mbar-val.pos { color: #1e5c1e; }
+  .card { background: #fff; border: 1px solid #dde8e2; border-radius: 12px; overflow: hidden; margin-bottom: 1rem; }
+  .card-header { padding: 10px 1.5rem; border-bottom: 1px solid #dde8e2; }
+  .card-header-title { font-size: 11px; font-weight: 600; color: #4a7a60; text-transform: uppercase; letter-spacing: .07em; }
+  .form-row { display: grid; grid-template-columns: 140px 110px 110px 120px 140px 120px; gap: 12px; padding: 1rem 1.5rem; align-items: end; }
+  .fg-label { font-size: 10px; color: #6b8c7a; font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .06em; display: block; }
+  .fg-input { width: 100%; border: 1px solid #c8ddd2; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none; text-transform: uppercase; height: 38px; transition: border-color .15s; }
+  .fg-input[type="date"], .fg-input[type="number"] { text-transform: none; }
+  .fg-input:focus { border-color: #2d4a3e; box-shadow: 0 0 0 3px rgba(45,74,62,.08); }
+  select.fg-input { cursor: pointer; }
+  .btn-add { background: #2d4a3e; border: none; border-radius: 8px; font-size: 13px; font-family: inherit; color: #fff; cursor: pointer; font-weight: 600; height: 38px; width: 100%; }
+  .btn-add:hover { background: #1e3329; }
+  .btn-add:disabled { background: #7a9e8a; cursor: not-allowed; }
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+  .seg { display: flex; border: 1px solid #c8ddd2; border-radius: 8px; overflow: hidden; background: #fff; }
+  .seg-btn { padding: 6px 14px; font-size: 12px; font-family: inherit; border: none; background: transparent; cursor: pointer; color: #5a7a68; font-weight: 500; }
+  .seg-btn:not(:last-child) { border-right: 1px solid #c8ddd2; }
+  .seg-btn.active { background: #2d4a3e; color: #fff; font-weight: 600; }
+  .toolbar-sep { width: 1px; height: 26px; background: #dde8e2; }
+  .date-group { display: flex; align-items: center; gap: 7px; }
+  .dlabel { font-size: 12px; color: #6b8c7a; font-weight: 500; }
+  .date-in { border: 1px solid #c8ddd2; border-radius: 8px; padding: 6px 9px; font-size: 12px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none; height: 34px; }
+  .btn-clear { background: #fff; border: 1px solid #c8ddd2; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-family: inherit; color: #6b8c7a; cursor: pointer; height: 34px; }
+  .btn-clear:hover { background: #f0f4f2; }
+  .table-card { background: #fff; border: 1px solid #dde8e2; border-radius: 12px; overflow: hidden; position: relative; }
+  .watermark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 0; opacity: 0.04; }
+  .watermark img { width: 260px; height: 260px; object-fit: contain; }
+  .tbl-wrap { overflow-x: auto; position: relative; z-index: 1; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead tr { background: #f5f9f6; }
+  th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 600; color: #5a7a68; text-transform: uppercase; letter-spacing: .07em; border-bottom: 1px solid #dde8e2; white-space: nowrap; }
+  td { padding: 10px 16px; border-bottom: 1px solid #edf3ef; color: #1a1a1a; font-size: 13px; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafcfb; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-c { background: #e3eef9; color: #1a4f82; }
+  .badge-v { background: #e3f4e3; color: #1a5c1a; }
+  .dif-neg { color: #922020; font-weight: 500; }
+  .dif-pos { color: #1e5c1e; font-weight: 500; }
+  .btn-del { background: transparent; border: none; color: #aac4b4; cursor: pointer; font-size: 14px; padding: 3px 6px; border-radius: 5px; }
+  .btn-del:hover { color: #922020; background: #fdf0f0; }
+  .empty { text-align: center; color: #8aab97; font-size: 14px; padding: 3rem 0; }
+  .loading-msg { text-align: center; color: #8aab97; font-size: 13px; padding: 2rem 0; }
+  @media (max-width: 900px) {
+    .page-wrap { padding: 1rem; }
+    .form-row { grid-template-columns: 1fr 1fr; }
+    .metrics-bar { grid-template-columns: 1fr 1fr; }
+    .mbar-item:nth-child(2) { border-right: none; }
+    .mbar-item:nth-child(3) { border-top: 1px solid #dde8e2; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">Informativo Diário Brascof</div>
+      <div class="hdr-sub" id="hdrSub">—</div>
+    </div>
+    <div class="hdr-right">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-txt" id="statusTxt">conectando...</span>
+      <button class="btn-export" onclick="exportExcel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+        Exportar Excel
+      </button>
+    </div>
+  </div>
+
+  <div class="metrics-bar">
+    <div class="mbar-item"><div class="mbar-label">Sacas compradas</div><div class="mbar-val" id="mQC">—</div></div>
+    <div class="mbar-item"><div class="mbar-label">Média dif. compra</div><div class="mbar-val" id="mDC">—</div></div>
+    <div class="mbar-item"><div class="mbar-label">Sacas vendidas</div><div class="mbar-val" id="mQV">—</div></div>
+    <div class="mbar-item"><div class="mbar-label">Média dif. venda</div><div class="mbar-val" id="mDV">—</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-header-title">Novo lançamento</div></div>
+    <div class="form-row">
+      <div><label class="fg-label">Data</label><input type="date" id="fData" class="fg-input"/></div>
+      <div><label class="fg-label">Tipo</label><select id="fTipo" class="fg-input"><option value="COMPRA">COMPRA</option><option value="VENDA">VENDA</option></select></div>
+      <div><label class="fg-label">Sacas</label><input type="number" id="fSacas" class="fg-input" placeholder="0" min="0"/></div>
+      <div><label class="fg-label">Qualidade</label><input type="text" id="fQual" class="fg-input" placeholder="BC2"/></div>
+      <div><label class="fg-label">Diferencial</label><input type="number" id="fDif" class="fg-input" placeholder="0.00" step="0.01"/></div>
+      <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add" id="btnAdd" onclick="addRow()">+ Adicionar</button></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="seg" id="segTipo">
+      <button class="seg-btn active" data-v="todos" onclick="setTipo(this)">Todos</button>
+      <button class="seg-btn" data-v="COMPRA" onclick="setTipo(this)">Compra</button>
+      <button class="seg-btn" data-v="VENDA" onclick="setTipo(this)">Venda</button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <div class="date-group">
+      <span class="dlabel">De</span>
+      <input type="date" id="fDtDe" class="date-in" oninput="render()"/>
+      <span class="dlabel">até</span>
+      <input type="date" id="fDtAte" class="date-in" oninput="render()"/>
+      <button class="btn-clear" onclick="clearDates()">Limpar</button>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="watermark"><img src="logo_brascof.png" alt=""/></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:120px">Data</th>
+          <th style="width:90px">Tipo</th>
+          <th style="width:80px">Sacas</th>
+          <th style="width:110px">Qualidade</th>
+          <th>Diferencial</th>
+          <th style="width:44px"></th>
+        </tr></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+      <div id="loadingMsg" class="loading-msg">Carregando dados...</div>
+      <div id="emptyMsg" class="empty" style="display:none">Nenhum registro para os filtros selecionados.</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const SUPA_URL = 'https://cfrvnsnwdldnflowxqbs.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
+const H = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
+
+let rows = [], filterTipo = 'todos';
+
+const todayStr = () => new Date().toISOString().slice(0, 10);
+const fmtDate = s => { const p = s.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
+const fmt2 = v => v != null ? ((v >= 0 ? '+' : '') + Number(v).toFixed(2)) : '—';
+const sumQ = arr => arr.reduce((a, r) => a + Number(r.sacas), 0);
+const medW = arr => { const s = sumQ(arr); if (!s) return null; return arr.reduce((a, r) => a + Number(r.dif) * Number(r.sacas), 0) / s; };
+
+function setStatus(ok, txt) {
+  document.getElementById('statusDot').className = 'status-dot ' + (ok ? 'ok' : 'err');
+  document.getElementById('statusTxt').textContent = txt;
+}
+
+function setValColor(id, val) {
+  const el = document.getElementById(id);
+  el.textContent = val != null ? ((val >= 0 ? '+' : '') + Number(val).toFixed(2)) : '—';
+  el.className = 'mbar-val ' + (val == null || val < 0 ? 'neg' : 'pos');
+}
+
+async function fetchRows() {
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`, { headers: H });
+    if (!res.ok) throw new Error(res.status);
+    rows = await res.json();
+    setStatus(true, 'conectado');
+    document.getElementById('loadingMsg').style.display = 'none';
+    render();
+  } catch (e) {
+    setStatus(false, 'erro de conexão');
+    document.getElementById('loadingMsg').textContent = 'Erro ao carregar. Verifique a conexão e recarregue a página.';
+  }
+}
+
+function getByDate() {
+  const de = document.getElementById('fDtDe').value;
+  const ate = document.getElementById('fDtAte').value;
+  return rows.filter(r => {
+    if (de && r.data < de) return false;
+    if (ate && r.data > ate) return false;
+    return true;
+  });
+}
+function filtered() { return getByDate().filter(r => filterTipo === 'todos' || r.tipo === filterTipo); }
+
+function render() {
+  document.getElementById('hdrSub').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const byDate = getByDate();
+  const compras = byDate.filter(r => r.tipo === 'COMPRA');
+  const vendas = byDate.filter(r => r.tipo === 'VENDA');
+  document.getElementById('mQC').textContent = sumQ(compras);
+  setValColor('mDC', medW(compras));
+  document.getElementById('mQV').textContent = sumQ(vendas);
+  setValColor('mDV', medW(vendas));
+  const data = filtered();
+  const tbody = document.getElementById('tBody');
+  tbody.innerHTML = '';
+  document.getElementById('emptyMsg').style.display = data.length ? 'none' : 'block';
+  data.forEach(r => {
+    const tr = document.createElement('tr');
+    const d = Number(r.dif);
+    tr.innerHTML = `<td>${fmtDate(r.data)}</td>
+      <td><span class="badge ${r.tipo === 'COMPRA' ? 'badge-c' : 'badge-v'}">${r.tipo}</span></td>
+      <td>${r.sacas}</td><td>${r.qual || '—'}</td>
+      <td class="${d < 0 ? 'dif-neg' : 'dif-pos'}">${fmt2(d)}</td>
+      <td><button class="btn-del" onclick="delRow(${r.id})">✕</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+async function addRow() {
+  const data = document.getElementById('fData').value;
+  const tipo = document.getElementById('fTipo').value;
+  const sacas = parseFloat(document.getElementById('fSacas').value);
+  const qual = document.getElementById('fQual').value.trim().toUpperCase();
+  const dif = parseFloat(document.getElementById('fDif').value);
+  if (!data || isNaN(sacas) || sacas <= 0 || isNaN(dif)) { alert('Preencha Data, Sacas e Diferencial.'); return; }
+  const btn = document.getElementById('btnAdd');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos`, {
+      method: 'POST',
+      headers: { ...H, 'Prefer': 'return=representation' },
+      body: JSON.stringify({ data, tipo, sacas, qual, dif })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const [novo] = await res.json();
+    rows.unshift(novo);
+    document.getElementById('fSacas').value = '';
+    document.getElementById('fQual').value = '';
+    document.getElementById('fDif').value = '';
+    render();
+  } catch (e) {
+    alert('Erro ao salvar: ' + e.message);
+    setStatus(false, 'erro ao salvar');
+  } finally {
+    btn.disabled = false; btn.textContent = '+ Adicionar';
+  }
+}
+
+async function delRow(id) {
+  if (!confirm('Remover este lançamento?')) return;
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${id}`, { method: 'DELETE', headers: H });
+    if (!res.ok) throw new Error(res.status);
+    rows = rows.filter(r => r.id !== id);
+    render();
+  } catch (e) { alert('Erro ao remover.'); }
+}
+
+function setTipo(btn) {
+  filterTipo = btn.dataset.v;
+  document.querySelectorAll('#segTipo .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function clearDates() { document.getElementById('fDtDe').value = ''; document.getElementById('fDtAte').value = ''; render(); }
+
+function exportExcel() {
+  const byDate = getByDate();
+  if (!byDate.length) { alert('Nenhum registro para exportar.'); return; }
+  const compras = byDate.filter(r => r.tipo === 'COMPRA');
+  const vendas = byDate.filter(r => r.tipo === 'VENDA');
+  const dc = medW(compras), dv = medW(vendas);
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([
+    ['INFORMATIVO DIÁRIO BRASCOF'],
+    ['Gerado em:', new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })],
+    [],
+    ['DATA', 'TIPO', 'SACAS', 'QUALIDADE', 'DIFERENCIAL'],
+    ...byDate.map(r => [fmtDate(r.data), r.tipo, r.sacas, r.qual, Number(r.dif)]),
+  ]);
+  ws['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 14 }];
+  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+  const de = document.getElementById('fDtDe').value;
+  const ate = document.getElementById('fDtAte').value;
+  const periodo = de && ate ? `${fmtDate(de)} a ${fmtDate(ate)}` : 'Todos os registros';
+  const wsRes = XLSX.utils.aoa_to_sheet([
+    ['RESUMO EXECUTIVO — BRASCOF'], ['Período:', periodo], [],
+    ['INDICADOR', 'COMPRA', 'VENDA'],
+    ['Sacas', sumQ(compras), sumQ(vendas)],
+    ['Média diferencial', dc != null ? dc.toFixed(2) : '—', dv != null ? dv.toFixed(2) : '—'],
+  ]);
+  wsRes['!cols'] = [{ wch: 28 }, { wch: 14 }, { wch: 14 }];
+  wsRes['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }];
+  XLSX.utils.book_append_sheet(wb, ws, 'Registros');
+  XLSX.utils.book_append_sheet(wb, wsRes, 'Resumo');
+  XLSX.writeFile(wb, `Brascof_Informativo_${todayStr().replace(/-/g, '')}.xlsx`);
+}
+
+document.getElementById('fData').value = todayStr();
+document.getElementById('fQual').addEventListener('input', function () { this.value = this.value.toUpperCase(); });
+fetchRows();
+</script>
+</body>
+</html>
