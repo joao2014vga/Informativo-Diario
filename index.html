@@ -53,7 +53,7 @@
   #formLancamento { display: none; }
   .card-header { padding: 10px 1.5rem; border-bottom: 1px solid #dde8e2; }
   .card-header-title { font-size: 11px; font-weight: 600; color: #4a7a60; text-transform: uppercase; letter-spacing: .07em; }
-  .form-row { display: grid; grid-template-columns: 140px 110px 110px 120px 140px 120px; gap: 12px; padding: 1rem 1.5rem; align-items: end; }
+  .form-row { display: grid; grid-template-columns: 130px 100px 100px 110px 120px 130px 110px; gap: 10px; padding: 1rem 1.5rem; align-items: end; }
   .fg-label { font-size: 10px; color: #6b8c7a; font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .06em; display: block; }
   .fg-input { width: 100%; border: 1px solid #c8ddd2; border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none; text-transform: uppercase; height: 38px; transition: border-color .15s; }
   .fg-input[type="date"], .fg-input[type="number"] { text-transform: none; }
@@ -90,6 +90,20 @@
   .dif-pos { color: #1e5c1e; font-weight: 500; }
   .btn-del { background: transparent; border: none; color: #aac4b4; cursor: pointer; font-size: 14px; padding: 3px 6px; border-radius: 5px; }
   .btn-del:hover { color: #922020; background: #fdf0f0; }
+  .btn-edit { background: transparent; border: none; color: #aac4b4; cursor: pointer; font-size: 15px; padding: 3px 6px; border-radius: 5px; }
+  .btn-edit:hover { color: #2d4a3e; background: #e8f5ee; }
+  .badge-esp-a { background: #fef3e2; color: #7a4f00; }
+  .badge-esp-c { background: #f0e8ff; color: #4a1a7a; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 999; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 14px; padding: 1.75rem; width: 100%; max-width: 480px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  .modal-title { font-size: 14px; font-weight: 600; color: #2d4a3e; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 1.25rem; }
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+  .modal-grid .full { grid-column: 1 / -1; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1rem; }
+  .btn-cancel { background: transparent; border: 1px solid #c8ddd2; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-family: inherit; color: #6b8c7a; cursor: pointer; }
+  .btn-save-edit { background: #2d4a3e; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-family: inherit; color: #fff; cursor: pointer; font-weight: 600; }
+  .btn-save-edit:hover { background: #1e3329; }
   .empty { text-align: center; color: #8aab97; font-size: 14px; padding: 3rem 0; }
   .loading-msg { text-align: center; color: #8aab97; font-size: 13px; padding: 2rem 0; }
   @media (max-width: 900px) {
@@ -162,6 +176,7 @@
         <div><label class="fg-label">Sacas</label><input type="number" id="fSacas" class="fg-input" placeholder="0" min="0"/></div>
         <div><label class="fg-label">Qualidade</label><input type="text" id="fQual" class="fg-input" placeholder="BC2"/></div>
         <div><label class="fg-label">Diferencial</label><input type="number" id="fDif" class="fg-input" placeholder="0.00" step="0.01"/></div>
+        <div><label class="fg-label">Espécie</label><select id="fEspecie" class="fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
         <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add" id="btnAdd" onclick="addRow()">+ Adicionar</button></div>
       </div>
     </div>
@@ -171,6 +186,12 @@
         <button class="seg-btn active" data-v="todos" onclick="setTipo(this)">Todos</button>
         <button class="seg-btn" data-v="COMPRA" onclick="setTipo(this)">Compra</button>
         <button class="seg-btn" data-v="VENDA" onclick="setTipo(this)">Venda</button>
+      </div>
+      <div class="toolbar-sep"></div>
+      <div class="seg" id="segEspecie">
+        <button class="seg-btn active" data-v="todos" onclick="setEspecie(this)">Todas</button>
+        <button class="seg-btn" data-v="ARABICA" onclick="setEspecie(this)">Arábica</button>
+        <button class="seg-btn" data-v="CONILON" onclick="setEspecie(this)">Conilon</button>
       </div>
       <div class="toolbar-sep"></div>
       <div class="date-group">
@@ -203,12 +224,31 @@
   </div>
 </div>
 
+<!-- MODAL EDITAR -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-title">Editar lançamento</div>
+    <div class="modal-grid">
+      <div><label class="fg-label">Data</label><input type="date" id="eData" class="fg-input" style="text-transform:none"/></div>
+      <div><label class="fg-label">Tipo</label><select id="eTipo" class="fg-input"><option value="COMPRA">COMPRA</option><option value="VENDA">VENDA</option></select></div>
+      <div><label class="fg-label">Sacas</label><input type="number" id="eSacas" class="fg-input" style="text-transform:none"/></div>
+      <div><label class="fg-label">Qualidade</label><input type="text" id="eQual" class="fg-input"/></div>
+      <div><label class="fg-label">Diferencial</label><input type="number" id="eDif" class="fg-input" step="0.01" style="text-transform:none"/></div>
+      <div><label class="fg-label">Espécie</label><select id="eEspecie" class="fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save-edit" id="btnSaveEdit" onclick="saveEdit()">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const SUPA_URL = 'https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
 
-let rows = [], filterTipo = 'todos', accessToken = null, refreshToken = null, userRole = 'visualizador';
+let rows = [], filterTipo = 'todos', filterEspecie = 'todos', accessToken = null, refreshToken = null, userRole = 'visualizador';
 
 const todayStr = () => new Date().toISOString().slice(0, 10);
 const fmtDate = s => { const p = s.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
@@ -384,7 +424,13 @@ function getByDate() {
     return true;
   });
 }
-function filtered() { return getByDate().filter(r => filterTipo === 'todos' || r.tipo === filterTipo); }
+function filtered() {
+  return getByDate().filter(r => {
+    if (filterTipo !== 'todos' && r.tipo !== filterTipo) return false;
+    if (filterEspecie !== 'todos' && (r.especie || 'ARABICA') !== filterEspecie) return false;
+    return true;
+  });
+}
 
 function render() {
   document.getElementById('hdrSub').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -402,11 +448,16 @@ function render() {
   data.forEach(r => {
     const tr = document.createElement('tr');
     const d = Number(r.dif);
+    const espBadge = r.especie === 'CONILON' ? 'badge-esp-c' : 'badge-esp-a';
     tr.innerHTML = `<td>${fmtDate(r.data)}</td>
       <td><span class="badge ${r.tipo === 'COMPRA' ? 'badge-c' : 'badge-v'}">${r.tipo}</span></td>
       <td>${r.sacas}</td><td>${r.qual || '—'}</td>
+      <td><span class="badge ${espBadge}">${r.especie || 'ARABICA'}</span></td>
       <td class="${d < 0 ? 'dif-neg' : 'dif-pos'}">${fmt2(d)}</td>
-      <td class="col-del"><button class="btn-del" onclick="delRow(${r.id})">✕</button></td>`;
+      <td class="col-del">
+        <button class="btn-edit" onclick="editRow(${r.id})" title="Editar">✎</button>
+        <button class="btn-del" onclick="delRow(${r.id})" title="Excluir">✕</button>
+      </td>`;
     tbody.appendChild(tr);
   });
 }
@@ -417,6 +468,7 @@ async function addRow() {
   const sacas = parseFloat(document.getElementById('fSacas').value);
   const qual = document.getElementById('fQual').value.trim().toUpperCase();
   const dif = parseFloat(document.getElementById('fDif').value);
+  const especie = document.getElementById('fEspecie').value;
   if (!data || isNaN(sacas) || sacas <= 0 || isNaN(dif)) { alert('Preencha Data, Sacas e Diferencial.'); return; }
   const btn = document.getElementById('btnAdd');
   btn.disabled = true; btn.textContent = 'Salvando...';
@@ -424,7 +476,7 @@ async function addRow() {
     let res = await fetch(`${SUPA_URL}/rest/v1/lancamentos`, {
       method: 'POST',
       headers: { ...authHeaders(), 'Prefer': 'return=representation' },
-      body: JSON.stringify({ data, tipo, sacas, qual, dif })
+      body: JSON.stringify({ data, tipo, sacas, qual, dif, especie })
     });
     if (res.status === 401) {
       const renovado = await renovarToken();
@@ -432,7 +484,7 @@ async function addRow() {
         res = await fetch(`${SUPA_URL}/rest/v1/lancamentos`, {
           method: 'POST',
           headers: { ...authHeaders(), 'Prefer': 'return=representation' },
-          body: JSON.stringify({ data, tipo, sacas, qual, dif })
+          body: JSON.stringify({ data, tipo, sacas, qual, dif, especie })
         });
       } else { doLogout(); return; }
     }
@@ -442,6 +494,7 @@ async function addRow() {
     document.getElementById('fSacas').value = '';
     document.getElementById('fQual').value = '';
     document.getElementById('fDif').value = '';
+    document.getElementById('fEspecie').value = 'ARABICA';
     render();
   } catch (e) {
     alert('Erro ao salvar: ' + e.message);
@@ -461,6 +514,13 @@ async function delRow(id) {
   } catch (e) { alert('Erro ao remover.'); }
 }
 
+function setEspecie(btn) {
+  filterEspecie = btn.dataset.v;
+  document.querySelectorAll('#segEspecie .seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
 function setTipo(btn) {
   filterTipo = btn.dataset.v;
   document.querySelectorAll('#segTipo .seg-btn').forEach(b => b.classList.remove('active'));
@@ -469,6 +529,55 @@ function setTipo(btn) {
 }
 
 function clearDates() { document.getElementById('fDtDe').value = ''; document.getElementById('fDtAte').value = ''; render(); }
+
+let editingId = null;
+
+function editRow(id) {
+  const r = rows.find(x => x.id === id);
+  if (!r) return;
+  editingId = id;
+  document.getElementById('eData').value = r.data;
+  document.getElementById('eTipo').value = r.tipo;
+  document.getElementById('eSacas').value = r.sacas;
+  document.getElementById('eQual').value = r.qual || '';
+  document.getElementById('eDif').value = r.dif;
+  document.getElementById('eEspecie').value = r.especie || 'ARABICA';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  editingId = null;
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+async function saveEdit() {
+  const data = document.getElementById('eData').value;
+  const tipo = document.getElementById('eTipo').value;
+  const sacas = parseFloat(document.getElementById('eSacas').value);
+  const qual = document.getElementById('eQual').value.trim().toUpperCase();
+  const dif = parseFloat(document.getElementById('eDif').value);
+  const especie = document.getElementById('eEspecie').value;
+  if (!data || isNaN(sacas) || sacas <= 0 || isNaN(dif)) { alert('Preencha todos os campos.'); return; }
+  const btn = document.getElementById('btnSaveEdit');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${editingId}`, {
+      method: 'PATCH',
+      headers: { ...authHeaders(), 'Prefer': 'return=representation' },
+      body: JSON.stringify({ data, tipo, sacas, qual, dif, especie })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const [updated] = await res.json();
+    const idx = rows.findIndex(r => r.id === editingId);
+    if (idx !== -1) rows[idx] = updated;
+    closeModal();
+    render();
+  } catch(e) {
+    alert('Erro ao salvar: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Salvar alterações';
+  }
+}
 
 function exportExcel() {
   const byDate = getByDate();
@@ -481,11 +590,11 @@ function exportExcel() {
     ['INFORMATIVO DIÁRIO BRASCOF'],
     ['Gerado em:', new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })],
     [],
-    ['DATA', 'TIPO', 'SACAS', 'QUALIDADE', 'DIFERENCIAL'],
-    ...byDate.map(r => [fmtDate(r.data), r.tipo, r.sacas, r.qual, Number(r.dif)]),
+    ['DATA', 'TIPO', 'SACAS', 'QUALIDADE', 'ESPÉCIE', 'DIFERENCIAL'],
+    ...byDate.map(r => [fmtDate(r.data), r.tipo, r.sacas, r.qual, r.especie || 'ARABICA', Number(r.dif)]),
   ]);
-  ws['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 14 }];
-  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+  ws['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 14 }];
+  ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }];
   const de = document.getElementById('fDtDe').value;
   const ate = document.getElementById('fDtAte').value;
   const periodo = de && ate ? `${fmtDate(de)} a ${fmtDate(ate)}` : 'Todos os registros';
