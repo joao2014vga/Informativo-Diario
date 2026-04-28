@@ -206,7 +206,7 @@
 const SUPA_URL = 'https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
 
-let rows = [], filterTipo = 'todos', accessToken = null;
+let rows = [], filterTipo = 'todos', accessToken = null, refreshToken = null;
 
 const todayStr = () => new Date().toISOString().slice(0, 10);
 const fmtDate = s => { const p = s.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
@@ -240,7 +240,9 @@ async function doLogin() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error_description || data.msg || 'Credenciais inválidas');
     accessToken = data.access_token;
+    refreshToken = data.refresh_token;
     sessionStorage.setItem('brascof_token', accessToken);
+    sessionStorage.setItem('brascof_refresh', refreshToken);
     sessionStorage.setItem('brascof_email', email);
     showPortal(email);
   } catch (e) {
@@ -267,7 +269,9 @@ function showPortal(email) {
 
 function doLogout() {
   accessToken = null;
+  refreshToken = null;
   sessionStorage.removeItem('brascof_token');
+  sessionStorage.removeItem('brascof_refresh');
   sessionStorage.removeItem('brascof_email');
   document.getElementById('portalWrap').style.display = 'none';
   document.getElementById('loginWrap').style.display = 'flex';
@@ -277,9 +281,37 @@ function doLogout() {
 // Verificar sessão salva
 (function checkSession() {
   const token = sessionStorage.getItem('brascof_token');
+  const refresh = sessionStorage.getItem('brascof_refresh');
   const email = sessionStorage.getItem('brascof_email');
-  if (token && email) { accessToken = token; showPortal(email); }
+  if (token && email) {
+    accessToken = token;
+    refreshToken = refresh;
+    showPortal(email);
+  }
 })();
+
+async function renovarToken() {
+  if (!refreshToken) return false;
+  try {
+    const res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_KEY },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    accessToken = data.access_token;
+    refreshToken = data.refresh_token;
+    sessionStorage.setItem('brascof_token', accessToken);
+    sessionStorage.setItem('brascof_refresh', refreshToken);
+    return true;
+  } catch (e) { return false; }
+}
+
+// Renovar token a cada 45 minutos automaticamente
+setInterval(async () => {
+  if (accessToken) await renovarToken();
+}, 45 * 60 * 1000);
 
 // ── DADOS ─────────────────────────────────────────────────────
 function setStatus(ok, txt) {
@@ -295,7 +327,15 @@ function setValColor(id, val) {
 
 async function fetchRows() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`, { headers: authHeaders() });
+    let res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`, { headers: authHeaders() });
+    if (res.status === 401) {
+      const renovado = await renovarToken();
+      if (renovado) {
+        res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`, { headers: authHeaders() });
+      } else {
+        doLogout(); return;
+      }
+    }
     if (!res.ok) throw new Error(res.status);
     rows = await res.json();
     setStatus(true, 'conectado');
@@ -353,11 +393,21 @@ async function addRow() {
   const btn = document.getElementById('btnAdd');
   btn.disabled = true; btn.textContent = 'Salvando...';
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos`, {
+    let res = await fetch(`${SUPA_URL}/rest/v1/lancamentos`, {
       method: 'POST',
       headers: { ...authHeaders(), 'Prefer': 'return=representation' },
       body: JSON.stringify({ data, tipo, sacas, qual, dif })
     });
+    if (res.status === 401) {
+      const renovado = await renovarToken();
+      if (renovado) {
+        res = await fetch(`${SUPA_URL}/rest/v1/lancamentos`, {
+          method: 'POST',
+          headers: { ...authHeaders(), 'Prefer': 'return=representation' },
+          body: JSON.stringify({ data, tipo, sacas, qual, dif })
+        });
+      } else { doLogout(); return; }
+    }
     if (!res.ok) throw new Error(await res.text());
     const [novo] = await res.json();
     rows.unshift(novo);
