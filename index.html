@@ -7,6 +7,26 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f2; color: #1a1a1a; min-height: 100vh; }
+
+  /* LOGIN */
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f0f4f2; }
+  .login-box { background: #fff; border: 1px solid #dde8e2; border-radius: 16px; padding: 2.5rem 2rem; width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(45,74,62,0.08); }
+  .login-logo { text-align: center; margin-bottom: 1.5rem; }
+  .login-logo-circle { width: 64px; height: 64px; border-radius: 50%; background: #2d4a3e; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+  .login-logo-circle svg { width: 36px; height: 36px; }
+  .login-title { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+  .login-sub { font-size: 12px; color: #6b8c7a; }
+  .login-field { margin-bottom: 1rem; }
+  .login-label { font-size: 11px; font-weight: 600; color: #6b8c7a; text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 5px; }
+  .login-input { width: 100%; border: 1px solid #c8ddd2; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none; height: 42px; transition: border-color .15s; }
+  .login-input:focus { border-color: #2d4a3e; box-shadow: 0 0 0 3px rgba(45,74,62,.08); }
+  .btn-login { background: #2d4a3e; border: none; border-radius: 8px; padding: 11px; font-size: 14px; font-family: inherit; color: #fff; cursor: pointer; font-weight: 600; width: 100%; margin-top: 0.5rem; transition: background .15s; }
+  .btn-login:hover { background: #1e3329; }
+  .btn-login:disabled { background: #7a9e8a; cursor: not-allowed; }
+  .login-error { background: #fdf0f0; border: 1px solid #f0c8c8; border-radius: 8px; padding: 10px 12px; font-size: 12.5px; color: #922020; margin-top: 1rem; display: none; }
+
+  /* PORTAL */
+  .portal-wrap { display: none; }
   .page-wrap { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem; }
   .hdr { background: #2d4a3e; border-radius: 12px; padding: 0 1.5rem; height: 56px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
   .hdr-title { font-size: 16px; font-weight: 600; color: #e8f0ec; letter-spacing: .01em; }
@@ -15,6 +35,9 @@
   .btn-export { background: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 12.5px; font-family: inherit; color: #2d4a3e; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; }
   .btn-export:hover { background: #d4e8dc; }
   .btn-export svg { width: 15px; height: 15px; }
+  .btn-logout { background: transparent; border: 1px solid #8aab97; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-family: inherit; color: #e8f0ec; cursor: pointer; }
+  .btn-logout:hover { background: #1e3329; }
+  .user-info { font-size: 11px; color: #8aab97; }
   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #8aab97; flex-shrink: 0; }
   .status-dot.ok { background: #4caf7d; }
   .status-dot.err { background: #e05252; }
@@ -78,86 +101,116 @@
 </style>
 </head>
 <body>
-<div class="page-wrap">
 
-  <div class="hdr">
-    <div>
-      <div class="hdr-title">Informativo Diário Brascof</div>
-      <div class="hdr-sub" id="hdrSub">—</div>
+<!-- TELA DE LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-circle">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="14" stroke="#8aab97" stroke-width="1.5"/>
+          <path d="M10 20c1-4 3-8 6-10 3 2 5 6 6 10" stroke="#4caf7d" stroke-width="1.5" stroke-linecap="round"/>
+          <ellipse cx="16" cy="21" rx="6" ry="2.5" fill="#1e3329" stroke="#4caf7d" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="login-title">Informativo Diário Brascof</div>
+      <div class="login-sub">Acesso restrito — faça login para continuar</div>
     </div>
-    <div class="hdr-right">
-      <div class="status-dot" id="statusDot"></div>
-      <span class="status-txt" id="statusTxt">conectando...</span>
-      <button class="btn-export" onclick="exportExcel()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
-        Exportar Excel
-      </button>
+    <div class="login-field">
+      <label class="login-label">E-mail</label>
+      <input type="email" id="lEmail" class="login-input" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div class="login-field">
+      <label class="login-label">Senha</label>
+      <input type="password" id="lSenha" class="login-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div class="portal-wrap" id="portalWrap">
+  <div class="page-wrap">
+    <div class="hdr">
+      <div>
+        <div class="hdr-title">Informativo Diário Brascof</div>
+        <div class="hdr-sub" id="hdrSub">—</div>
+      </div>
+      <div class="hdr-right">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-txt" id="statusTxt">conectando...</span>
+        <span class="user-info" id="userInfo"></span>
+        <button class="btn-export" onclick="exportExcel()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+          Exportar Excel
+        </button>
+        <button class="btn-logout" onclick="doLogout()">Sair</button>
+      </div>
+    </div>
+
+    <div class="metrics-bar">
+      <div class="mbar-item"><div class="mbar-label">Sacas compradas</div><div class="mbar-val" id="mQC">—</div></div>
+      <div class="mbar-item"><div class="mbar-label">Média dif. compra</div><div class="mbar-val" id="mDC">—</div></div>
+      <div class="mbar-item"><div class="mbar-label">Sacas vendidas</div><div class="mbar-val" id="mQV">—</div></div>
+      <div class="mbar-item"><div class="mbar-label">Média dif. venda</div><div class="mbar-val" id="mDV">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-header-title">Novo lançamento</div></div>
+      <div class="form-row">
+        <div><label class="fg-label">Data</label><input type="date" id="fData" class="fg-input"/></div>
+        <div><label class="fg-label">Tipo</label><select id="fTipo" class="fg-input"><option value="COMPRA">COMPRA</option><option value="VENDA">VENDA</option></select></div>
+        <div><label class="fg-label">Sacas</label><input type="number" id="fSacas" class="fg-input" placeholder="0" min="0"/></div>
+        <div><label class="fg-label">Qualidade</label><input type="text" id="fQual" class="fg-input" placeholder="BC2"/></div>
+        <div><label class="fg-label">Diferencial</label><input type="number" id="fDif" class="fg-input" placeholder="0.00" step="0.01"/></div>
+        <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add" id="btnAdd" onclick="addRow()">+ Adicionar</button></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="seg" id="segTipo">
+        <button class="seg-btn active" data-v="todos" onclick="setTipo(this)">Todos</button>
+        <button class="seg-btn" data-v="COMPRA" onclick="setTipo(this)">Compra</button>
+        <button class="seg-btn" data-v="VENDA" onclick="setTipo(this)">Venda</button>
+      </div>
+      <div class="toolbar-sep"></div>
+      <div class="date-group">
+        <span class="dlabel">De</span>
+        <input type="date" id="fDtDe" class="date-in" oninput="render()"/>
+        <span class="dlabel">até</span>
+        <input type="date" id="fDtAte" class="date-in" oninput="render()"/>
+        <button class="btn-clear" onclick="clearDates()">Limpar</button>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="watermark"><img src="logo_brascof.png" alt=""/></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th style="width:120px">Data</th>
+            <th style="width:90px">Tipo</th>
+            <th style="width:80px">Sacas</th>
+            <th style="width:110px">Qualidade</th>
+            <th>Diferencial</th>
+            <th style="width:44px"></th>
+          </tr></thead>
+          <tbody id="tBody"></tbody>
+        </table>
+        <div id="loadingMsg" class="loading-msg">Carregando dados...</div>
+        <div id="emptyMsg" class="empty" style="display:none">Nenhum registro para os filtros selecionados.</div>
+      </div>
     </div>
   </div>
-
-  <div class="metrics-bar">
-    <div class="mbar-item"><div class="mbar-label">Sacas compradas</div><div class="mbar-val" id="mQC">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Média dif. compra</div><div class="mbar-val" id="mDC">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Sacas vendidas</div><div class="mbar-val" id="mQV">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Média dif. venda</div><div class="mbar-val" id="mDV">—</div></div>
-  </div>
-
-  <div class="card">
-    <div class="card-header"><div class="card-header-title">Novo lançamento</div></div>
-    <div class="form-row">
-      <div><label class="fg-label">Data</label><input type="date" id="fData" class="fg-input"/></div>
-      <div><label class="fg-label">Tipo</label><select id="fTipo" class="fg-input"><option value="COMPRA">COMPRA</option><option value="VENDA">VENDA</option></select></div>
-      <div><label class="fg-label">Sacas</label><input type="number" id="fSacas" class="fg-input" placeholder="0" min="0"/></div>
-      <div><label class="fg-label">Qualidade</label><input type="text" id="fQual" class="fg-input" placeholder="BC2"/></div>
-      <div><label class="fg-label">Diferencial</label><input type="number" id="fDif" class="fg-input" placeholder="0.00" step="0.01"/></div>
-      <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add" id="btnAdd" onclick="addRow()">+ Adicionar</button></div>
-    </div>
-  </div>
-
-  <div class="toolbar">
-    <div class="seg" id="segTipo">
-      <button class="seg-btn active" data-v="todos" onclick="setTipo(this)">Todos</button>
-      <button class="seg-btn" data-v="COMPRA" onclick="setTipo(this)">Compra</button>
-      <button class="seg-btn" data-v="VENDA" onclick="setTipo(this)">Venda</button>
-    </div>
-    <div class="toolbar-sep"></div>
-    <div class="date-group">
-      <span class="dlabel">De</span>
-      <input type="date" id="fDtDe" class="date-in" oninput="render()"/>
-      <span class="dlabel">até</span>
-      <input type="date" id="fDtAte" class="date-in" oninput="render()"/>
-      <button class="btn-clear" onclick="clearDates()">Limpar</button>
-    </div>
-  </div>
-
-  <div class="table-card">
-    <div class="watermark"><img src="logo_brascof.png" alt=""/></div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr>
-          <th style="width:120px">Data</th>
-          <th style="width:90px">Tipo</th>
-          <th style="width:80px">Sacas</th>
-          <th style="width:110px">Qualidade</th>
-          <th>Diferencial</th>
-          <th style="width:44px"></th>
-        </tr></thead>
-        <tbody id="tBody"></tbody>
-      </table>
-      <div id="loadingMsg" class="loading-msg">Carregando dados...</div>
-      <div id="emptyMsg" class="empty" style="display:none">Nenhum registro para os filtros selecionados.</div>
-    </div>
-  </div>
-
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const SUPA_URL = 'https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
-const H = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
 
-let rows = [], filterTipo = 'todos';
+let rows = [], filterTipo = 'todos', accessToken = null;
 
 const todayStr = () => new Date().toISOString().slice(0, 10);
 const fmtDate = s => { const p = s.split('-'); return p[2] + '/' + p[1] + '/' + p[0]; };
@@ -165,6 +218,74 @@ const fmt2 = v => v != null ? ((v >= 0 ? '+' : '') + Number(v).toFixed(2)) : '�
 const sumQ = arr => arr.reduce((a, r) => a + Number(r.sacas), 0);
 const medW = arr => { const s = sumQ(arr); if (!s) return null; return arr.reduce((a, r) => a + Number(r.dif) * Number(r.sacas), 0) / s; };
 
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'apikey': SUPA_KEY,
+    'Authorization': 'Bearer ' + (accessToken || SUPA_KEY)
+  };
+}
+
+// ── AUTH ─────────────────────────────────────────────────────
+async function doLogin() {
+  const email = document.getElementById('lEmail').value.trim();
+  const senha = document.getElementById('lSenha').value;
+  const btn = document.getElementById('btnLogin');
+  const err = document.getElementById('loginError');
+  err.style.display = 'none';
+  if (!email || !senha) { showError('Preencha e-mail e senha.'); return; }
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  try {
+    const res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_KEY },
+      body: JSON.stringify({ email, password: senha })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.msg || 'Credenciais inválidas');
+    accessToken = data.access_token;
+    sessionStorage.setItem('brascof_token', accessToken);
+    sessionStorage.setItem('brascof_email', email);
+    showPortal(email);
+  } catch (e) {
+    showError(e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+
+function showError(msg) {
+  const err = document.getElementById('loginError');
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+
+function showPortal(email) {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('portalWrap').style.display = 'block';
+  document.getElementById('userInfo').textContent = email;
+  document.getElementById('fData').value = todayStr();
+  document.getElementById('fQual').addEventListener('input', function () { this.value = this.value.toUpperCase(); });
+  fetchRows();
+}
+
+function doLogout() {
+  accessToken = null;
+  sessionStorage.removeItem('brascof_token');
+  sessionStorage.removeItem('brascof_email');
+  document.getElementById('portalWrap').style.display = 'none';
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('lSenha').value = '';
+}
+
+// Verificar sessão salva
+(function checkSession() {
+  const token = sessionStorage.getItem('brascof_token');
+  const email = sessionStorage.getItem('brascof_email');
+  if (token && email) { accessToken = token; showPortal(email); }
+})();
+
+// ── DADOS ─────────────────────────────────────────────────────
 function setStatus(ok, txt) {
   document.getElementById('statusDot').className = 'status-dot ' + (ok ? 'ok' : 'err');
   document.getElementById('statusTxt').textContent = txt;
@@ -178,7 +299,7 @@ function setValColor(id, val) {
 
 async function fetchRows() {
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`, { headers: H });
+    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`, { headers: authHeaders() });
     if (!res.ok) throw new Error(res.status);
     rows = await res.json();
     setStatus(true, 'conectado');
@@ -186,7 +307,7 @@ async function fetchRows() {
     render();
   } catch (e) {
     setStatus(false, 'erro de conexão');
-    document.getElementById('loadingMsg').textContent = 'Erro ao carregar. Verifique a conexão e recarregue a página.';
+    document.getElementById('loadingMsg').textContent = 'Erro ao carregar. Recarregue a página.';
   }
 }
 
@@ -238,7 +359,7 @@ async function addRow() {
   try {
     const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos`, {
       method: 'POST',
-      headers: { ...H, 'Prefer': 'return=representation' },
+      headers: { ...authHeaders(), 'Prefer': 'return=representation' },
       body: JSON.stringify({ data, tipo, sacas, qual, dif })
     });
     if (!res.ok) throw new Error(await res.text());
@@ -259,7 +380,7 @@ async function addRow() {
 async function delRow(id) {
   if (!confirm('Remover este lançamento?')) return;
   try {
-    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${id}`, { method: 'DELETE', headers: H });
+    const res = await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${id}`, { method: 'DELETE', headers: authHeaders() });
     if (!res.ok) throw new Error(res.status);
     rows = rows.filter(r => r.id !== id);
     render();
@@ -306,10 +427,6 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(wb, wsRes, 'Resumo');
   XLSX.writeFile(wb, `Brascof_Informativo_${todayStr().replace(/-/g, '')}.xlsx`);
 }
-
-document.getElementById('fData').value = todayStr();
-document.getElementById('fQual').addEventListener('input', function () { this.value = this.value.toUpperCase(); });
-fetchRows();
 </script>
 </body>
 </html>
