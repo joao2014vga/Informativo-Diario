@@ -434,9 +434,14 @@ function filtered() {
 
 function render() {
   document.getElementById('hdrSub').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const byDate = getByDate();
-  const compras = byDate.filter(r => r.tipo === 'COMPRA');
-  const vendas = byDate.filter(r => r.tipo === 'VENDA');
+
+  // Cards respeitam filtro de data E especie, mas sempre mostram compra e venda separados
+  const base = getByDate().filter(r => {
+    if (filterEspecie !== 'todos' && (r.especie || 'ARABICA') !== filterEspecie) return false;
+    return true;
+  });
+  const compras = base.filter(r => r.tipo === 'COMPRA');
+  const vendas = base.filter(r => r.tipo === 'VENDA');
   document.getElementById('mQC').textContent = sumQ(compras);
   setValColor('mDC', medW(compras));
   document.getElementById('mQV').textContent = sumQ(vendas);
