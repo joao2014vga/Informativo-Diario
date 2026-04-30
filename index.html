@@ -306,6 +306,10 @@ select.cont-fg-input{cursor:pointer}
 .cont-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid #dde8e2}
 .btn-cancel-cont{background:transparent;border:1px solid #c8ddd2;border-radius:8px;padding:8px 18px;font-size:13px;font-family:inherit;color:#6b8c7a;cursor:pointer}
 .btn-save-cont{background:#2d4a3e;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600}
+.cont-filter-input{border:1px solid #c8ddd2;border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;height:32px;min-width:130px}
+.cont-filter-input:focus{border-color:#2d4a3e}
+.cont-filter-select{border:1px solid #c8ddd2;border-radius:8px;padding:5px 8px;font-size:12px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;height:32px;cursor:pointer}
+.cont-filter-select:focus{border-color:#2d4a3e}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){
   .cont-form-grid{grid-template-columns:1fr 1fr}
@@ -370,12 +374,12 @@ select.cont-fg-input{cursor:pointer}
 <div class="col-left">
   <div class="sec">Identificação</div>
   <div class="ig ig-3">
-    <div class="icard"><label class="ilabel">Produtor</label><input type="text" id="i-producer" placeholder="Ex: SCHMITT" oninput="calc()"></div>
-    <div class="icard"><label class="ilabel">Corretor</label><input type="text" id="i-broker-name" placeholder="Ex: VB" oninput="calc()"></div>
-    <div class="icard"><label class="ilabel">Qualidade</label><input type="text" id="i-quality" placeholder="Ex: BC2" oninput="calc()"></div>
+    <div class="icard"><label class="ilabel">Produtor</label><input type="text" id="i-producer" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: SCHMITT" oninput="calc()"></div>
+    <div class="icard"><label class="ilabel">Corretor</label><input type="text" id="i-broker-name" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: VB" oninput="calc()"></div>
+    <div class="icard"><label class="ilabel">Qualidade</label><input type="text" id="i-quality" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: BC2" oninput="calc()"></div>
   </div>
   <div class="ig ig-4">
-    <div class="icard"><label class="ilabel">Safra</label><input type="text" id="i-crop" placeholder="Ex: 26/27" oninput="calc()"></div>
+    <div class="icard"><label class="ilabel">Safra</label><input type="text" id="i-crop" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: 26/27" oninput="calc()"></div>
     <div class="icard"><label class="ilabel">Data Retirada</label><input type="date" id="i-date" oninput="calc()"></div>
     <div class="icard"><label class="ilabel">Data Pagamento</label><input type="date" id="i-paydate" oninput="calc()"></div>
     <div class="icard"><label class="ilabel">Modalidade</label><select id="i-modalidade" oninput="calc()"><option value="NORMAL">NORMAL</option><option value="FUTURO">FUTURO</option></select></div>
@@ -599,6 +603,36 @@ select.cont-fg-input{cursor:pointer}
       <button class="seg-btn" data-v="ERP LANÇADO" onclick="setContFiltro(this,'status')">ERP Lançado</button>
     </div>
     <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
+    <button class="btn-export-cont" id="btnImportPlanilha" onclick="importarPlanilha()" style="border-color:#2d4a3e;color:#2d4a3e">📥 Importar planilha histórica</button>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
+    <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
+    <input type="text" id="cf-vendedor" class="cont-filter-input" placeholder="Vendedor..." oninput="renderContratos()"/>
+    <input type="text" id="cf-corretor" class="cont-filter-input" placeholder="Corretor..." oninput="renderContratos()"/>
+    <select id="cf-filial" class="cont-filter-select" onchange="renderContratos()">
+      <option value="">Todas filiais</option>
+      <option value="MG">MG</option>
+      <option value="SP">SP</option>
+      <option value="ES">ES</option>
+    </select>
+    <select id="cf-frete" class="cont-filter-select" onchange="renderContratos()">
+      <option value="">Posto / Retirar</option>
+      <option value="Posto">Posto</option>
+      <option value="Retirar">Retirar</option>
+    </select>
+    <select id="cf-modalidade" class="cont-filter-select" onchange="renderContratos()">
+      <option value="">Normal / Futuro</option>
+      <option value="Normal">Normal</option>
+      <option value="Futuro">Futuro</option>
+    </select>
+    <select id="cf-email" class="cont-filter-select" onchange="renderContratos()">
+      <option value="">E-mail prog.</option>
+      <option value="ENVIAR BRC">Enviar BRC</option>
+      <option value="ENVIAR PROGRAMAÇÃO">Enviar Programação</option>
+      <option value="ENVIADO BRC">Enviado BRC</option>
+      <option value="ENVIADO PROGRAMAÇÃO">Enviado Programação</option>
+    </select>
+    <button class="btn-clear-inf" onclick="limparFiltrosCont()" style="height:32px;font-size:11px">Limpar filtros</button>
   </div>
   <div class="cont-table-wrap">
     <div style="overflow-x:auto">
@@ -649,7 +683,7 @@ select.cont-fg-input{cursor:pointer}
 
     <div style="margin-bottom:.75rem">
       <div class="modal-label" style="margin-bottom:5px">Observação (opcional)</div>
-      <textarea id="modal-obs" placeholder="Ex: aguardar retorno..." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;font-family:var(--mono);font-size:12px;color:var(--text);resize:vertical;min-height:50px;outline:none"></textarea>
+      <textarea id="modal-obs" placeholder="EX: AGUARDAR RETORNO..." oninput="this.value=this.value.toUpperCase()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;font-family:var(--mono);font-size:12px;color:var(--text);resize:vertical;min-height:50px;outline:none"></textarea>
     </div>
 
     <div id="modal-success" style="display:none;background:#d8f3dc;border:1px solid #52b788;border-radius:8px;padding:10px 14px;font-size:13px;color:#2d6a4f;text-align:center;margin-bottom:.75rem;font-family:var(--mono)">
@@ -1226,7 +1260,7 @@ async function salvarNegociacao(){
       sacas:parseInt(snap.bags)||null,
       valor:parseFloat(snap.brl)||null,
       frete:frete,
-      vencimento:null,
+      vencimento:document.getElementById('i-paydate').value||null,
       obs_extra:'',
       status_erp:'AGUARDANDO FECHAMENTO',
       instrucao_faturamento:instrucao,
@@ -1495,11 +1529,31 @@ async function fetchContratos(){
 }
 
 function contFiltered(){
+  const fContrato=(document.getElementById('cf-contrato')?.value||'').toUpperCase();
+  const fVendedor=(document.getElementById('cf-vendedor')?.value||'').toUpperCase();
+  const fCorretor=(document.getElementById('cf-corretor')?.value||'').toUpperCase();
+  const fFilial=document.getElementById('cf-filial')?.value||'';
+  const fFrete=document.getElementById('cf-frete')?.value||'';
+  const fModalidade=document.getElementById('cf-modalidade')?.value||'';
+  const fEmail=document.getElementById('cf-email')?.value||'';
   return contRows.filter(r=>{
     if(contFiltroTipo!=='todos'&&r.tipo!==contFiltroTipo)return false;
     if(contFiltroStatus!=='todos'&&r.status_erp!==contFiltroStatus)return false;
+    if(fContrato&&!(r.contrato||'').toUpperCase().includes(fContrato))return false;
+    if(fVendedor&&!(r.vendedor||'').toUpperCase().includes(fVendedor))return false;
+    if(fCorretor&&!(r.corretor||'').toUpperCase().includes(fCorretor))return false;
+    if(fFilial&&r.filial!==fFilial)return false;
+    if(fFrete&&r.frete!==fFrete)return false;
+    if(fModalidade&&r.modalidade!==fModalidade)return false;
+    if(fEmail&&r.email_programacao!==fEmail)return false;
     return true;
   });
+}
+
+function limparFiltrosCont(){
+  ['cf-contrato','cf-vendedor','cf-corretor'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['cf-filial','cf-frete','cf-modalidade','cf-email'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  renderContratos();
 }
 
 function setContFiltro(btn,kind){
@@ -1656,14 +1710,111 @@ async function salvarContrato(){
   finally{btn.disabled=false;btn.textContent='Salvar';}
 }
 
+const PLANILHA_HISTORICA = [{"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0272.26", "status_erp": "ERP LANÇADO", "vendedor": "CULTUR COMERCIAL DE GRAO", "corretor": "PORTAL", "sacas": 800, "valor": 1830.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0273.26", "status_erp": "ERP LANÇADO", "vendedor": "CATUAI", "corretor": "FINE", "sacas": 370, "valor": 1800.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-0274.26", "status_erp": "ERP LANÇADO", "vendedor": "JOSE CARLOS SCHIMIT", "corretor": "VB", "sacas": 200, "valor": 1610.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": "INSTRUÇÃO DE FATURAMENTO SÓ SETEMBRO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-275.26", "status_erp": "ERP LANÇADO", "vendedor": "LONDE & RIBEIRO AGRONEGÓCIOS LTDA.", "corretor": "LESSA", "sacas": 500, "valor": 1790.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-276.26", "status_erp": "ERP LANÇADO", "vendedor": "NAYME COMERCIO DE CAFE", "corretor": "LESSA", "sacas": 550, "valor": 1855.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-277.26", "status_erp": "ERP LANÇADO", "vendedor": "HENRIQUE DIAS CAMBRAIA E OUTROS(SII)", "corretor": "SANCAFÉ", "sacas": 735, "valor": 1600.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-278.26", "status_erp": "ERP LANÇADO", "vendedor": "JOSE CARLOS SCHIMIT", "corretor": "VB", "sacas": 300, "valor": 1610.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": "INSTRUÇÃO DE FATURAMENTO SÓ SETEMBRO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-279.26", "status_erp": "ERP LANÇADO", "vendedor": "VALE FORTE", "corretor": "PORTAL", "sacas": 530, "valor": 1600.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-280.26", "status_erp": "ERP LANÇADO", "vendedor": "MUNDO NOVO", "corretor": "CAIO", "sacas": 3000, "valor": 1790.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-281.26", "status_erp": "ERP LANÇADO", "vendedor": "OURO MINAS", "corretor": "CAIO", "sacas": 1000, "valor": 1790.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-282.26", "status_erp": "ERP LANÇADO", "vendedor": "NAYME", "corretor": "LESSA", "sacas": 1100, "valor": 1780.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-283.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPERCAP", "corretor": "PORTAL", "sacas": 230, "valor": 1800.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRV-0037.26", "status_erp": "ERP LANÇADO", "vendedor": "BRASCOF", "corretor": "", "sacas": 1000, "valor": 1580.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0284..26", "status_erp": "ERP LANÇADO", "vendedor": "COMERCIANTE", "corretor": "FINE", "sacas": 240, "valor": 1620.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": "FECHAMENTO  PELO WHATS"}, {"filial": "SP", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0287.26", "status_erp": "ERP LANÇADO", "vendedor": "SERRA NEGRA", "corretor": "PORTAL", "sacas": 1260, "valor": 1780.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-286.26", "status_erp": "ERP LANÇADO", "vendedor": "RAIZ FORTE", "corretor": "PORTAL", "sacas": 530, "valor": 1700.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-285.26", "status_erp": "ERP LANÇADO", "vendedor": "SANCOFFEE", "corretor": "SANCAFÉ", "sacas": 140, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-288.26", "status_erp": "ERP LANÇADO", "vendedor": "AGROFORTE", "corretor": "FINE", "sacas": 10000, "valor": 1590.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-15", "obs_extra": "LANÇAR COMO FUTURO/SAFRA 26/27"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-289.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPERCAM", "corretor": "ALEXANDRE", "sacas": 1120, "valor": 1925.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-290.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPSAN", "corretor": "SANCAFÉ", "sacas": 200, "valor": 1915.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-291.26", "status_erp": "ERP LANÇADO", "vendedor": "BERNARDES", "corretor": "ALEXANDRE", "sacas": 500, "valor": 1930.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-295.26", "status_erp": "ERP LANÇADO", "vendedor": "MARCHETTI", "corretor": "ALEXANDRE", "sacas": 32, "valor": 1600.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-294.26", "status_erp": "ERP LANÇADO", "vendedor": "PRIMAVERA", "corretor": "-", "sacas": 5000, "valor": 1420.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-09-30", "obs_extra": "CONFIRMAR FORNECEDOR/FUTURO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-293.26", "status_erp": "ERP LANÇADO", "vendedor": "ILCEU", "corretor": "FINE", "sacas": 2000, "valor": 1530.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-30", "obs_extra": "FUTURO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-299.26", "status_erp": "ERP LANÇADO", "vendedor": "HERMAS CAIXETA BARBOSA JUNIOR", "corretor": "GLOBAL", "sacas": 298, "valor": 1472.08, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": "INTRUÇÃO DE FATURAAMENTO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-300.26", "status_erp": "ERP LANÇADO", "vendedor": "NT COFFEE", "corretor": "GLOBAL", "sacas": 250, "valor": 1500.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-302.26", "status_erp": "ERP LANÇADO", "vendedor": "JOAO EMILIO", "corretor": "VB", "sacas": 3000, "valor": 1605.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-301.26", "status_erp": "ERP LANÇADO", "vendedor": "JOSE SEVERINO", "corretor": "VB", "sacas": 300, "valor": 1605.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-303.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "FAVAROS", "sacas": 1060, "valor": 1490.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-304.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "FAVAROS", "sacas": 1060, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-305.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "FAVAROS", "sacas": 1590, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-306.26", "status_erp": "ERP LANÇADO", "vendedor": "PEDRO DE MELO RIBEIRO", "corretor": "VB", "sacas": 300, "valor": 1600.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-307.26", "status_erp": "ERP LANÇADO", "vendedor": "MARIA LIDIA", "corretor": "ALEXANDRE", "sacas": 1000, "valor": 1700.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-308.26", "status_erp": "ERP LANÇADO", "vendedor": "LEANDRO CAFÉ", "corretor": "FAVAROS", "sacas": 500, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-05", "obs_extra": "ALTERAÇÃO NO ESPELHO DO FECHAMENTO, SEGUIR CONTRATO (GUSTAVO)"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-309.26", "status_erp": "ERP LANÇADO", "vendedor": "MIGUEL SABIA NETO", "corretor": "VB", "sacas": 100, "valor": 1646.84, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-311.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPERBELO", "corretor": "MINAS COMISSÁRIA", "sacas": 1500, "valor": 1625.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-08-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-310.26", "status_erp": "ERP LANÇADO", "vendedor": "PRIMAVERA", "corretor": "-", "sacas": 5000, "valor": 1460.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2027-08-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRV-0038.26", "status_erp": "ERP LANÇADO", "vendedor": "CULTUR COMERCIAL DE GRAO", "corretor": "PORTAL", "sacas": 500, "valor": 1000.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2027-05-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRV-0039.26", "status_erp": "ERP LANÇADO", "vendedor": "CAFÉ LEM", "corretor": "VCC", "sacas": 854, "valor": 1000.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-04-28", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-312.26", "status_erp": "ERP LANÇADO", "vendedor": "OLIVEIRA COMERCIO", "corretor": "AGROTRADE", "sacas": 280, "valor": 1410.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-313.26", "status_erp": "ERP LANÇADO", "vendedor": "LUIS CARLOS", "corretor": "FINE", "sacas": 500, "valor": 1600.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2027-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-315.26", "status_erp": "ERP LANÇADO", "vendedor": "ALISSON ASSUNÇÃO", "corretor": "FINE", "sacas": 2000, "valor": 1600.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-316.26", "status_erp": "ERP LANÇADO", "vendedor": "ILCEU", "corretor": "FINE", "sacas": 1000, "valor": 1550.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-07-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Futuro", "contrato": "BRV-0040/26", "status_erp": "ERP LANÇADO", "vendedor": "ODEBRECHT", "corretor": "FINE", "sacas": 1433, "valor": 950.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-06-05", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Futuro", "contrato": "BRC-317.26", "status_erp": "ERP LANÇADO", "vendedor": "AGROFORTE", "corretor": "FINE", "sacas": 7500, "valor": 1580.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-06-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRC-319.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "ZÉ", "sacas": 1590, "valor": 1490.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-05-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Futuro", "contrato": "BRC-318.26", "status_erp": "ERP LANÇADO", "vendedor": "TIAGO CAPELINHA", "corretor": "FINE", "sacas": 600, "valor": 1550.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-07-30", "obs_extra": ""}];
+
+async function importarPlanilha(){
+  const btn=document.getElementById('btnImportPlanilha');
+  if(!confirm('Importar 47 contratos da planilha histórica para o Supabase?\n\nEsta ação não pode ser desfeita. Continuar?'))return;
+  btn.disabled=true;btn.textContent='Importando...';
+  let ok=0,err=0;
+  for(const rec of PLANILHA_HISTORICA){
+    try{
+      const res=await fetch(`${SUPA_URL}/rest/v1/contratos`,{method:'POST',headers:authH(),body:JSON.stringify(rec)});
+      if(res.ok)ok++;else err++;
+    }catch(e){err++;}
+  }
+  btn.disabled=false;btn.textContent='📥 Importar planilha histórica';
+  alert(`Importação concluída!\n✅ Importados: ${ok}\n❌ Erros: ${err}`);
+  if(ok>0){await fetchContratos();btn.style.display='none';}
+}
+
 function exportContExcel(){
-  if(!contRows.length){alert('Nenhum contrato.');return;}
-  const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.aoa_to_sheet([['CONTROLE DE CONTRATOS — BRASCOF'],['Gerado em:',new Date().toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})],[],['CONTRATO','FILIAL','TIPO','MODALIDADE','VENDEDOR','CORRETOR','EMP/PROD','SACAS','VALOR','FRETE','STATUS ERP','INSTR. FAT.','E-MAIL PROG.','CONT. FUTURO','VENCIMENTO','OBS'],...contRows.map(r=>[r.contrato,r.filial,r.tipo,r.modalidade,r.vendedor,r.corretor,r.empresa_produtor,r.sacas,r.valor,r.frete,r.status_erp,r.instrucao_faturamento,r.email_programacao,r.contrato_futuro,r.vencimento||'',r.obs_extra||''])]);
-  ws['!cols']=[{wch:14},{wch:5},{wch:7},{wch:8},{wch:22},{wch:10},{wch:8},{wch:6},{wch:8},{wch:8},{wch:20},{wch:14},{wch:20},{wch:16},{wch:12},{wch:20}];
+  const data=contFiltered();
+  if(!data.length){alert('Nenhum contrato para exportar.');return;}
+
+  // Título + cabeçalho igual à planilha original
+  const titulo='☕  CONTROLE COMERCIAL — CONTRATOS DE CAFÉ';
+  const cabecalho=['MG/SP','TIPO','MODALIDADE','OBSERVAÇÃO EXTRA','CONTRATO','STATUS','VENDEDOR','CORRETOR','SACAS','VALOR','MODALIDADE','CNPJ/CPF','INSTRUÇÃO DE\nFATURAMENTO','E-MAIL DE\nPROGRAMAÇÃO','CONTRATO DE\nCOMPRA E VENDA\nFUTURO','VENCIMENTO'];
+
+  const linhas=data.map(r=>[
+    r.filial||'',
+    r.tipo||'',
+    r.modalidade||'',
+    r.obs_extra||'',
+    r.contrato||'',
+    r.status_erp==='ERP LANÇADO'?'ERP Lançado':'Aguardando Fechamento',
+    r.vendedor||'',
+    r.corretor||'',
+    r.sacas||'',
+    r.valor||'',
+    r.frete||'',
+    r.empresa_produtor||'',
+    r.instrucao_faturamento||'',
+    r.email_programacao||'',
+    r.contrato_futuro||'',
+    r.vencimento||''
+  ]);
+
+  const ws=XLSX.utils.aoa_to_sheet([[titulo],...[cabecalho],...linhas]);
+
+  // Merge da linha de título (A1:P1)
   ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:15}}];
-  XLSX.utils.book_append_sheet(wb,ws,'Contratos');
-  XLSX.writeFile(wb,`Brascof_Contratos_${todayStr().replace(/-/g,'')}.xlsx`);
+
+  // Larguras iguais à planilha original
+  ws['!cols']=[
+    {wch:10},{wch:8},{wch:17},{wch:44},{wch:15},{wch:24},
+    {wch:33},{wch:16},{wch:9},{wch:13},{wch:10},{wch:12},
+    {wch:15},{wch:15},{wch:15},{wch:12}
+  ];
+
+  // Altura das linhas
+  ws['!rows']=[{hpt:22},{hpt:30}];
+
+  // Estilo do título — fundo azul escuro, texto branco, negrito
+  const titleStyle={
+    font:{name:'Calibri',sz:13,bold:true,color:{rgb:'FFFFFF'}},
+    fill:{fgColor:{rgb:'1B3A5C'}},
+    alignment:{horizontal:'center',vertical:'center'}
+  };
+  // Estilo do cabeçalho
+  const headerStyle={
+    font:{name:'Calibri',sz:9,bold:true,color:{rgb:'FFFFFF'}},
+    fill:{fgColor:{rgb:'1B3A5C'}},
+    alignment:{horizontal:'center',vertical:'center',wrapText:true}
+  };
+  // Estilo das linhas de dados
+  const dataStyle={
+    font:{name:'Calibri',sz:9},
+    fill:{fgColor:{rgb:'F4F7FB'}},
+    alignment:{horizontal:'center',vertical:'center'}
+  };
+
+  // Aplicar estilos
+  const cols='ABCDEFGHIJKLMNOP'.split('');
+
+  // Título
+  if(!ws['A1'])ws['A1']={v:titulo,t:'s'};
+  ws['A1'].s=titleStyle;
+
+  // Cabeçalho linha 2
+  cols.forEach((col,i)=>{
+    const ref=col+'2';
+    if(!ws[ref])ws[ref]={v:cabecalho[i],t:'s'};
+    ws[ref].s=headerStyle;
+  });
+
+  // Dados linha 3+
+  linhas.forEach((linha,ri)=>{
+    cols.forEach((col,ci)=>{
+      const ref=col+(ri+3);
+      if(!ws[ref])ws[ref]={v:linha[ci],t:'s'};
+      ws[ref].s=dataStyle;
+    });
+  });
+
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'Controle');
+  XLSX.writeFile(wb,'Brascof_Controle_Contratos_'+todayStr().replace(/-/g,'')+'.xlsx');
 }
 </script>
 </body>
