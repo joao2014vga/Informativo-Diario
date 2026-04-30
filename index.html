@@ -1583,18 +1583,19 @@ function renderQualidade(data){
   if(!quals.length){panel.innerHTML='';vazio.style.display='block';return;}
   vazio.style.display='none';
 
-  // Max sacas para escala das barras
-  let maxSacas=0;
+  // Total de sacas por tipo para escala proporcional ao total
+  let totalCompras=0, totalVendas=0;
   quals.forEach(q=>{
-    maxSacas=Math.max(maxSacas,grupos[q].compra.sacas,grupos[q].venda.sacas);
+    totalCompras+=grupos[q].compra.sacas;
+    totalVendas+=grupos[q].venda.sacas;
   });
 
   panel.innerHTML=quals.map(q=>{
     const g=grupos[q];
     const medC=g.compra.sacas?g.compra.wdif/g.compra.sacas:null;
     const medV=g.venda.sacas?g.venda.wdif/g.venda.sacas:null;
-    const pctC=maxSacas?Math.round((g.compra.sacas/maxSacas)*100):0;
-    const pctV=maxSacas?Math.round((g.venda.sacas/maxSacas)*100):0;
+    const pctC=totalCompras?Math.round((g.compra.sacas/totalCompras)*100):0;
+    const pctV=totalVendas?Math.round((g.venda.sacas/totalVendas)*100):0;
     const fmtDif=v=>v!=null?((v>=0?'+':'')+v.toFixed(2)):'—';
     const colDif=v=>v==null?'#8aab97':v<0?'#922020':'#1e5c1e';
     const hasC=g.compra.sacas>0, hasV=g.venda.sacas>0;
@@ -1671,16 +1672,16 @@ async function salvarImagemInformativo(){
       grupos[q][t].sacas+=Number(r.sacas)||0;
       grupos[q][t].wdif+=(Number(r.sacas)||0)*(Number(r.dif)||0);
     });
-    let maxS=0;
-    Object.values(grupos).forEach(g=>maxS=Math.max(maxS,g.compra.sacas,g.venda.sacas));
+    let totC=0,totV=0;
+    Object.values(grupos).forEach(g=>{totC+=g.compra.sacas;totV+=g.venda.sacas;});
     const fmtDif=v=>v!=null?((v>=0?'+':'')+v.toFixed(2)):'—';
     const colD=v=>v==null?'#8aab97':v<0?'#922020':'#1e5c1e';
     document.getElementById('ipf-qualidade').innerHTML=Object.keys(grupos).sort().map(q=>{
       const g=grupos[q];
       const mC=g.compra.sacas?g.compra.wdif/g.compra.sacas:null;
       const mV=g.venda.sacas?g.venda.wdif/g.venda.sacas:null;
-      const pC=maxS?Math.round(g.compra.sacas/maxS*100):0;
-      const pV=maxS?Math.round(g.venda.sacas/maxS*100):0;
+      const pC=totC?Math.round(g.compra.sacas/totC*100):0;
+      const pV=totV?Math.round(g.venda.sacas/totV*100):0;
       const hasC=g.compra.sacas>0,hasV=g.venda.sacas>0;
       return `<div style="background:#fff;border:1px solid #dde8e2;border-radius:10px;padding:.75rem .9rem">
         <div style="font-size:12px;font-weight:700;color:#2d4a3e;background:#f5f9f6;border:1px solid #dde8e2;border-radius:5px;padding:2px 8px;display:inline-block;margin-bottom:.5rem">${q}</div>
