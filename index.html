@@ -248,6 +248,21 @@ tbody tr:hover{background:#fafcfb}
 .btn-edit-inf{background:transparent;border:none;color:#aac4b4;cursor:pointer;font-size:15px;padding:3px 6px;border-radius:5px}
 .btn-edit-inf:hover{color:#2d4a3e;background:#e8f5ee}
 .inf-empty,.inf-loading{text-align:center;color:#8aab97;font-size:13px;padding:2.5rem 0;position:relative;z-index:1}
+.qual-card{background:#fff;border:1px solid #dde8e2;border-radius:12px;padding:1rem 1.1rem;overflow:hidden}
+.qual-card-title{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
+.qual-badge-title{background:#f5f9f6;border:1px solid #dde8e2;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700;color:#2d4a3e;letter-spacing:.04em}
+.qual-row{margin-bottom:.6rem}
+.qual-row-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.qual-row-type{font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px}
+.qual-row-stats{font-size:11px;color:#6b8c7a;display:flex;gap:10px}
+.qual-row-stat{display:flex;flex-direction:column;align-items:flex-end}
+.qual-row-stat-label{font-size:9px;color:#8aab97;text-transform:uppercase;letter-spacing:.05em}
+.qual-row-stat-val{font-size:13px;font-weight:600}
+.qual-bar-wrap{height:8px;background:#f0f4f2;border-radius:20px;overflow:hidden}
+.qual-bar{height:100%;border-radius:20px;transition:width .4s ease}
+.qual-bar-c{background:linear-gradient(90deg,#1a4f82,#4a8fd4)}
+.qual-bar-v{background:linear-gradient(90deg,#1a5c1a,#4caf7d)}
+.qual-divider{height:1px;background:#edf3ef;margin:.5rem 0}
 #formInfLancamento{display:none}
 .btn-export-inf{background:#fff;border:1px solid #c8ddd2;border-radius:8px;padding:6px 14px;font-size:12px;font-family:inherit;color:#2d4a3e;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:400;align-items:center;justify-content:center}
@@ -579,6 +594,14 @@ select.cont-fg-input{cursor:pointer}
     </div>
   </div>
 </div>
+
+  <!-- PAINEL ANÁLISE POR QUALIDADE -->
+  <div style="max-width:1280px;margin:1rem auto 0;padding:0 1.5rem 1.5rem">
+    <div style="font-size:11px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem">Análise por Qualidade</div>
+    <div id="qualidadePanel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px"></div>
+    <div id="qualidadeVazio" style="display:none;text-align:center;color:#8aab97;font-size:13px;padding:2rem 0">Nenhum dado para os filtros selecionados.</div>
+  </div>
+
 </div><!-- /panel-informativo -->
 
 <!-- PAINEL CONTRATOS -->
@@ -1431,6 +1454,7 @@ function renderInf(){
   const data=infFiltered();
   const tbody=document.getElementById('infBody');tbody.innerHTML='';
   document.getElementById('infEmpty').style.display=data.length?'none':'block';
+  renderQualidade(infFiltered());
   const isAdmin=userRole==='admin';
   data.forEach(r=>{
     const tr=document.createElement('tr');
@@ -1496,6 +1520,67 @@ async function saveInfEdit(){
     closeInfModal();renderInf();
   }catch(e){alert('Erro: '+e.message);}
   finally{btn.disabled=false;btn.textContent='Salvar alterações';}
+}
+
+function renderQualidade(data){
+  const panel=document.getElementById('qualidadePanel');
+  const vazio=document.getElementById('qualidadeVazio');
+  if(!panel)return;
+
+  // Agrupar por qualidade
+  const grupos={};
+  data.forEach(r=>{
+    const q=(r.qual||'—').toUpperCase();
+    if(!grupos[q])grupos[q]={compra:{sacas:0,wdif:0},venda:{sacas:0,wdif:0}};
+    const tipo=r.tipo==='COMPRA'?'compra':'venda';
+    grupos[q][tipo].sacas+=Number(r.sacas)||0;
+    grupos[q][tipo].wdif+=(Number(r.sacas)||0)*(Number(r.dif)||0);
+  });
+
+  const quals=Object.keys(grupos).sort();
+  if(!quals.length){panel.innerHTML='';vazio.style.display='block';return;}
+  vazio.style.display='none';
+
+  // Max sacas para escala das barras
+  let maxSacas=0;
+  quals.forEach(q=>{
+    maxSacas=Math.max(maxSacas,grupos[q].compra.sacas,grupos[q].venda.sacas);
+  });
+
+  panel.innerHTML=quals.map(q=>{
+    const g=grupos[q];
+    const medC=g.compra.sacas?g.compra.wdif/g.compra.sacas:null;
+    const medV=g.venda.sacas?g.venda.wdif/g.venda.sacas:null;
+    const pctC=maxSacas?Math.round((g.compra.sacas/maxSacas)*100):0;
+    const pctV=maxSacas?Math.round((g.venda.sacas/maxSacas)*100):0;
+    const fmtDif=v=>v!=null?((v>=0?'+':'')+v.toFixed(2)):'—';
+    const colDif=v=>v==null?'#8aab97':v<0?'#922020':'#1e5c1e';
+    const hasC=g.compra.sacas>0, hasV=g.venda.sacas>0;
+    return `<div class="qual-card">
+      <div class="qual-card-title"><span class="qual-badge-title">${q}</span></div>
+      ${hasC?`<div class="qual-row">
+        <div class="qual-row-label">
+          <div class="qual-row-type"><span class="badge badge-c">COMPRA</span></div>
+          <div class="qual-row-stats">
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Sacas</span><span class="qual-row-stat-val">${g.compra.sacas.toLocaleString('pt-BR')}</span></div>
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Média Dif</span><span class="qual-row-stat-val" style="color:${colDif(medC)}">${fmtDif(medC)}</span></div>
+          </div>
+        </div>
+        <div class="qual-bar-wrap"><div class="qual-bar qual-bar-c" style="width:${pctC}%"></div></div>
+      </div>`:''}
+      ${hasC&&hasV?'<div class="qual-divider"></div>':''}
+      ${hasV?`<div class="qual-row">
+        <div class="qual-row-label">
+          <div class="qual-row-type"><span class="badge badge-v">VENDA</span></div>
+          <div class="qual-row-stats">
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Sacas</span><span class="qual-row-stat-val">${g.venda.sacas.toLocaleString('pt-BR')}</span></div>
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Média Dif</span><span class="qual-row-stat-val" style="color:${colDif(medV)}">${fmtDif(medV)}</span></div>
+          </div>
+        </div>
+        <div class="qual-bar-wrap"><div class="qual-bar qual-bar-v" style="width:${pctV}%"></div></div>
+      </div>`:''}
+    </div>`;
+  }).join('');
 }
 
 function setInfTipo(btn){infFilterTipo=btn.dataset.v;document.querySelectorAll('#segTipo .seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderInf();}
