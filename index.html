@@ -1833,41 +1833,8 @@ function termDivisor(term){
 }
 
 function renderRisk(){
-  const today=new Date();
-  today.setHours(0,0,0,0);
-
-  // Usar infRows (lancamentos) que têm term+lots — cobre tanto lançamentos manuais
-  // quanto os criados automaticamente pelo pricing, a partir de hoje
-  const todayStr=today.toISOString().slice(0,10);
-
-  // Parser de data: aceita DD/MM/YYYY, YYYY-MM-DD ou ISO
-  const parseDate=raw=>{
-    if(!raw)return '';
-    const s=String(raw);
-    if(s.includes('/')){
-      const parts=s.split(/[,\s]/)[0].split('/');
-      if(parts.length===3)return parts[2]+'-'+parts[1]+'-'+parts[0];
-    }
-    return s.slice(0,10);
-  };
-
-  // negRows do pricing (term/lots salvos a partir de hoje)
-  const validNeg=negRows.filter(h=>{
-    if(!h.term||!h.lots)return false;
-    return parseDate(h.data||h.criado_em)>=todayStr;
-  });
-
-  // infRows dos lançamentos com term/lots (manual ou auto) a partir de hoje
-  const validInf=infRows.filter(r=>{
-    if(!r.term||!r.lots)return false;
-    return parseDate(r.data||r.criado_em)>=todayStr;
-  });
-
-  // Combinar os dois sem duplicatas (lançamento auto cria em ambos)
-  // Preferir infRows pois têm os dados mais diretos
-  const valid=[...validInf,...validNeg.filter(n=>
-    !validInf.some(i=>i.term===n.term&&parseDate(i.data||i.criado_em)===parseDate(n.data||n.criado_em)&&Number(i.lots)===Number(n.lots))
-  )];
+  // Respeitar os mesmos filtros do informativo (data, tipo, espécie)
+  const valid=infFiltered().filter(r=>r.term&&r.lots);
 
   const headerRow=document.getElementById('riskHeaderRow');
   const futuresRow=document.getElementById('riskFuturesRow');
