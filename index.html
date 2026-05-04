@@ -1759,13 +1759,21 @@ function renderRisk(){
   const today=new Date();
   today.setHours(0,0,0,0);
 
-  // Mostrar apenas negociações com term+lots salvas a partir de hoje
+  // Mostrar negociações com term+lots cuja data >= hoje
   const todayStr=today.toISOString().slice(0,10);
   const valid=negRows.filter(h=>{
     if(!h.term||!h.lots)return false;
-    // criado_em >= hoje
-    const criado=(h.criado_em||'').slice(0,10);
-    return criado>=todayStr;
+    // h.data pode vir como "04/05/2026, 16:16" (pt-BR) ou "2026-05-04..."
+    const raw=h.data||h.criado_em||'';
+    let dataNeg='';
+    if(raw.includes('/')){
+      // formato DD/MM/YYYY → converter para YYYY-MM-DD
+      const parts=raw.split(/[,\s]/)[0].split('/');
+      if(parts.length===3)dataNeg=parts[2]+'-'+parts[1]+'-'+parts[0];
+    } else {
+      dataNeg=raw.slice(0,10);
+    }
+    return dataNeg>=todayStr;
   });
 
   const headerRow=document.getElementById('riskHeaderRow');
