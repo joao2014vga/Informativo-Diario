@@ -562,6 +562,17 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Quality</label><input type="text" id="fQual" class="fg-input" placeholder="BC2"/></div>
       <div><label class="fg-label">Diff</label><input type="number" id="fDif" class="fg-input" placeholder="0.00" step="0.01"/></div>
       <div><label class="fg-label">Species</label><select id="fEspecie" class="fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
+      <div style="position:relative"><label class="fg-label">Term</label>
+        <input type="text" id="fTerm" class="fg-input" placeholder="ex: nyu26" autocomplete="off"
+          oninput="termSearchInf(this.value)" onkeydown="termKeyNavInf(event)" onfocus="termSearchInf(this.value)" onblur="setTimeout(termHideInf,150)">
+        <div id="term-dropdown-inf" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:200px;overflow-y:auto;margin-top:2px"></div>
+      </div>
+      <div><label class="fg-label">Lots</label>
+        <div class="irow" style="position:relative">
+          <input type="number" id="fLots" class="fg-input" step="0.5" placeholder="—" oninput="document.getElementById('fLots').dataset.userEdited='true'">
+        </div>
+        <span id="fLots-badge" style="font-size:9px;color:#6b8c7a"></span>
+      </div>
       <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add-inf" id="btnAddInf" onclick="addInfRow()">+ Add</button></div>
     </div>
   </div>
@@ -965,6 +976,7 @@ async function showPortal(email){
   document.getElementById('userEmail').textContent=email;
   document.getElementById('fData').value=todayStr();
   document.getElementById('fQual').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+  document.getElementById('fSacas').addEventListener('input',calcLotsInf);
   setStatus(null,'connecting...');
   try{
     await Promise.race([fetchPerfil(email),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),10000))]);
@@ -1309,6 +1321,71 @@ function termSelect(val){
 function termHide(){
   document.getElementById('term-dropdown').style.display='none';
   termIdx=-1;
+}
+
+// ── Term autocomplete para Informativo ─────────────────────────
+let termIdxInf=-1;
+function termSearchInf(q){
+  const dd=document.getElementById('term-dropdown-inf');
+  const s=q.trim().toUpperCase().replace(/^#/,'');
+  const filtered=s?TERM_LIST.filter(t=>t.label.replace('#','').includes(s)):TERM_LIST;
+  termIdxInf=-1;
+  if(!filtered.length){dd.style.display='none';return;}
+  const groups={NY:[],LDN:[],BMF:[]};
+  filtered.forEach(t=>groups[t.group].push(t));
+  let html='';
+  ['NY','LDN','BMF'].forEach(g=>{
+    if(!groups[g].length)return;
+    html+=`<div style="padding:4px 10px 2px;font-size:9px;font-weight:700;color:#6b8c7a;text-transform:uppercase;letter-spacing:.06em">${g}</div>`;
+    groups[g].forEach(t=>{
+      html+=`<div class="term-opt" data-val="${t.label}" onmousedown="termSelectInf('${t.label}')"
+        style="padding:6px 14px;font-size:12px;cursor:pointer;color:#1b2e22;border-radius:4px">${t.label}</div>`;
+    });
+  });
+  dd.innerHTML=html;dd.style.display='block';
+}
+function termKeyNavInf(e){
+  const dd=document.getElementById('term-dropdown-inf');
+  const opts=dd.querySelectorAll('.term-opt');
+  if(e.key==='ArrowDown'){e.preventDefault();termIdxInf=Math.min(termIdxInf+1,opts.length-1);termHighlightInf(opts);}
+  else if(e.key==='ArrowUp'){e.preventDefault();termIdxInf=Math.max(termIdxInf-1,0);termHighlightInf(opts);}
+  else if(e.key==='Enter'||e.key==='Tab'){
+    if(termIdxInf>=0&&opts[termIdxInf]){e.preventDefault();termSelectInf(opts[termIdxInf].dataset.val);}
+    else if(opts.length===1){e.preventDefault();termSelectInf(opts[0].dataset.val);}
+    else{termHideInf();}
+  }else if(e.key==='Escape'){termHideInf();}
+}
+function termHighlightInf(opts){
+  opts.forEach((o,i)=>{o.style.background=i===termIdxInf?'#e8f4ee':'';});
+  if(opts[termIdxInf])opts[termIdxInf].scrollIntoView({block:'nearest'});
+}
+function termSelectInf(val){
+  const el=document.getElementById('fTerm');
+  el.value=val;
+  termHideInf();
+  document.getElementById('fLots').dataset.userEdited='false';
+  calcLotsInf();
+  setTimeout(()=>document.getElementById('fLots').focus(),50);
+}
+function termHideInf(){
+  document.getElementById('term-dropdown-inf').style.display='none';
+  termIdxInf=-1;
+}
+function calcLotsInf(){
+  const bags=parseFloat(document.getElementById('fSacas').value)||0;
+  const term=(document.getElementById('fTerm').value||'').toUpperCase();
+  const lotsEl=document.getElementById('fLots');
+  const badge=document.getElementById('fLots-badge');
+  if(!bags||!term){if(badge)badge.textContent='';return;}
+  let divisor=0;
+  if(term.includes('NY'))divisor=283.50;
+  else if(term.includes('LDN'))divisor=166.66;
+  else if(term.includes('BMF'))divisor=100;
+  if(!divisor){if(badge)badge.textContent='';return;}
+  const raw=bags/divisor;
+  const sugInt=raw%1>=0.5?Math.ceil(raw):Math.floor(raw);
+  if(badge)badge.textContent=bags+'/'+divisor+' = '+raw.toFixed(2)+' → '+sugInt;
+  if(lotsEl.dataset.userEdited!=='true')lotsEl.value=sugInt;
 }
 
 // ── Lots ────────────────────────────────────────────────────────
@@ -1883,13 +1960,18 @@ async function addInfRow(){
   const qual=document.getElementById('fQual').value.trim().toUpperCase();
   const dif=parseFloat(document.getElementById('fDif').value);
   const especie=document.getElementById('fEspecie').value;
+  const fTermVal=document.getElementById('fTerm')?.value||null;
+  const fLotsVal=document.getElementById('fLots')?.value||null;
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in Date, Bags and Diff.');return;}
   const btn=document.getElementById('btnAddInf');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie})});
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:fTermVal,lots:fLotsVal})});
     if(!res.ok)throw new Error(await res.text());
     const[novo]=await res.json();infRows.unshift(novo);
     document.getElementById('fSacas').value='';document.getElementById('fQual').value='';document.getElementById('fDif').value='';document.getElementById('fEspecie').value='ARABICA';
+    if(document.getElementById('fTerm'))document.getElementById('fTerm').value='';
+    if(document.getElementById('fLots')){document.getElementById('fLots').value='';document.getElementById('fLots').dataset.userEdited='false';}
+    if(document.getElementById('fLots-badge'))document.getElementById('fLots-badge').textContent='';
     renderInf();
   }catch(e){alert('Error saving: '+e.message);}
   finally{btn.disabled=false;btn.textContent='+ Add';}
