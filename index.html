@@ -606,13 +606,13 @@ select.cont-fg-input{cursor:pointer}
       <table id="riskTable" style="width:100%;border-collapse:collapse;font-size:11px;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #dde8e2">
         <thead>
           <tr id="riskHeaderRow">
-            <th style="background:#1b2e22;color:#fff;font-weight:600;padding:7px 12px;text-align:left;font-size:10px;min-width:110px">Risk Daily Report</th>
+            <th style="background:#1b2e22;color:#fff;font-weight:600;padding:8px 14px;text-align:left;font-size:12px;min-width:120px">Risk Daily Report</th>
             <!-- meses gerados dinamicamente -->
           </tr>
         </thead>
         <tbody>
           <tr id="riskFuturesRow">
-            <td style="padding:5px 12px;font-size:10px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">Futures</td>
+            <td style="padding:6px 14px;font-size:12px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">Futures</td>
             <!-- valores gerados dinamicamente -->
           </tr>
         </tbody>
@@ -628,6 +628,7 @@ select.cont-fg-input{cursor:pointer}
         <thead><tr>
           <th style="width:110px">Date</th><th style="width:90px">Type</th><th style="width:80px">Bags</th>
           <th style="width:100px">Quality</th><th style="width:90px">Species</th><th>Diff</th>
+          <th style="width:90px">Term</th><th style="width:60px">Lots</th>
           <th id="thDelInf" style="width:70px"></th>
         </tr></thead>
         <tbody id="infBody"></tbody>
@@ -909,6 +910,7 @@ select.cont-fg-input{cursor:pointer}
   <!-- Análise por qualidade -->
   <div style="font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Quality Analysis</div>
   <div id="ipf-qualidade" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-bottom:.75rem"></div>
+  <div id="ipf-risk" style="margin-bottom:.75rem"></div>
 
   <!-- Tabela -->
   <div style="font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">History</div>
@@ -1389,7 +1391,7 @@ function renderHist(){
     const diffs=`Bica: ${h.bica_diff||'—'} · 14/16: ${h.d1416||'—'} · 17/18: ${h.d1718||'—'}`;
     const obs=h.obs?`<div class="hist-obs">${h.obs}</div>`:'';
     const mod=h.modalidade?` · ${h.modalidade}`:'';
-    return `<div class="hist-card">
+    return `<div class="hist-card" data-neg-id="${h.id}">
       <div><span class="hist-badge ${bc}">${bl}</span></div>
       <div class="hist-info"><strong>${nome}${mod}</strong>
         <div>R$ ${h.brl||'—'} · USD ${h.usd||'—'} · KC ${h.kc||'—'} · ${h.freight||'—'}</div>
@@ -1403,7 +1405,7 @@ function renderHist(){
           <option value="demanda"${h.tipo==='demanda'?' selected':''}>Demanda</option>
           <option value="finalizada"${h.tipo==='finalizada'?' selected':''}>Finalizada</option>
         </select>
-        <button class="hist-btn" onclick='carregarNeg(${JSON.stringify(h)})'>Carregar</button>
+        <button class="hist-btn" onclick='editarNeg(${JSON.stringify(h)})'>✏ Edit</button>
         <button class="hist-btn del" onclick="excluirNeg(${h.id})">Excluir</button>
       </div>
     </div>`;
@@ -1428,6 +1430,65 @@ function carregarNeg(h){
   const sel=document.getElementById('v-cidade');
   if(sel&&h.freight){for(let o of sel.options){if(o.value===h.freight){o.selected=true;break;}}}
   switchPTab(0);switchModule('pricing');calc();
+}
+
+
+async function editarNeg(h){
+  // Abre modal de edição inline na hist-card
+  const id=h.id;
+  const existing=document.getElementById('edit-neg-'+id);
+  if(existing){existing.remove();return;}
+  const card=document.querySelector(`[data-neg-id="${id}"]`);
+  if(!card)return;
+  const div=document.createElement('div');
+  div.id='edit-neg-'+id;
+  div.style.cssText='margin-top:10px;padding:12px;background:#f5f9f6;border-radius:8px;border:1px solid #dde8e2;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px';
+  div.innerHTML=`
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Produtor</label>
+      <input id="en-prod-${id}" value="${h.produtor||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Corretor</label>
+      <input id="en-corr-${id}" value="${h.corretor||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Quality</label>
+      <input id="en-qual-${id}" value="${h.quality||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Safra</label>
+      <input id="en-safra-${id}" value="${h.safra||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Bags</label>
+      <input id="en-bags-${id}" value="${h.bags||''}" type="number" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">BRL Price</label>
+      <input id="en-brl-${id}" value="${h.brl||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">USD BRL</label>
+      <input id="en-usd-${id}" value="${h.usd||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">KC</label>
+      <input id="en-kc-${id}" value="${h.kc||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Term</label>
+      <input id="en-term-${id}" value="${h.term||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Lots</label>
+      <input id="en-lots-${id}" value="${h.lots||''}" type="number" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Obs</label>
+      <input id="en-obs-${id}" value="${h.obs||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+    <div style="display:flex;align-items:flex-end;gap:6px">
+      <button onclick="salvarEditNeg(${id})" style="flex:1;background:#2d4a3e;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">Salvar</button>
+      <button onclick="document.getElementById('edit-neg-${id}').remove()" style="flex:1;background:#f0f4f2;color:#4a7a60;border:1px solid #c8dbd0;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">Cancel</button>
+    </div>`;
+  card.appendChild(div);
+}
+
+async function salvarEditNeg(id){
+  const g=s=>document.getElementById(s)?.value||'';
+  const patch={
+    produtor:g(`en-prod-${id}`),corretor:g(`en-corr-${id}`),quality:g(`en-qual-${id}`),
+    safra:g(`en-safra-${id}`),bags:g(`en-bags-${id}`),brl:g(`en-brl-${id}`),
+    usd:g(`en-usd-${id}`),kc:g(`en-kc-${id}`),term:g(`en-term-${id}`),
+    lots:g(`en-lots-${id}`),obs:g(`en-obs-${id}`)
+  };
+  const res=await fetch(`${SUPA_URL}/rest/v1/negociacoes?id=eq.${id}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(patch)});
+  if(res.ok){
+    const[updated]=await res.json();
+    const idx=negRows.findIndex(h=>h.id===id);
+    if(idx>=0)negRows[idx]={...negRows[idx],...updated};
+    document.getElementById('edit-neg-'+id)?.remove();
+    renderHist();renderRisk();
+  }else{alert('Erro ao salvar edição');}
 }
 
 function snapshot(){
@@ -1482,7 +1543,9 @@ async function salvarNegociacao(){
       sacas:parseInt(snap.bags)||0,
       qual:(snap.quality||'').toUpperCase(),
       dif:isNaN(diff1416Val)?0:diff1416Val,
-      especie:especie
+      especie:especie,
+      term:snap.term||null,
+      lots:snap.lots||null
     };
     const resInf=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(infPayload)});
     if(resInf.ok){const[novoInf]=await resInf.json();infRows.unshift(novoInf);}
@@ -1758,7 +1821,7 @@ function renderRisk(){
   headerRow.innerHTML=thBase;
   months.forEach(m=>{
     const th=document.createElement('th');
-    th.style.cssText='background:#1b2e22;color:#fff;font-weight:600;padding:7px 12px;text-align:center;font-size:10px;min-width:80px;border-left:1px solid #2d4a3e';
+    th.style.cssText='background:#1b2e22;color:#fff;font-weight:600;padding:8px 14px;text-align:center;font-size:12px;min-width:80px;border-left:1px solid #2d4a3e';
     th.textContent=m;
     headerRow.appendChild(th);
   });
@@ -1771,7 +1834,7 @@ function renderRisk(){
     const td=document.createElement('td');
     const neg=val<0;
     const fmt=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
-    td.style.cssText='padding:5px 12px;text-align:center;font-size:11px;border-left:1px solid #edf2ef;'+(neg?'color:#c0392b':'color:#1a5c1a');
+    td.style.cssText='padding:6px 14px;text-align:center;font-size:13px;font-weight:500;border-left:1px solid #edf2ef;'+(neg?'color:#c0392b':'color:#1a5c1a');
     td.textContent=neg?'('+fmt.format(Math.abs(val))+')':'+'+fmt.format(val);
     futuresRow.appendChild(td);
   });
@@ -1799,6 +1862,8 @@ function renderInf(){
       <td>${r.sacas}</td><td>${r.qual||'—'}</td>
       <td><span class="badge ${espBadge}">${r.especie||'ARABICA'}</span></td>
       <td class="${d<0?'dif-neg':'dif-pos'}">${fmt2(d)}</td>
+      <td style="font-size:11px;color:#4a7a60">${r.term||'—'}</td>
+      <td style="font-size:11px;text-align:center">${r.lots||'—'}</td>
       <td>${isAdmin?`<button class="btn-edit-inf" onclick="openInfEdit(${r.id})">✎</button><button class="btn-del" onclick="delInfRow(${r.id})">✕</button>`:''}</td>`;
     tbody.appendChild(tr);
   });
@@ -2004,6 +2069,59 @@ async function salvarImagemInformativo(){
         </div>`:''}
       </div>`;
     }).join('');
+
+    // Risk Daily Report no print
+    const riskHtml=(()=>{
+      const today=new Date();today.setHours(0,0,0,0);
+      const todayStr2=today.toISOString().slice(0,10);
+      const validR=negRows.filter(h=>{
+        if(!h.term||!h.lots)return false;
+        return (h.criado_em||'').slice(0,10)>=todayStr2;
+      });
+      if(!validR.length)return '';
+      const monthData={};
+      const TMAP={K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
+      validR.forEach(h=>{
+        const t=h.term.toUpperCase().replace('#','');
+        const m=t.match(/([A-Z]+)([KNUZHX])(\d{2})$/);
+        if(!m)return;
+        const my=(TMAP[m[2]]||m[2])+'-'+m[3];
+        const div=t.includes('NY')?283.50:t.includes('LDN')?166.66:t.includes('BMF')?100:0;
+        if(!div)return;
+        const sacas=(parseFloat(h.lots)||0)*div;
+        const tipo=(h.tipo||'').toLowerCase();
+        const sinal=(tipo==='venda'||tipo.includes('vend'))?1:-1;
+        if(!monthData[my])monthData[my]=0;
+        monthData[my]+=sinal*sacas;
+      });
+      const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const months=Object.keys(monthData).sort((a,b)=>{
+        const[ma,ya]=a.split('-');const[mb,yb]=b.split('-');
+        const d=parseInt(ya)-parseInt(yb);if(d)return d;
+        return MO.indexOf(ma)-MO.indexOf(mb);
+      });
+      if(!months.length)return '';
+      const thS='background:#1b2e22;color:#fff;font-weight:600;padding:8px 14px;text-align:center;font-size:11px;border-left:1px solid #2d4a3e';
+      const fmt=v=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}).format(Math.abs(v));
+      return `<div style="margin-bottom:.75rem">
+        <div style="font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Risk Daily Report</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;border-radius:8px;overflow:hidden;border:1px solid #dde8e2">
+          <thead><tr>
+            <th style="${thS};text-align:left;min-width:120px">Risk Daily Report</th>
+            ${months.map(m=>`<th style="${thS}">${m}</th>`).join('')}
+          </tr></thead>
+          <tbody><tr>
+            <td style="padding:6px 14px;font-size:11px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">Futures</td>
+            ${months.map(m=>{
+              const v=monthData[m];const neg=v<0;
+              return `<td style="padding:6px 14px;text-align:center;font-size:12px;font-weight:500;color:${neg?'#c0392b':'#1a5c1a'};border-left:1px solid #edf2ef">${neg?'('+fmt(v)+')':'+'+fmt(v)}</td>`;
+            }).join('')}
+          </tr></tbody>
+        </table>
+      </div>`;
+    })();
+    const riskEl=document.getElementById('ipf-risk');
+    if(riskEl)riskEl.innerHTML=riskHtml;
 
     // Tabela
     const sorted=[...data].sort((a,b)=>b.data.localeCompare(a.data));
