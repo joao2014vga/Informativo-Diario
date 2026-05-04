@@ -2179,27 +2179,33 @@ async function salvarImagemInformativo(){
       </div>`;
     }).join('');
 
-    // Risk Daily Report no print
+    // Risk Daily Report no print — usa mesma lógica do renderRisk (infRows + negRows)
     const riskHtml=(()=>{
       const today=new Date();today.setHours(0,0,0,0);
       const todayStr2=today.toISOString().slice(0,10);
-      const validR=negRows.filter(h=>{
-        if(!h.term||!h.lots)return false;
-        return (h.criado_em||'').slice(0,10)>=todayStr2;
-      });
-      if(!validR.length)return '';
+      const parseD=raw=>{
+        if(!raw)return '';const s=String(raw);
+        if(s.includes('/')){const p=s.split(/[,\s]/)[0].split('/');if(p.length===3)return p[2]+'-'+p[1]+'-'+p[0];}
+        return s.slice(0,10);
+      };
+      const validInf=infRows.filter(r=>r.term&&r.lots&&parseD(r.data||r.criado_em)>=todayStr2);
+      const validNeg=negRows.filter(h=>h.term&&h.lots&&parseD(h.data||h.criado_em)>=todayStr2);
+      const valid=[...validInf,...validNeg.filter(n=>
+        !validInf.some(i=>i.term===n.term&&parseD(i.data||i.criado_em)===parseD(n.data||n.criado_em)&&Number(i.lots)===Number(n.lots))
+      )];
+      if(!valid.length)return '';
       const monthData={};
       const TMAP={K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
-      validR.forEach(h=>{
-        const t=h.term.toUpperCase().replace('#','');
+      valid.forEach(h=>{
+        const t=(h.term||'').toUpperCase().replace('#','');
         const m=t.match(/([A-Z]+)([KNUZHX])(\d{2})$/);
         if(!m)return;
         const my=(TMAP[m[2]]||m[2])+'-'+m[3];
         const div=t.includes('NY')?283.50:t.includes('LDN')?166.66:t.includes('BMF')?100:0;
         if(!div)return;
         const sacas=(parseFloat(h.lots)||0)*div;
-        const tipo=(h.tipo||'').toLowerCase();
-        const sinal=(tipo==='venda'||tipo.includes('vend'))?1:-1;
+        const tipo=(h.tipo||'').toUpperCase();
+        const sinal=(tipo==='VENDA'||tipo==='SALE')?1:-1;
         if(!monthData[my])monthData[my]=0;
         monthData[my]+=sinal*sacas;
       });
