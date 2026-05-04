@@ -208,7 +208,7 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .inf-card{background:#fff;border:1px solid #dde8e2;border-radius:12px;overflow:hidden;margin-bottom:1rem}
 .inf-card-header{padding:10px 1.5rem;border-bottom:1px solid #dde8e2}
 .inf-card-title{font-size:11px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em}
-.form-row{display:grid;grid-template-columns:130px 100px 100px 110px 120px 130px 110px;gap:10px;padding:.9rem 1.5rem;align-items:end}
+.form-row{display:grid;grid-template-columns:130px 100px 100px 110px 120px 130px 130px 80px 80px;gap:8px;padding:.9rem 1.5rem;align-items:end}
 .fg-label{font-size:10px;color:#6b8c7a;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;display:block}
 .fg-input{width:100%;border:1px solid #c8ddd2;border-radius:8px;padding:7px 9px;font-size:12.5px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;text-transform:uppercase;height:36px}
 .fg-input[type=date],.fg-input[type=number]{text-transform:none}
@@ -568,10 +568,8 @@ select.cont-fg-input{cursor:pointer}
         <div id="term-dropdown-inf" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:200px;overflow-y:auto;margin-top:2px"></div>
       </div>
       <div><label class="fg-label">Lots</label>
-        <div class="irow" style="position:relative">
-          <input type="number" id="fLots" class="fg-input" step="0.5" placeholder="—" oninput="document.getElementById('fLots').dataset.userEdited='true'">
-        </div>
-        <span id="fLots-badge" style="font-size:9px;color:#6b8c7a"></span>
+        <input type="number" id="fLots" class="fg-input" step="0.5" placeholder="—" oninput="document.getElementById('fLots').dataset.userEdited='true'">
+        <span id="fLots-badge" style="font-size:9px;color:#6b8c7a;display:block;margin-top:2px"></span>
       </div>
       <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add-inf" id="btnAddInf" onclick="addInfRow()">+ Add</button></div>
     </div>
@@ -778,6 +776,8 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Quality</label><input type="text" id="eQual" class="fg-input"/></div>
       <div><label class="fg-label">Diff</label><input type="number" id="eDif" class="fg-input" step="0.01" style="text-transform:none"/></div>
       <div><label class="fg-label">Species</label><select id="eEspecie" class="fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
+      <div><label class="fg-label">Term</label><input type="text" id="eTerm" class="fg-input" placeholder="ex: #NYU26"/></div>
+      <div><label class="fg-label">Lots</label><input type="number" id="eLots" class="fg-input" step="0.5" placeholder="—"/></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel-m" onclick="closeInfModal()">Cancel</button>
@@ -1836,22 +1836,38 @@ function renderRisk(){
   const today=new Date();
   today.setHours(0,0,0,0);
 
-  // Mostrar negociações com term+lots cuja data >= hoje
+  // Usar infRows (lancamentos) que têm term+lots — cobre tanto lançamentos manuais
+  // quanto os criados automaticamente pelo pricing, a partir de hoje
   const todayStr=today.toISOString().slice(0,10);
-  const valid=negRows.filter(h=>{
-    if(!h.term||!h.lots)return false;
-    // h.data pode vir como "04/05/2026, 16:16" (pt-BR) ou "2026-05-04..."
-    const raw=h.data||h.criado_em||'';
-    let dataNeg='';
-    if(raw.includes('/')){
-      // formato DD/MM/YYYY → converter para YYYY-MM-DD
-      const parts=raw.split(/[,\s]/)[0].split('/');
-      if(parts.length===3)dataNeg=parts[2]+'-'+parts[1]+'-'+parts[0];
-    } else {
-      dataNeg=raw.slice(0,10);
+
+  // Parser de data: aceita DD/MM/YYYY, YYYY-MM-DD ou ISO
+  const parseDate=raw=>{
+    if(!raw)return '';
+    const s=String(raw);
+    if(s.includes('/')){
+      const parts=s.split(/[,\s]/)[0].split('/');
+      if(parts.length===3)return parts[2]+'-'+parts[1]+'-'+parts[0];
     }
-    return dataNeg>=todayStr;
+    return s.slice(0,10);
+  };
+
+  // negRows do pricing (term/lots salvos a partir de hoje)
+  const validNeg=negRows.filter(h=>{
+    if(!h.term||!h.lots)return false;
+    return parseDate(h.data||h.criado_em)>=todayStr;
   });
+
+  // infRows dos lançamentos com term/lots (manual ou auto) a partir de hoje
+  const validInf=infRows.filter(r=>{
+    if(!r.term||!r.lots)return false;
+    return parseDate(r.data||r.criado_em)>=todayStr;
+  });
+
+  // Combinar os dois sem duplicatas (lançamento auto cria em ambos)
+  // Preferir infRows pois têm os dados mais diretos
+  const valid=[...validInf,...validNeg.filter(n=>
+    !validInf.some(i=>i.term===n.term&&parseDate(i.data||i.criado_em)===parseDate(n.data||n.criado_em)&&Number(i.lots)===Number(n.lots))
+  )];
 
   const headerRow=document.getElementById('riskHeaderRow');
   const futuresRow=document.getElementById('riskFuturesRow');
@@ -1989,6 +2005,7 @@ function openInfEdit(id){
   document.getElementById('eData').value=r.data;document.getElementById('eTipo').value=r.tipo;
   document.getElementById('eSacas').value=r.sacas;document.getElementById('eQual').value=r.qual||'';
   document.getElementById('eDif').value=r.dif;document.getElementById('eEspecie').value=r.especie||'ARABICA';
+  document.getElementById('eTerm').value=r.term||'';document.getElementById('eLots').value=r.lots||'';
   document.getElementById('infModalOverlay').classList.add('open');
 }
 function closeInfModal(){infEditingId=null;document.getElementById('infModalOverlay').classList.remove('open');}
@@ -2002,11 +2019,13 @@ async function saveInfEdit(){
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in all fields.');return;}
   const btn=document.getElementById('btnSaveEdit');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie})});
+    const eTerm=document.getElementById('eTerm').value||null;
+    const eLots=document.getElementById('eLots').value||null;
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots})});
     if(!res.ok)throw new Error(await res.text());
     const[updated]=await res.json();
     const idx=infRows.findIndex(r=>r.id===infEditingId);if(idx!==-1)infRows[idx]=updated;
-    closeInfModal();renderInf();
+    closeInfModal();renderInf();renderRisk();
   }catch(e){alert('Erro: '+e.message);}
   finally{btn.disabled=false;btn.textContent='Salvar alterações';}
 }
