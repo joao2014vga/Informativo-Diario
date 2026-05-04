@@ -202,7 +202,7 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
 .mbar-item{padding:14px 1.5rem;border-right:1px solid #dde8e2}
 .mbar-item:last-child{border-right:none}
-.mbar-label{font-size:10px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.term-opt:hover{background:#e8f4ee!important}.mbar-label{font-size:10px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
 .mbar-val{font-size:24px;font-weight:600;color:#1a1a1a}
 .mbar-val.neg{color:#922020}.mbar-val.pos{color:#1e5c1e}
 .inf-card{background:#fff;border:1px solid #dde8e2;border-radius:12px;overflow:hidden;margin-bottom:1rem}
@@ -401,24 +401,31 @@ select.cont-fg-input{cursor:pointer}
   </div>
   <div class="sec">Descrição do Café</div>
   <div class="ig ig-4">
-    <div class="icard"><label class="ilabel">Bags</label><div class="irow"><input type="number" id="v-bags" placeholder="Ex: 500" oninput="calc()"></div></div>
+    <div class="icard"><label class="ilabel">Bags</label><div class="irow"><input type="number" id="v-bags" placeholder="Ex: 500" oninput="calc();calcLots()"></div></div>
     <div class="icard"><label class="ilabel">BRL Price Bica / 60kg</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="v-preco" placeholder="Ex: 1930" oninput="calc()"></div></div>
     <div class="icard"><label class="ilabel">USD BRL</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="v-dolar" step="0.0001" placeholder="Ex: 4.992" oninput="calc()"></div></div>
-    <div class="icard"><label class="ilabel">KC (Tela NY)</label><div class="irow"><input type="number" id="v-kc" step="0.05" placeholder="Ex: 303.8" oninput="calc()"><span class="ipfx">cts/lb</span></div></div>
+    <div class="icard"><label class="ilabel">KC</label><div class="irow"><input type="number" id="v-kc" step="0.05" placeholder="Ex: 303.8" oninput="calc()"><span class="ipfx">cts/lb</span></div></div>
   </div>
   <div class="ig ig-4">
+    <div class="icard" style="position:relative">
+      <label class="ilabel">Term</label>
+      <input type="text" id="v-term" placeholder="ex: u26, nyk27" autocomplete="off"
+        oninput="termSearch(this.value)" onkeydown="termKeyNav(event)" onfocus="termSearch(this.value)" onblur="setTimeout(termHide,150)"
+        style="width:100%;box-sizing:border-box">
+      <div id="term-dropdown" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
+    </div>
+    <div class="icard">
+      <label class="ilabel">Lots</label>
+      <div class="irow"><input type="number" id="v-lots" step="0.5" placeholder="—" oninput=""><span class="ipfx" id="v-lots-badge" style="font-size:9px;color:var(--muted)"></span></div>
+    </div>
     <div class="icard"><label class="ilabel">17/18%</label><div class="irow"><input type="number" id="v-p1718" step="1" placeholder="Ex: 20" oninput="calc()"><span class="ipfx">%</span></div></div>
     <div class="icard"><label class="ilabel">Prêmio</label><div class="irow"><input type="number" id="v-premio" step="0.5" placeholder="Ex: 12" oninput="calc()"><span class="ipfx">cts/lb</span></div></div>
-    <div class="icard"><label class="ilabel">Offgrades %</label><div class="irow"><input type="number" id="v-off" step="0.5" placeholder="Ex: 20" oninput="calc()"><span class="ipfx">%</span></div></div>
-    <div class="icard"><label class="ilabel">Foreign Matter %</label><div class="irow"><input type="number" id="v-fm" step="0.1" placeholder="Ex: 0.5" oninput="calc()"><span class="ipfx">%</span></div></div>
   </div>
-  <div class="ig ig-3">
+  <div class="ig ig-4">
+    <div class="icard"><label class="ilabel">Offgrades %</label><div class="irow"><input type="number" id="v-off" step="0.5" placeholder="Ex: 20" oninput="calc()"><span class="ipfx">%</span></div></div>
     <div class="icard"><label class="ilabel">Producer?</label><select id="v-producer" oninput="calc()"><option value="N">N</option><option value="Y">Y</option></select></div>
     <div class="icard"><label class="ilabel">Broker?</label><select id="v-broker" oninput="calc()"><option value="N">N</option><option value="Y">Y</option></select></div>
-    <div class="icard"><label class="ilabel">Extra Costs (+) / Savings (-)</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="v-extra" value="0" step="1" oninput="calc()"></div></div>
-  </div>
-  <div class="ig ig-1">
-    <div class="icard"><label class="ilabel">Freight — Cidade de Origem</label><select id="v-cidade" oninput="calc()"></select><span class="ibadge" id="v-frete-badge"></span></div>
+    <div class="icard"><label class="ilabel" style="font-size:9px">Freight — Origem</label><select id="v-cidade" oninput="calc()" style="font-size:11px"></select><span class="ibadge" id="v-frete-badge"></span></div>
   </div>
   <div class="ig ig-2">
     <div class="icard"><label class="ilabel">Low Grade BRL/bag (Direto)</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="v-lgbrl" step="1" placeholder="ou use catação →" oninput="calc()"></div><span class="ibadge" id="o-lgcalc" style="color:var(--muted)">LG calculado: —</span></div>
@@ -590,6 +597,28 @@ select.cont-fg-input{cursor:pointer}
     <div style="font-size:11px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem">Quality Analysis</div>
     <div id="qualidadePanel" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px"></div>
     <div id="qualidadeVazio" style="display:none;text-align:center;color:#8aab97;font-size:13px;padding:1.5rem 0">No data for selected filters.</div>
+  </div>
+
+  <!-- RISK DAILY REPORT -->
+  <div style="margin-bottom:1.2rem" id="riskSection">
+    <div style="font-size:11px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem">Risk Daily Report</div>
+    <div style="overflow-x:auto">
+      <table id="riskTable" style="width:100%;border-collapse:collapse;font-size:11px;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #dde8e2">
+        <thead>
+          <tr id="riskHeaderRow">
+            <th style="background:#1b2e22;color:#fff;font-weight:600;padding:7px 12px;text-align:left;font-size:10px;min-width:110px">Risk Daily Report</th>
+            <!-- meses gerados dinamicamente -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="riskFuturesRow">
+            <td style="padding:5px 12px;font-size:10px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">Futures</td>
+            <!-- valores gerados dinamicamente -->
+          </tr>
+        </tbody>
+      </table>
+      <div id="riskEmpty" style="display:none;text-align:center;color:#8aab97;font-size:12px;padding:1rem 0">No futures data available.</div>
+    </div>
   </div>
 
   <div class="inf-table-card">
@@ -1063,11 +1092,11 @@ function calc(){
   const p1718=+document.getElementById('v-p1718').value||0;
   const prem=+document.getElementById('v-premio').value||0;
   const off=+document.getElementById('v-off').value||0;
-  const fm=+document.getElementById('v-fm').value||0;
+  const fm=0; // Foreign Matter removido da UI
   const producer=document.getElementById('v-producer').value==='Y';
   const broker=document.getElementById('v-broker').value==='Y';
   const ciclo=+document.getElementById('v-ciclo').value||30;
-  const extra=+document.getElementById('v-extra').value||0;
+  const extra=0; // Extra Costs removido da UI
   const cidade=document.getElementById('v-cidade').value;
   const freteRs=FRETES[cidade]||0;
   const lgBrlDireto=document.getElementById('v-lgbrl').value;
@@ -1145,7 +1174,9 @@ function calc(){
   sv('o-d1718net','net: '+fmt(d1718net,2)+' cts/lb');
   sv('o-expfob','USD '+fmt(expFobC,2));sv('o-expcts',fmt(expFobCts,2));
   const bf=document.getElementById('o-bicafot');if(bf){bf.textContent=fmt(bicaFot,2);bf.className='rval '+cc(bicaDiff);}
-  sv('o-lgfob','USD '+fmt(lgFobEq,2));sv('o-p1416',fmt(p1416,2)+'%');sv('o-nylots',fmt(nyLots,2));
+  const vLots=document.getElementById('v-lots');
+  const displayLots=vLots&&vLots.value?vLots.value:fmt(nyLots,2);
+  sv('o-lgfob','USD '+fmt(lgFobEq,2));sv('o-p1416',fmt(p1416,2)+'%');sv('o-nylots',displayLots);
   sv('o-lgcalc','LG calculado: R$ '+fmt(lgBrl,2));
   document.getElementById('v-frete-badge').textContent='R$ '+fmt(freteRs,2)+' / saca';
   document.getElementById('t-cidade') && (document.getElementById('t-cidade').textContent='— '+cidade);
@@ -1178,6 +1209,10 @@ function gerarResumo(diff1416,diff1718){
   if(kc)p.push('NY '+fmt(kc,2));
   if(usd)p.push('Dólar: '+fmt(usd,4));
   if(crop)p.push('Safra '+crop);
+  const term=document.getElementById('v-term')?document.getElementById('v-term').value:'';
+  const lots=document.getElementById('v-lots')?document.getElementById('v-lots').value:'';
+  if(term)p.push('Term: '+term);
+  if(lots)p.push('Lots: '+lots);
   if(dateVal)p.push('Entrega '+fmtD(dateVal));
   if(payVal)p.push('Pgto '+fmtD(payVal));
   if(cidade)p.push('Retirar: '+cidade);
@@ -1195,6 +1230,96 @@ function copiarResumo(){
     setTimeout(()=>{b.textContent='Copiar texto';b.classList.remove('copied');},2000);
   });
 }
+
+// ── Term autocomplete ──────────────────────────────────────────
+const TERM_LIST=[
+  {label:'#NYK26',group:'NY'},{label:'#NYN26',group:'NY'},{label:'#NYU26',group:'NY'},{label:'#NYZ26',group:'NY'},
+  {label:'#NYH27',group:'NY'},{label:'#NYK27',group:'NY'},{label:'#NYN27',group:'NY'},{label:'#NYU27',group:'NY'},
+  {label:'#NYZ27',group:'NY'},{label:'#NYH28',group:'NY'},
+  {label:'#LDNK26',group:'LDN'},{label:'#LDNN26',group:'LDN'},{label:'#LDNU26',group:'LDN'},{label:'#LDNX26',group:'LDN'},
+  {label:'#BMFK26',group:'BMF'},{label:'#BMFN26',group:'BMF'},{label:'#BMFU26',group:'BMF'},{label:'#BMFZ26',group:'BMF'}
+];
+let termIdx=-1;
+
+function termSearch(q){
+  const dd=document.getElementById('term-dropdown');
+  const s=q.trim().toUpperCase().replace(/^#/,'');
+  const filtered=s?TERM_LIST.filter(t=>t.label.replace('#','').includes(s)):TERM_LIST;
+  termIdx=-1;
+  if(!filtered.length){dd.style.display='none';return;}
+  // Group by exchange
+  const groups={NY:[],LDN:[],BMF:[]};
+  filtered.forEach(t=>groups[t.group].push(t));
+  let html='';
+  ['NY','LDN','BMF'].forEach(g=>{
+    if(!groups[g].length)return;
+    html+=`<div style="padding:4px 10px 2px;font-size:9px;font-weight:700;color:#6b8c7a;text-transform:uppercase;letter-spacing:.06em">${g}</div>`;
+    groups[g].forEach((t,i)=>{
+      html+=`<div class="term-opt" data-val="${t.label}" onmousedown="termSelect('${t.label}')"
+        style="padding:6px 14px;font-size:12px;cursor:pointer;color:#1b2e22;border-radius:4px">${t.label}</div>`;
+    });
+  });
+  dd.innerHTML=html;
+  dd.style.display='block';
+}
+
+function termKeyNav(e){
+  const dd=document.getElementById('term-dropdown');
+  const opts=dd.querySelectorAll('.term-opt');
+  if(e.key==='ArrowDown'){e.preventDefault();termIdx=Math.min(termIdx+1,opts.length-1);termHighlight(opts);}
+  else if(e.key==='ArrowUp'){e.preventDefault();termIdx=Math.max(termIdx-1,0);termHighlight(opts);}
+  else if(e.key==='Enter'||e.key==='Tab'){
+    if(termIdx>=0&&opts[termIdx]){e.preventDefault();termSelect(opts[termIdx].dataset.val);}
+    else if(opts.length===1){e.preventDefault();termSelect(opts[0].dataset.val);}
+    else{termHide();}
+  }
+  else if(e.key==='Escape'){termHide();}
+}
+
+function termHighlight(opts){
+  opts.forEach((o,i)=>{o.style.background=i===termIdx?'#e8f4ee':'';});
+  if(opts[termIdx])opts[termIdx].scrollIntoView({block:'nearest'});
+}
+
+function termSelect(val){
+  const el=document.getElementById('v-term');
+  el.value=val;
+  termHide();
+  document.getElementById('v-lots').dataset.userEdited='false';
+  calcLots();
+  // Mover foco para Lots
+  setTimeout(()=>document.getElementById('v-lots').focus(),50);
+}
+
+function termHide(){
+  document.getElementById('term-dropdown').style.display='none';
+  termIdx=-1;
+}
+
+// ── Lots ────────────────────────────────────────────────────────
+function calcLots(){
+  const bags=+document.getElementById('v-bags').value||0;
+  const term=document.getElementById('v-term').value.toUpperCase();
+  const lotsEl=document.getElementById('v-lots');
+  const badge=document.getElementById('v-lots-badge');
+  if(!bags||!term){badge.textContent='';return;}
+  let divisor=0;
+  if(term.includes('NY')){divisor=283.50;}
+  else if(term.includes('LDN')){divisor=166.66;}
+  else if(term.includes('BMF')){divisor=100;}
+  if(!divisor){badge.textContent='';return;}
+  const raw=bags/divisor;
+  const sugInt=raw%1>=0.5?Math.ceil(raw):Math.floor(raw);
+  badge.textContent=bags+'/'+divisor+' = '+raw.toFixed(2)+' → '+sugInt;
+  if(lotsEl.dataset.userEdited!=='true'){lotsEl.value=sugInt;}
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  const lotsEl=document.getElementById('v-lots');
+  if(!lotsEl)return;
+  lotsEl.addEventListener('keydown',function(e){if(e.key==='Tab')this.dataset.userEdited='false';});
+  lotsEl.addEventListener('input',function(){this.dataset.userEdited='true';});
+});
 
 function calcDiff(){
   const preco=+document.getElementById('p1-preco').value||0;
@@ -1230,7 +1355,7 @@ let histFiltro='todos',negRows=[];
 async function fetchHist(){
   try{
     const res=await fetch(`${SUPA_URL}/rest/v1/negociacoes?select=*&order=criado_em.desc`,{headers:authH()});
-    if(res.ok){negRows=await res.json();renderHist();}
+    if(res.ok){negRows=await res.json();renderHist();renderRisk();}
   }catch(e){}
 }
 
@@ -1284,7 +1409,7 @@ async function excluirNeg(id){
 function carregarNeg(h){
   const set=(id,val)=>{const e=document.getElementById(id);if(e)e.value=val||'';};
   set('i-producer',h.produtor);set('i-broker-name',h.corretor);set('i-quality',h.quality);set('i-crop',h.safra);
-  set('v-bags',h.bags);set('v-preco',h.brl);set('v-dolar',h.usd);set('v-kc',h.kc);
+  set('v-bags',h.bags);set('v-preco',h.brl);set('v-dolar',h.usd);set('v-kc',h.kc);if(h.term)set('v-term',h.term);if(h.lots)set('v-lots',h.lots);
   set('v-p1718',h.p1718);set('v-premio',h.premio);set('v-off',h.off);
   set('i-modalidade',h.modalidade||'NORMAL');set('v-producer',h.producer||'N');
   const sel=document.getElementById('v-cidade');
@@ -1294,7 +1419,7 @@ function carregarNeg(h){
 
 function snapshot(){
   const get=id=>{const e=document.getElementById(id);return e?(e.value||e.textContent||''):''};
-  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
+  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),term:get('v-term'),lots:get('v-lots'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
 }
 
 function abrirModal(){
@@ -1436,7 +1561,7 @@ async function printNegociacao(){
     set('pf-p1718',(g('v-p1718')||'0')+'%');
     set('pf-premio',(g('v-premio')||'0')+' cts/lb');
     set('pf-off',(g('v-off')||'0')+'%');
-    set('pf-fm',(g('v-fm')||'0')+'%');
+
     set('pf-producer-yn',g('v-producer')||'N');
     set('pf-broker',g('v-broker')||'N');
     set('pf-extra','R$ '+(g('v-extra')||'0'));
@@ -1532,6 +1657,111 @@ function setValColor(id,val){
   el.className='mbar-val '+(val==null||val<0?'neg':'pos');
 }
 
+// ── Term code → mês/ano (ex: #NYU26 → Sep-26) ───────────────
+const TERM_MONTH_MAP={K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
+function termToMonthYear(term){
+  if(!term)return null;
+  const t=term.toUpperCase().replace('#','');
+  // ex: NYU26, LDNU26, BMFU26
+  const m=t.match(/([A-Z]+)([KNUZHX])(\d{2})$/);
+  if(!m)return null;
+  const mon=TERM_MONTH_MAP[m[2]]||m[2];
+  return mon+'-'+m[3]; // ex: Sep-26
+}
+
+function termDivisor(term){
+  const t=(term||'').toUpperCase();
+  if(t.includes('NY'))return 283.50;
+  if(t.includes('LDN'))return 166.66;
+  if(t.includes('BMF'))return 100;
+  return 0;
+}
+
+function renderRisk(){
+  const today=new Date();
+  today.setHours(0,0,0,0);
+
+  // Mostrar apenas negociações com term+lots salvas a partir de hoje
+  const todayStr=today.toISOString().slice(0,10);
+  const valid=negRows.filter(h=>{
+    if(!h.term||!h.lots)return false;
+    // criado_em >= hoje
+    const criado=(h.criado_em||'').slice(0,10);
+    return criado>=todayStr;
+  });
+
+  const headerRow=document.getElementById('riskHeaderRow');
+  const futuresRow=document.getElementById('riskFuturesRow');
+  const riskEmpty=document.getElementById('riskEmpty');
+  const riskTable=document.getElementById('riskTable');
+
+  if(!valid.length){
+    riskTable.style.display='none';
+    riskEmpty.style.display='block';
+    return;
+  }
+  riskTable.style.display='';
+  riskEmpty.style.display='none';
+
+  // Agrupar por mês/ano e somar sacas (sinal invertido: compra→negativo, venda→positivo)
+  const monthData={};
+  valid.forEach(h=>{
+    const my=termToMonthYear(h.term);
+    if(!my)return;
+    const div=termDivisor(h.term);
+    if(!div)return;
+    const lots=parseFloat(h.lots)||0;
+    const sacas=lots*div;
+    // tipo da negociação: compra café → vende lot → negativo
+    // venda café → compra lot → positivo
+    const tipo=(h.tipo||'').toLowerCase();
+    // negRows vem do pricing: tipo pode ser 'finalizada', campo produtor indica compra
+    // O sinal: se o negócio é uma COMPRA de café → futuro é VENDA = negativo
+    // Vamos usar o campo modalidade ou tipo — mas na verdade o sinal é sempre negativo
+    // quando compra café vende lot, e o informativo daily tem tipo COMPRA/VENDA
+    // No pricing não temos esse campo explícito, mas pelo contexto:
+    // todas as negociações do pricing são compras de café (você compra para exportar)
+    // então futures sempre negativo para compras
+    // Mas para ser correto: se houver campo 'tipo' com VENDA → positivo
+    let sinal=-1; // default: compra café = vende lot = negativo
+    if(tipo==='venda'||tipo.includes('vend'))sinal=1;
+    if(!monthData[my])monthData[my]=0;
+    monthData[my]+=sinal*sacas;
+  });
+
+  // Ordenar meses cronologicamente
+  const monthOrder=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const months=Object.keys(monthData).sort((a,b)=>{
+    const [ma,ya]=a.split('-'); const [mb,yb]=b.split('-');
+    const ynA=parseInt(ya),ynB=parseInt(yb);
+    if(ynA!==ynB)return ynA-ynB;
+    return monthOrder.indexOf(ma)-monthOrder.indexOf(mb);
+  });
+
+  // Construir header
+  const thBase=headerRow.children[0].outerHTML;
+  headerRow.innerHTML=thBase;
+  months.forEach(m=>{
+    const th=document.createElement('th');
+    th.style.cssText='background:#1b2e22;color:#fff;font-weight:600;padding:7px 12px;text-align:center;font-size:10px;min-width:80px;border-left:1px solid #2d4a3e';
+    th.textContent=m;
+    headerRow.appendChild(th);
+  });
+
+  // Construir futures row
+  const tdBase=futuresRow.children[0].outerHTML;
+  futuresRow.innerHTML=tdBase;
+  months.forEach(m=>{
+    const val=monthData[m];
+    const td=document.createElement('td');
+    const neg=val<0;
+    const fmt=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+    td.style.cssText='padding:5px 12px;text-align:center;font-size:11px;border-left:1px solid #edf2ef;'+(neg?'color:#c0392b':'color:#1a5c1a');
+    td.textContent=neg?'('+fmt.format(Math.abs(val))+')':'+'+fmt.format(val);
+    futuresRow.appendChild(td);
+  });
+}
+
 function renderInf(){
   const base=infGetByDate().filter(r=>infFilterEspecie==='todos'||(r.especie||'ARABICA')===infFilterEspecie);
   const compras=base.filter(r=>r.tipo==='COMPRA'),vendas=base.filter(r=>r.tipo==='VENDA');
@@ -1543,6 +1773,7 @@ function renderInf(){
   const tbody=document.getElementById('infBody');tbody.innerHTML='';
   document.getElementById('infEmpty').style.display=data.length?'none':'block';
   renderQualidade(infFiltered());
+  renderRisk();
   const isAdmin=userRole==='admin';
   data.forEach(r=>{
     const tr=document.createElement('tr');
