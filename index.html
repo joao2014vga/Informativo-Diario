@@ -362,7 +362,7 @@ select.cont-fg-input{cursor:pointer}
   </div>
   <div class="nav-right">
     <div class="status-dot" id="statusDot"></div>
-    <span class="status-txt" id="statusTxt">conectando...</span>
+    <span class="status-txt" id="statusTxt">connecting...</span>
     <span class="user-email" id="userEmail"></span>
     <span class="role-badge" id="roleBadge"></span>
     <button class="btn-logout" onclick="doLogout()">Sair</button>
@@ -921,25 +921,41 @@ async function doLogin(){
   finally{btn.disabled=false;btn.textContent='Entrar';}
 }
 
+async function fetchComTimeout(url,opts={},ms=8000){
+  const ctrl=new AbortController();
+  const tid=setTimeout(()=>ctrl.abort(),ms);
+  try{const res=await fetch(url,{...opts,signal:ctrl.signal});clearTimeout(tid);return res;}
+  catch(e){clearTimeout(tid);throw e;}
+}
+
 async function showPortal(email){
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('portalWrap').style.display='block';
   document.getElementById('userEmail').textContent=email;
   document.getElementById('fData').value=todayStr();
   document.getElementById('fQual').addEventListener('input',function(){this.value=this.value.toUpperCase();});
-  await fetchPerfil(email);
-  setStatus(true,'conectado');
+  setStatus(null,'connecting...');
+  try{
+    await Promise.race([fetchPerfil(email),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),10000))]);
+    setStatus(true,'connected');
+  }catch(e){
+    setStatus(false,'server timeout — retrying...');
+    setTimeout(async()=>{
+      try{await fetchPerfil(email);setStatus(true,'connected');}
+      catch(e2){setStatus(false,'connection failed — refresh the page');}
+    },5000);
+  }
   fetchInfRows();fetchContratos();populateCidades();
   calc();calcDiff();calcPreco();
 }
 
 async function fetchPerfil(email){
   try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/perfis?select=role&email=eq.${encodeURIComponent(email)}`,{headers:authH()});
+    const res=await fetchComTimeout(`${SUPA_URL}/rest/v1/perfis?select=role&email=eq.${encodeURIComponent(email)}`,{headers:authH()},8000);
     if(res.ok){const d=await res.json();if(d.length)userRole=d[0].role;}
   }catch(e){}
   const isAdmin=userRole==='admin';
-  document.getElementById('roleBadge').textContent=isAdmin?'Admin':'Visualizador';
+  document.getElementById('roleBadge').textContent=isAdmin?'Admin':'Viewer';
   document.getElementById('roleBadge').style.background=isAdmin?'#2d4a3e':'#6b8c7a';
   document.getElementById('formInfLancamento').style.display=isAdmin?'block':'none';
   if(!isAdmin){document.getElementById('btnNovoContrato').style.display='none';}
@@ -956,12 +972,13 @@ function doLogout(){
 async function renovarToken(){
   if(!refreshToken)return false;
   try{
-    const res=await fetch(`${SUPA_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPA_KEY},body:JSON.stringify({refresh_token:refreshToken})});
+    const res=await fetchComTimeout(`${SUPA_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPA_KEY},body:JSON.stringify({refresh_token:refreshToken})},8000);
     if(!res.ok)return false;
     const d=await res.json();accessToken=d.access_token;refreshToken=d.refresh_token;
     sessionStorage.setItem('bc_token',accessToken);sessionStorage.setItem('bc_refresh',refreshToken);
+    setStatus(true,'connected');
     return true;
-  }catch(e){return false;}
+  }catch(e){setStatus(false,'reconnecting...');return false;}
 }
 setInterval(async()=>{if(accessToken)await renovarToken();},45*60*1000);
 
@@ -971,7 +988,7 @@ setInterval(async()=>{if(accessToken)await renovarToken();},45*60*1000);
 })();
 
 function setStatus(ok,txt){
-  document.getElementById('statusDot').className='status-dot '+(ok?'ok':'err');
+  document.getElementById('statusDot').className='status-dot '+(ok===true?'ok':ok===false?'err':'');
   document.getElementById('statusTxt').textContent=txt;
 }
 
@@ -1002,14 +1019,32 @@ function cc(v){return v<0?'c-neg':'c-pos'}
 function tsUpdate(){const e=document.getElementById('pts');if(e)e.textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
 
 function calcFOB(usd){
-  const F5=5;
-  const cont=(1204+49+200+0.13*320+830)/320/F/F5;
-  const emb=(557+317+348+480+250+35+65)/640/F/F5;
-  const saca=(65+65+0.15*320+0.03*320+0.5*320+250)/320/F/F5;
-  const f26=FREIGHT_SANTOS_CONTAINER/320/usd/F;
-  const f27=PACKING_SACA/F/usd;
-  // Retorna USD/saca (sem multiplicar por F — D6 da planilha)
-  return cont+emb+saca+f26+f27;
+  // Custos portuários fixos: a planilha usa USD=5 fixo para converter R$->cts/lb
+  // Freight e Packing usam o USD real
+  // Total cts/lb * F = USD/saca
+  const USD_FIXO=5;
+  const thc=1204/320/F/USD_FIXO;
+  const bl=557/640/F/USD_FIXO;
+  const swb=317/640/F/USD_FIXO;
+  const seal=49/320/F/USD_FIXO;
+  const isps=348/640/F/USD_FIXO;
+  const elf=480/640/F/USD_FIXO;
+  const scan=200/320/F/USD_FIXO;
+  const phyto=250/640/F/USD_FIXO;
+  const phyto2=65/640/F/USD_FIXO;
+  const qual=65/320/F/USD_FIXO;
+  const peso=65/320/F/USD_FIXO;
+  const mercosur=35/640/F/USD_FIXO;
+  const fum=(0.13*320)/320/F/USD_FIXO;
+  const ico1=(0.15*320)/320/F/USD_FIXO;
+  const ico2=(0.03*320)/320/F/USD_FIXO;
+  const forwarder=(0.5*320)/320/F/USD_FIXO;
+  const courier=250/320/F/USD_FIXO;
+  const prestack=830/320/F/USD_FIXO;
+  const freight=FREIGHT_SANTOS_CONTAINER/320/usd/F;
+  const packing=PACKING_SACA/F/usd;
+  const totalCts=thc+bl+swb+seal+isps+elf+scan+phyto+phyto2+qual+peso+mercosur+fum+ico1+ico2+forwarder+courier+prestack+freight+packing;
+  return totalCts*F;
 }
 
 function calc(){
@@ -1462,10 +1497,13 @@ const medW=arr=>{const s=sumQ(arr);if(!s)return null;return arr.reduce((a,r)=>a+
 
 async function fetchInfRows(){
   try{
-    let res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`,{headers:authH()});
-    if(res.status===401){const r=await renovarToken();if(r)res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`,{headers:authH()});else{doLogout();return;}}
+    let res=await fetchComTimeout(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`,{headers:authH()},10000);
+    if(res.status===401){const r=await renovarToken();if(r)res=await fetchComTimeout(`${SUPA_URL}/rest/v1/lancamentos?select=*&order=data.desc,criado_em.desc`,{headers:authH()},10000);else{doLogout();return;}}
     if(res.ok){infRows=await res.json();document.getElementById('infLoading').style.display='none';renderInf();}
-  }catch(e){setStatus(false,'erro de conexão');}
+  }catch(e){
+    setStatus(false,'connection error — retrying...');
+    setTimeout(()=>fetchInfRows(),8000);
+  }
 }
 
 function infGetByDate(){
