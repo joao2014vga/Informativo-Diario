@@ -2236,14 +2236,34 @@ async function salvarImagemInformativo(){
       </div>`;
     })();
     const riskEl=document.getElementById('ipf-risk');
-    if(riskEl)riskEl.innerHTML=riskHtml;
+    if(riskEl){
+      if(riskHtml){
+        riskEl.innerHTML=riskHtml;
+      } else {
+        // Tentar clonar a tabela de risk já renderizada na tela
+        const riskTableEl=document.getElementById('riskTable');
+        if(riskTableEl&&riskTableEl.style.display!=='none'){
+          const clone=riskTableEl.cloneNode(true);
+          clone.style.cssText='width:100%;border-collapse:collapse;font-size:12px;border-radius:8px;overflow:hidden;border:1px solid #dde8e2';
+          const wrapper=document.createElement('div');
+          wrapper.style.marginBottom='.75rem';
+          const lbl=document.createElement('div');
+          lbl.style.cssText='font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem';
+          lbl.textContent='Risk Daily Report';
+          wrapper.appendChild(lbl);
+          wrapper.appendChild(clone);
+          riskEl.innerHTML='';
+          riskEl.appendChild(wrapper);
+        }
+      }
+    }
 
     // Tabela
     const sorted=[...data].sort((a,b)=>b.data.localeCompare(a.data));
     const thStyle='padding:8px 12px;text-align:left;font-size:9px;font-weight:600;color:#5a7a68;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #dde8e2;background:#f5f9f6;white-space:nowrap';
     const tdStyle='padding:8px 12px;border-bottom:1px solid #edf3ef;font-size:11px;color:#1a1a1a';
     document.getElementById('ipf-table').innerHTML=
-      `<thead><tr>${['Date','Type','Bags','Quality','Species','Diff'].map(h=>`<th style="${thStyle}">${h}</th>`).join('')}</tr></thead>`+
+      `<thead><tr>${['Date','Type','Bags','Quality','Species','Diff','Term','Lots'].map(h=>`<th style="${thStyle}">${h}</th>`).join('')}</tr></thead>`+
       `<tbody>${sorted.map((r,i)=>{
         const d=Number(r.dif);
         const bg=i%2===0?'#fff':'#fafcfb';
@@ -2254,6 +2274,8 @@ async function salvarImagemInformativo(){
           <td style="${tdStyle}">${r.qual||'—'}</td>
           <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.especie==='CONILON'?'#f0e8ff':'#fef3e2'};color:${r.especie==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
           <td style="${tdStyle};font-weight:500;color:${d<0?'#922020':'#1e5c1e'}">${fmt2(d)}</td>
+          <td style="${tdStyle};color:#4a7a60">${r.term||'—'}</td>
+          <td style="${tdStyle};text-align:center">${r.lots||'—'}</td>
         </tr>`;
       }).join('')}</tbody>`;
 
