@@ -982,9 +982,17 @@ async function renovarToken(){
 }
 setInterval(async()=>{if(accessToken)await renovarToken();},45*60*1000);
 
-(function(){
+(async function(){
   const t=sessionStorage.getItem('bc_token'),r=sessionStorage.getItem('bc_refresh'),e=sessionStorage.getItem('bc_email');
-  if(t&&e){accessToken=t;refreshToken=r;showPortal(e);}
+  if(!t||!e)return;
+  accessToken=t;refreshToken=r;
+  // Tenta renovar o token ao recarregar a página, pois o token pode ter expirado
+  const ok=await renovarToken();
+  if(!ok){
+    // Token inválido — tenta usar o token salvo mesmo assim (pode ainda ser válido)
+    // Se falhar, o fetchPerfil vai tratar
+  }
+  showPortal(e);
 })();
 
 function setStatus(ok,txt){
@@ -1886,11 +1894,11 @@ function renderContratos(){
       <td><span class="status-pill ${pillInst}">${r.instrucao_faturamento||'—'}</span></td>
       <td>
         <span class="status-pill ${pillEmail}">${r.email_programacao||'—'}</span>
-        ${isAdmin&&(r.email_programacao==='ENVIAR BRC'||r.email_programacao==='ENVIAR PROGRAMAÇÃO')?'<br><button class=\'cont-action-btn confirm\' onclick=\'confirmarEmail('+r.id+',\''+r.email_programacao+'\')\'>✓ Confirmar</button>':''}
+
       </td>
       <td>
         <span class="status-pill ${pillFut}">${r.contrato_futuro||'—'}</span>
-        ${isAdmin&&r.contrato_futuro==='PENDENTE'?'<br><button class=\'cont-action-btn confirm\' onclick=\'confirmarFuturo('+r.id+')\'>✓ Enviado</button>':''}
+
       </td>
       <td><span class="status-pill ${vencAlert?'pill-alerta':''}" style="${!vencAlert?'background:transparent;color:#6b8c7a;font-size:11px':''}">${vencStr}</span></td>
       <td>${editBtns}</td>`;
