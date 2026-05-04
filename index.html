@@ -1084,11 +1084,24 @@ function calcFOB(usd){
   return totalCts*F;
 }
 
+function parseBrNum(v){
+  if(v===undefined||v===null||v==='')return 0;
+  // Aceita tanto ponto quanto vírgula como separador decimal
+  // Ex: "1.530,00" → 1530.00 | "5,0267" → 5.0267 | "276.60" → 276.60
+  let s=String(v).trim();
+  // Se tem vírgula e ponto: formato BR (1.530,00)
+  if(s.includes(',')&&s.includes('.')){s=s.replace(/\./g,'').replace(',','.');}
+  // Se tem só vírgula: vírgula é decimal (5,0267)
+  else if(s.includes(','))s=s.replace(',','.');
+  // Se tem só ponto: já é decimal padrão (276.60)
+  return parseFloat(s)||0;
+}
+
 function calc(){
   const bags=+document.getElementById('v-bags').value||0;
-  const brl=+document.getElementById('v-preco').value||0;
-  const usd=+document.getElementById('v-dolar').value||1;
-  const kc=+document.getElementById('v-kc').value||0;
+  const brl=parseBrNum(document.getElementById('v-preco').value)||0;
+  const usd=parseBrNum(document.getElementById('v-dolar').value)||1;
+  const kc=parseBrNum(document.getElementById('v-kc').value)||0;
   const p1718=+document.getElementById('v-p1718').value||0;
   const prem=+document.getElementById('v-premio').value||0;
   const off=+document.getElementById('v-off').value||0;
@@ -1446,7 +1459,9 @@ async function salvarNegociacao(){
   const especie=document.getElementById('modal-especie').value;
   const obs=document.getElementById('modal-obs').value.trim();
   const snap=snapshot();
-  const neg={...snap,tipo:'finalizada',obs};
+  // Remover campos que podem não existir na tabela (term, lots são campos novos)
+  const {term:_t, lots:_l, ...snapSafe}=snap;
+  const neg={...snapSafe,tipo:'finalizada',obs,term:_t||null,lots:_l||null};
 
   const btnConf=document.getElementById('btnConfirmarModal');
   const btnCanc=document.getElementById('btnCancelarModal');
@@ -1455,7 +1470,7 @@ async function salvarNegociacao(){
   try{
     // 1. Salvar negociação
     const resNeg=await fetch(`${SUPA_URL}/rest/v1/negociacoes`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(neg)});
-    if(!resNeg.ok)throw new Error('Erro ao salvar negociação');
+    if(!resNeg.ok){const errBody=await resNeg.json().catch(()=>({}));throw new Error('Erro ao salvar: '+(errBody.message||errBody.error||resNeg.status));}
     const[novoNeg]=await resNeg.json();
     negRows.unshift(novoNeg);
 
