@@ -208,7 +208,7 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .inf-card{background:#fff;border:1px solid #dde8e2;border-radius:12px;overflow:hidden;margin-bottom:1rem}
 .inf-card-header{padding:10px 1.5rem;border-bottom:1px solid #dde8e2}
 .inf-card-title{font-size:11px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em}
-.form-row{display:grid;grid-template-columns:130px 100px 100px 110px 120px 130px 130px 80px 80px;gap:8px;padding:.9rem 1.5rem;align-items:end}
+.form-row{display:grid;grid-template-columns:130px 100px 100px 110px 120px 130px 130px 80px 100px 80px;gap:8px;padding:.9rem 1.5rem;align-items:end}
 .fg-label{font-size:10px;color:#6b8c7a;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;display:block}
 .fg-input{width:100%;border:1px solid #c8ddd2;border-radius:8px;padding:7px 9px;font-size:12.5px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;text-transform:uppercase;height:36px}
 .fg-input[type=date],.fg-input[type=number]{text-transform:none}
@@ -571,6 +571,9 @@ select.cont-fg-input{cursor:pointer}
         <input type="number" id="fLots" class="fg-input" step="0.5" placeholder="—" oninput="document.getElementById('fLots').dataset.userEdited='true'">
         <span id="fLots-badge" style="font-size:9px;color:#6b8c7a;display:block;margin-top:2px"></span>
       </div>
+      <div><label class="fg-label">Hedge Date</label>
+        <input type="date" id="fHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa (pode ser diferente da data do lançamento)">
+      </div>
       <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add-inf" id="btnAddInf" onclick="addInfRow()">+ Add</button></div>
     </div>
   </div>
@@ -638,6 +641,7 @@ select.cont-fg-input{cursor:pointer}
           <th style="width:110px">Date</th><th style="width:90px">Type</th><th style="width:80px">Bags</th>
           <th style="width:100px">Quality</th><th style="width:90px">Species</th><th>Diff</th>
           <th style="width:90px">Term</th><th style="width:60px">Lots</th>
+          <th style="width:100px">Hedge Date</th>
           <th id="thDelInf" style="width:70px"></th>
         </tr></thead>
         <tbody id="infBody"></tbody>
@@ -778,6 +782,7 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Species</label><select id="eEspecie" class="fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
       <div><label class="fg-label">Term</label><input type="text" id="eTerm" class="fg-input" placeholder="ex: #NYU26"/></div>
       <div><label class="fg-label">Lots</label><input type="number" id="eLots" class="fg-input" step="0.5" placeholder="—"/></div>
+      <div><label class="fg-label">Hedge Date</label><input type="date" id="eHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa"/></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel-m" onclick="closeInfModal()">Cancel</button>
@@ -1833,8 +1838,18 @@ function termDivisor(term){
 }
 
 function renderRisk(){
-  // Respeitar os mesmos filtros do informativo (data, tipo, espécie)
-  const valid=infFiltered().filter(r=>r.term&&r.lots);
+  // Risk usa hedge_date (se preenchida) para filtrar; senão usa a data do lançamento
+  // Pega o filtro de datas do informativo
+  const de=document.getElementById('fDtDe').value;
+  const ate=document.getElementById('fDtAte').value;
+  const valid=infRows.filter(r=>{
+    if(!r.term||!r.lots)return false;
+    // data efetiva para o risk = hedge_date se preenchida, senão data do lançamento
+    const dataRisk=r.hedge_date||r.data;
+    if(de&&dataRisk<de)return false;
+    if(ate&&dataRisk>ate)return false;
+    return true;
+  });
 
   const headerRow=document.getElementById('riskHeaderRow');
   const futuresRow=document.getElementById('riskFuturesRow');
@@ -1932,6 +1947,7 @@ function renderInf(){
       <td class="${d<0?'dif-neg':'dif-pos'}">${fmt2(d)}</td>
       <td style="font-size:11px;color:#4a7a60">${r.term||'—'}</td>
       <td style="font-size:11px;text-align:center">${r.lots||'—'}</td>
+      <td style="font-size:11px;color:#7a5a00">${r.hedge_date?fmtDate(r.hedge_date):'—'}</td>
       <td>${isAdmin?`<button class="btn-edit-inf" onclick="openInfEdit(${r.id})">✎</button><button class="btn-del" onclick="delInfRow(${r.id})">✕</button>`:''}</td>`;
     tbody.appendChild(tr);
   });
@@ -1945,16 +1961,18 @@ async function addInfRow(){
   const especie=document.getElementById('fEspecie').value;
   const fTermVal=document.getElementById('fTerm')?.value||null;
   const fLotsVal=document.getElementById('fLots')?.value||null;
+  const fHedgeDateVal=document.getElementById('fHedgeDate')?.value||null;
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in Date, Bags and Diff.');return;}
   const btn=document.getElementById('btnAddInf');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:fTermVal,lots:fLotsVal})});
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:fTermVal,lots:fLotsVal,hedge_date:fHedgeDateVal})});
     if(!res.ok)throw new Error(await res.text());
     const[novo]=await res.json();infRows.unshift(novo);
     document.getElementById('fSacas').value='';document.getElementById('fQual').value='';document.getElementById('fDif').value='';document.getElementById('fEspecie').value='ARABICA';
     if(document.getElementById('fTerm'))document.getElementById('fTerm').value='';
     if(document.getElementById('fLots')){document.getElementById('fLots').value='';document.getElementById('fLots').dataset.userEdited='false';}
     if(document.getElementById('fLots-badge'))document.getElementById('fLots-badge').textContent='';
+    if(document.getElementById('fHedgeDate'))document.getElementById('fHedgeDate').value='';
     renderInf();
   }catch(e){alert('Error saving: '+e.message);}
   finally{btn.disabled=false;btn.textContent='+ Add';}
@@ -1973,6 +1991,7 @@ function openInfEdit(id){
   document.getElementById('eSacas').value=r.sacas;document.getElementById('eQual').value=r.qual||'';
   document.getElementById('eDif').value=r.dif;document.getElementById('eEspecie').value=r.especie||'ARABICA';
   document.getElementById('eTerm').value=r.term||'';document.getElementById('eLots').value=r.lots||'';
+  document.getElementById('eHedgeDate').value=r.hedge_date||'';
   document.getElementById('infModalOverlay').classList.add('open');
 }
 function closeInfModal(){infEditingId=null;document.getElementById('infModalOverlay').classList.remove('open');}
@@ -1988,7 +2007,8 @@ async function saveInfEdit(){
   try{
     const eTerm=document.getElementById('eTerm').value||null;
     const eLots=document.getElementById('eLots').value||null;
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots})});
+    const eHedgeDate=document.getElementById('eHedgeDate').value||null;
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots,hedge_date:eHedgeDate})});
     if(!res.ok)throw new Error(await res.text());
     const[updated]=await res.json();
     const idx=infRows.findIndex(r=>r.id===infEditingId);if(idx!==-1)infRows[idx]=updated;
