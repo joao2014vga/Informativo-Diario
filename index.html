@@ -710,8 +710,8 @@ select.cont-fg-input{cursor:pointer}
     <div style="overflow-x:auto">
       <table class="cont-table">
         <thead><tr>
-          <th style="min-width:120px">Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
-          <th>Vendedor</th><th>Corretor</th><th>Sacas</th><th>Valor</th><th>Frete</th>
+          <th style="min-width:130px;white-space:nowrap">Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
+          <th>Vendedor</th><th>Corretor</th><th>Sacas</th><th>Espécie</th><th>Valor</th><th>Frete</th>
           <th>Status ERP</th><th>Instr. Fat.</th><th>E-mail Prog.</th><th>Cont. Futuro</th>
           <th>Vencimento</th><th style="width:70px"></th>
         </tr></thead>
@@ -2391,7 +2391,7 @@ function renderContratos(){
     const pillInst=r.instrucao_faturamento==='PRECISA ENVIAR'?'pill-pendente':(r.instrucao_faturamento==='ENVIADO'?'pill-enviado':'pill-nao-precisa');
     const editBtns=isAdmin?'<button class="btn-edit-cont" onclick="abrirModalContrato('+r.id+')">✎</button><button class="btn-del-cont" onclick="delContrato('+r.id+')">✕</button>':'';
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td style="min-width:120px;white-space:nowrap"><strong>${r.contrato||'—'}</strong></td>
+    tr.innerHTML=`<td style="min-width:130px;white-space:nowrap"><strong>${r.contrato||'—'}</strong></td>
       <td>${r.filial||'—'}</td><td>${r.tipo||'—'}</td><td>${r.modalidade||'—'}</td>
       <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vendedor||''}">${r.vendedor||'—'}</td>
       <td>${r.corretor||'—'}</td><td>${r.sacas||'—'}</td>
@@ -2472,6 +2472,7 @@ function abrirModalContrato(id){
     document.getElementById('c-instrucao').value=r.instrucao_faturamento||'NÃO PRECISA';
     document.getElementById('c-email-prog').value=r.email_programacao||'ENVIAR BRC';
     document.getElementById('c-futuro').value=r.contrato_futuro||'NÃO PRECISA ENVIAR';
+    document.getElementById('c-especie').value=r.especie||'ARABICA';
   }
   document.getElementById('contModalOverlay').classList.add('open');
 }
