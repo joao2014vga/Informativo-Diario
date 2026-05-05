@@ -809,6 +809,7 @@ select.cont-fg-input{cursor:pointer}
     </div>
     <div class="cont-form-grid four">
       <div><label class="cont-fg-label">Bags</label><input type="number" id="c-sacas" class="cont-fg-input" placeholder="0" style="text-transform:none"/></div>
+      <div><label class="cont-fg-label">Espécie</label><select id="c-especie" class="cont-fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
       <div><label class="cont-fg-label">Valor R$/saca</label><input type="number" id="c-valor" class="cont-fg-input" placeholder="0.00" step="0.01" style="text-transform:none"/></div>
       <div><label class="cont-fg-label">Frete</label><select id="c-frete" class="cont-fg-input" onchange="autoFillContrato()"><option value="Posto">POSTO</option><option value="Retirar">RETIRAR</option></select></div>
       <div><label class="cont-fg-label">Vencimento</label><input type="date" id="c-vencimento" class="cont-fg-input" style="text-transform:none"/></div>
@@ -1658,6 +1659,7 @@ async function salvarNegociacao(){
       sacas:parseInt(snap.bags)||null,
       valor:parseFloat(snap.brl)||null,
       frete:frete,
+      especie:(document.getElementById('c-especie')?document.getElementById('c-especie').value:null)||null,
       vencimento:document.getElementById('i-paydate').value||null,
       obs_extra:'',
       status_erp:'AGUARDANDO FECHAMENTO',
@@ -2381,6 +2383,7 @@ function renderContratos(){
       <td>${r.filial||'—'}</td><td>${r.tipo||'—'}</td><td>${r.modalidade||'—'}</td>
       <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vendedor||''}">${r.vendedor||'—'}</td>
       <td>${r.corretor||'—'}</td><td>${r.sacas||'—'}</td>
+      <td><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${(r.especie||'ARABICA')==='CONILON'?'#f0e8ff':'#fef3e2'};color:${(r.especie||'ARABICA')==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
       <td>${r.valor?'R$ '+Number(r.valor).toLocaleString('pt-BR',{minimumFractionDigits:0}):'—'}</td>
       <td>${r.frete||'—'}</td>
       <td><span class="status-pill ${pillErp}">${r.status_erp||'—'}</span></td>
