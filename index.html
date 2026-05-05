@@ -710,7 +710,7 @@ select.cont-fg-input{cursor:pointer}
     <div style="overflow-x:auto">
       <table class="cont-table">
         <thead><tr>
-          <th>Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
+          <th style="min-width:120px">Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
           <th>Vendedor</th><th>Corretor</th><th>Sacas</th><th>Valor</th><th>Frete</th>
           <th>Status ERP</th><th>Instr. Fat.</th><th>E-mail Prog.</th><th>Cont. Futuro</th>
           <th>Vencimento</th><th style="width:70px"></th>
@@ -1102,6 +1102,18 @@ function calcFOB(usd){
   const packing=PACKING_SACA/F/usd;
   const totalCts=thc+bl+swb+seal+isps+elf+scan+phyto+phyto2+qual+peso+mercosur+fum+ico1+ico2+forwarder+courier+prestack+freight+packing;
   return totalCts*F;
+}
+
+function normalizarContrato(v){
+  if(!v)return v;
+  // Aceita: BRC-318.26, BRC-0318.26, BRV-41/26, BRC-0324.26 etc.
+  // Saída:  BRC-0318/26, BRV-0041/26
+  const m=v.toUpperCase().trim().match(/^(BR[A-Z])-?0*(\d+)[./\-](\d{2})$/);
+  if(!m)return v.toUpperCase().trim();
+  const prefix=m[1];
+  const num=m[2].padStart(4,'0');
+  const ano=m[3];
+  return `${prefix}-${num}/${ano}`;
 }
 
 function parseBrNum(v){
@@ -2379,7 +2391,7 @@ function renderContratos(){
     const pillInst=r.instrucao_faturamento==='PRECISA ENVIAR'?'pill-pendente':(r.instrucao_faturamento==='ENVIADO'?'pill-enviado':'pill-nao-precisa');
     const editBtns=isAdmin?'<button class="btn-edit-cont" onclick="abrirModalContrato('+r.id+')">✎</button><button class="btn-del-cont" onclick="delContrato('+r.id+')">✕</button>':'';
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><strong>${r.contrato||'—'}</strong></td>
+    tr.innerHTML=`<td style="min-width:120px;white-space:nowrap"><strong>${r.contrato||'—'}</strong></td>
       <td>${r.filial||'—'}</td><td>${r.tipo||'—'}</td><td>${r.modalidade||'—'}</td>
       <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vendedor||''}">${r.vendedor||'—'}</td>
       <td>${r.corretor||'—'}</td><td>${r.sacas||'—'}</td>
@@ -2467,6 +2479,7 @@ function fecharModalContrato(){contEditingId=null;document.getElementById('contM
 
 async function salvarContrato(){
   ['c-contrato','c-vendedor','c-corretor','c-obs'].forEach(id=>{const e=document.getElementById(id);if(e&&e.type!=='date'&&e.type!=='number')e.value=e.value.toUpperCase();});
+  const cEl=document.getElementById('c-contrato');if(cEl)cEl.value=normalizarContrato(cEl.value);
   const payload={
     contrato:document.getElementById('c-contrato').value.trim(),
     filial:document.getElementById('c-filial').value,
@@ -2476,6 +2489,7 @@ async function salvarContrato(){
     corretor:document.getElementById('c-corretor').value.trim(),
     empresa_produtor:document.getElementById('c-empresa-produtor').value,
     sacas:parseInt(document.getElementById('c-sacas').value)||null,
+    especie:document.getElementById('c-especie').value||'ARABICA',
     valor:parseFloat(document.getElementById('c-valor').value)||null,
     frete:document.getElementById('c-frete').value,
     vencimento:document.getElementById('c-vencimento').value||null,
