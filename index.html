@@ -565,7 +565,7 @@ select.cont-fg-input{cursor:pointer}
       <div style="position:relative"><label class="fg-label">Term</label>
         <input type="text" id="fTerm" class="fg-input" placeholder="ex: nyu26" autocomplete="off"
           oninput="termSearchInf(this.value)" onkeydown="termKeyNavInf(event)" onfocus="termSearchInf(this.value)" onblur="setTimeout(termHideInf,150)">
-        <div id="term-dropdown-inf" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:200px;overflow-y:auto;margin-top:2px"></div>
+        <div id="term-dropdown-inf" style="display:none;position:fixed;z-index:99999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);max-height:220px;overflow-y:auto;min-width:160px"></div>
       </div>
       <div><label class="fg-label">Lots</label>
         <input type="number" id="fLots" class="fg-input" step="0.5" placeholder="—" oninput="document.getElementById('fLots').dataset.userEdited='true'">
@@ -1332,6 +1332,11 @@ function termHide(){
 let termIdxInf=-1;
 function termSearchInf(q){
   const dd=document.getElementById('term-dropdown-inf');
+  const input=document.getElementById('fTerm');
+  const rect=input.getBoundingClientRect();
+  dd.style.left=rect.left+'px';
+  dd.style.top=(rect.bottom+2)+'px';
+  dd.style.width=Math.max(rect.width,160)+'px';
   const s=q.trim().toUpperCase().replace(/^#/,'');
   const filtered=s?TERM_LIST.filter(t=>t.label.replace('#','').includes(s)):TERM_LIST;
   termIdxInf=-1;
@@ -2250,7 +2255,7 @@ async function salvarImagemInformativo(){
     const thStyle='padding:8px 12px;text-align:left;font-size:9px;font-weight:600;color:#5a7a68;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #dde8e2;background:#f5f9f6;white-space:nowrap';
     const tdStyle='padding:8px 12px;border-bottom:1px solid #edf3ef;font-size:11px;color:#1a1a1a';
     document.getElementById('ipf-table').innerHTML=
-      `<thead><tr>${['Date','Type','Bags','Quality','Species','Diff','Term','Lots'].map(h=>`<th style="${thStyle}">${h}</th>`).join('')}</tr></thead>`+
+      `<thead><tr>${['Date','Type','Bags','Quality','Species','Diff','Term','Lots','Hedge Date'].map(h=>`<th style="${thStyle}">${h}</th>`).join('')}</tr></thead>`+
       `<tbody>${sorted.map((r,i)=>{
         const d=Number(r.dif);
         const bg=i%2===0?'#fff':'#fafcfb';
@@ -2263,6 +2268,7 @@ async function salvarImagemInformativo(){
           <td style="${tdStyle};font-weight:500;color:${d<0?'#922020':'#1e5c1e'}">${fmt2(d)}</td>
           <td style="${tdStyle};color:#4a7a60">${r.term||'—'}</td>
           <td style="${tdStyle};text-align:center">${r.lots||'—'}</td>
+          <td style="${tdStyle};color:#7a5a00">${r.hedge_date?fmtDate(r.hedge_date):'—'}</td>
         </tr>`;
       }).join('')}</tbody>`;
 
