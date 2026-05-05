@@ -2171,20 +2171,19 @@ async function salvarImagemInformativo(){
       </div>`;
     }).join('');
 
-    // Risk Daily Report no print — usa mesma lógica do renderRisk (infRows + negRows)
+    // Risk Daily Report no print — usa mesma lógica do renderRisk com filtro de datas
     const riskHtml=(()=>{
-      const today=new Date();today.setHours(0,0,0,0);
-      const todayStr2=today.toISOString().slice(0,10);
-      const parseD=raw=>{
-        if(!raw)return '';const s=String(raw);
-        if(s.includes('/')){const p=s.split(/[,\s]/)[0].split('/');if(p.length===3)return p[2]+'-'+p[1]+'-'+p[0];}
-        return s.slice(0,10);
-      };
-      const validInf=infRows.filter(r=>r.term&&r.lots&&parseD(r.data||r.criado_em)>=todayStr2);
-      const validNeg=negRows.filter(h=>h.term&&h.lots&&parseD(h.data||h.criado_em)>=todayStr2);
-      const valid=[...validInf,...validNeg.filter(n=>
-        !validInf.some(i=>i.term===n.term&&parseD(i.data||i.criado_em)===parseD(n.data||n.criado_em)&&Number(i.lots)===Number(n.lots))
-      )];
+      // Pegar os mesmos filtros de data do informativo
+      const de=document.getElementById('fDtDe').value;
+      const ate=document.getElementById('fDtAte').value;
+      // Filtrar infRows usando hedge_date (se preenchida) ou data do lançamento
+      const valid=infRows.filter(r=>{
+        if(!r.term||!r.lots)return false;
+        const dataRisk=r.hedge_date||r.data;
+        if(de&&dataRisk<de)return false;
+        if(ate&&dataRisk>ate)return false;
+        return true;
+      });
       if(!valid.length)return '';
       const monthData={};
       const TMAP={K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
