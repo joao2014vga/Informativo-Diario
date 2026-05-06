@@ -208,7 +208,7 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .inf-card{background:#fff;border:1px solid #dde8e2;border-radius:12px;overflow:hidden;margin-bottom:1rem}
 .inf-card-header{padding:10px 1.5rem;border-bottom:1px solid #dde8e2}
 .inf-card-title{font-size:11px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em}
-.form-row{display:grid;grid-template-columns:130px 100px 100px 110px 120px 130px 130px 80px 100px 80px;gap:8px;padding:.9rem 1.5rem;align-items:end}
+.form-row{display:grid;grid-template-columns:110px 90px 80px 90px 90px 110px 110px 70px 90px 130px 70px;gap:6px;padding:.9rem 1.2rem;align-items:end}
 .fg-label{font-size:10px;color:#6b8c7a;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;display:block}
 .fg-input{width:100%;border:1px solid #c8ddd2;border-radius:8px;padding:7px 9px;font-size:12.5px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;text-transform:uppercase;height:36px}
 .fg-input[type=date],.fg-input[type=number]{text-transform:none}
@@ -388,10 +388,11 @@ select.cont-fg-input{cursor:pointer}
 <div class="two-col">
 <div class="col-left">
   <div class="sec">Identificação</div>
-  <div class="ig ig-3">
-    <div class="icard"><label class="ilabel">Produtor</label><input type="text" id="i-producer" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: SCHMITT" oninput="calc()"></div>
-    <div class="icard"><label class="ilabel">Corretor</label><input type="text" id="i-broker-name" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: VB" oninput="calc()"></div>
-    <div class="icard"><label class="ilabel">Quality</label><input type="text" id="i-quality" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: BC2" oninput="calc()"></div>
+  <div class="ig ig-4">
+    <div class="icard"><label class="ilabel">Produtor</label><input type="text" id="i-producer" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: SCHMITT"></div>
+    <div class="icard"><label class="ilabel">Corretor</label><input type="text" id="i-broker-name" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: VB"></div>
+    <div class="icard"><label class="ilabel">Certificate</label><select id="i-certificate" oninput="buildResumo()" style="font-size:11px"><option value="">— None —</option><option value="RAINFOREST ALLIANCE">RAINFOREST ALLIANCE</option><option value="EUDR">EUDR</option><option value="CAFE PRACTICES">CAFE PRACTICES</option><option value="UTZ">UTZ</option><option value="4C SERVICES">4C SERVICES</option></select></div>
+    <div class="icard"><label class="ilabel">Quality</label><input type="text" id="i-quality" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: BC2"></div>
   </div>
   <div class="ig ig-4">
     <div class="icard"><label class="ilabel">Safra</label><input type="text" id="i-crop" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: 26/27" oninput="calc()"></div>
@@ -574,6 +575,14 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Hedge Date</label>
         <input type="date" id="fHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa (pode ser diferente da data do lançamento)">
       </div>
+      <div><label class="fg-label">Certificate</label>
+        <select id="fCertificate" class="fg-input"><option value="">— None —</option>
+<option value="RAINFOREST ALLIANCE">RAINFOREST ALLIANCE</option>
+<option value="EUDR">EUDR</option>
+<option value="CAFE PRACTICES">CAFE PRACTICES</option>
+<option value="UTZ">UTZ</option>
+<option value="4C SERVICES">4C SERVICES</option></select>
+      </div>
       <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add-inf" id="btnAddInf" onclick="addInfRow()">+ Add</button></div>
     </div>
   </div>
@@ -640,6 +649,7 @@ select.cont-fg-input{cursor:pointer}
         <thead><tr>
           <th style="width:110px">Date</th><th style="width:90px">Type</th><th style="width:80px">Bags</th>
           <th style="width:100px">Quality</th><th style="width:90px">Variety</th><th>Diff</th>
+          <th style="width:130px">Certificate</th>
           <th style="width:90px">Term</th><th style="width:60px">Lots</th>
           <th style="width:100px">Hedge Date</th>
           <th id="thDelInf" style="width:70px"></th>
@@ -783,6 +793,12 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Term</label><input type="text" id="eTerm" class="fg-input" placeholder="ex: #NYU26"/></div>
       <div><label class="fg-label">Lots</label><input type="number" id="eLots" class="fg-input" step="0.5" placeholder="—"/></div>
       <div><label class="fg-label">Hedge Date</label><input type="date" id="eHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa"/></div>
+      <div><label class="fg-label">Certificate</label><select id="eCertificate" class="fg-input"><option value="">— None —</option>
+<option value="RAINFOREST ALLIANCE">RAINFOREST ALLIANCE</option>
+<option value="EUDR">EUDR</option>
+<option value="CAFE PRACTICES">CAFE PRACTICES</option>
+<option value="UTZ">UTZ</option>
+<option value="4C SERVICES">4C SERVICES</option></select></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel-m" onclick="closeInfModal()">Cancel</button>
@@ -1256,6 +1272,8 @@ function gerarResumo(diff1416,diff1718){
   if(crop)p.push('Safra '+crop);
   const term=document.getElementById('v-term')?document.getElementById('v-term').value:'';
   const lots=document.getElementById('v-lots')?document.getElementById('v-lots').value:'';
+  const cert=document.getElementById('i-certificate')?document.getElementById('i-certificate').value:'';
+  if(cert)p.push('Cert: '+cert);
   if(term)p.push('Term: '+term);
   if(lots)p.push('Lots: '+lots);
   if(dateVal)p.push('Entrega '+fmtD(dateVal));
@@ -1524,7 +1542,7 @@ async function excluirNeg(id){
 function carregarNeg(h){
   const set=(id,val)=>{const e=document.getElementById(id);if(e)e.value=val||'';};
   set('i-producer',h.produtor);set('i-broker-name',h.corretor);set('i-quality',h.quality);set('i-crop',h.safra);
-  set('v-bags',h.bags);set('v-preco',h.brl);set('v-dolar',h.usd);set('v-kc',h.kc);if(h.term)set('v-term',h.term);if(h.lots)set('v-lots',h.lots);
+  set('v-bags',h.bags);set('v-preco',h.brl);set('v-dolar',h.usd);set('v-kc',h.kc);if(h.term)set('v-term',h.term);if(h.lots)set('v-lots',h.lots);if(h.certificate)set('i-certificate',h.certificate);
   set('v-p1718',h.p1718);set('v-premio',h.premio);set('v-off',h.off);
   set('i-modalidade',h.modalidade||'NORMAL');set('v-producer',h.producer||'N');
   const sel=document.getElementById('v-cidade');
@@ -1593,7 +1611,7 @@ async function salvarEditNeg(id){
 
 function snapshot(){
   const get=id=>{const e=document.getElementById(id);return e?(e.value||e.textContent||''):''};
-  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),term:get('v-term'),lots:get('v-lots'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
+  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),certificate:get('i-certificate'),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),term:get('v-term'),lots:get('v-lots'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
 }
 
 function abrirModal(){
@@ -1857,23 +1875,22 @@ function termDivisor(term){
 }
 
 function renderRisk(){
-  // Risk usa hedge_date (se preenchida) para filtrar; senão usa a data do lançamento
-  // Pega o filtro de datas do informativo
   const de=document.getElementById('fDtDe').value;
   const ate=document.getElementById('fDtAte').value;
+
+  // OBRIGATÓRIO ter hedge_date preenchido para aparecer no Risk
   const valid=infRows.filter(r=>{
-    if(!r.term||!r.lots)return false;
-    // data efetiva para o risk = hedge_date se preenchida, senão data do lançamento
-    const dataRisk=r.hedge_date||r.data;
+    if(!r.term||!r.lots||!r.hedge_date)return false;
+    const dataRisk=r.hedge_date;
     if(de&&dataRisk<de)return false;
     if(ate&&dataRisk>ate)return false;
     return true;
   });
 
   const headerRow=document.getElementById('riskHeaderRow');
-  const futuresRow=document.getElementById('riskFuturesRow');
   const riskEmpty=document.getElementById('riskEmpty');
   const riskTable=document.getElementById('riskTable');
+  const tbody=riskTable.querySelector('tbody');
 
   if(!valid.length){
     riskTable.style.display='none';
@@ -1883,63 +1900,104 @@ function renderRisk(){
   riskTable.style.display='';
   riskEmpty.style.display='none';
 
-  // Agrupar por mês/ano e somar sacas (sinal invertido: compra→negativo, venda→positivo)
-  const monthData={};
+  // Agrupar SEPARADO por tipo (COMPRA/VENDA) e mês
+  // compra café → vende lot na bolsa → NEGATIVO
+  // venda café → compra lot na bolsa → POSITIVO
+  const monthOrder=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const compraData={};  // sempre negativo
+  const vendaData={};   // sempre positivo
+  const allMonths=new Set();
+
   valid.forEach(h=>{
     const my=termToMonthYear(h.term);
     if(!my)return;
     const div=termDivisor(h.term);
     if(!div)return;
-    const lots=parseFloat(h.lots)||0;
-    const sacas=lots*div;
-    // tipo da negociação: compra café → vende lot → negativo
-    // venda café → compra lot → positivo
-    const tipo=(h.tipo||'').toLowerCase();
-    // negRows vem do pricing: tipo pode ser 'finalizada', campo produtor indica compra
-    // O sinal: se o negócio é uma COMPRA de café → futuro é VENDA = negativo
-    // Vamos usar o campo modalidade ou tipo — mas na verdade o sinal é sempre negativo
-    // quando compra café vende lot, e o informativo daily tem tipo COMPRA/VENDA
-    // No pricing não temos esse campo explícito, mas pelo contexto:
-    // todas as negociações do pricing são compras de café (você compra para exportar)
-    // então futures sempre negativo para compras
-    // Mas para ser correto: se houver campo 'tipo' com VENDA → positivo
-    let sinal=-1; // default: compra café = vende lot = negativo
-    if(tipo==='venda'||tipo.includes('vend'))sinal=1;
-    if(!monthData[my])monthData[my]=0;
-    monthData[my]+=sinal*sacas;
+    const sacas=(parseFloat(h.lots)||0)*div;
+    const tipo=(h.tipo||'').toUpperCase();
+    allMonths.add(my);
+    if(tipo==='VENDA'||tipo==='SALE'){
+      vendaData[my]=(vendaData[my]||0)+sacas;   // positivo
+    } else {
+      compraData[my]=(compraData[my]||0)+sacas;  // negativo
+    }
   });
 
-  // Ordenar meses cronologicamente
-  const monthOrder=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const months=Object.keys(monthData).sort((a,b)=>{
-    const [ma,ya]=a.split('-'); const [mb,yb]=b.split('-');
-    const ynA=parseInt(ya),ynB=parseInt(yb);
-    if(ynA!==ynB)return ynA-ynB;
+  const months=[...allMonths].sort((a,b)=>{
+    const[ma,ya]=a.split('-');const[mb,yb]=b.split('-');
+    const d=parseInt(ya)-parseInt(yb);if(d)return d;
     return monthOrder.indexOf(ma)-monthOrder.indexOf(mb);
   });
 
-  // Construir header
+  const fmt=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+  const fmtVal=(v,neg)=>neg?'('+fmt.format(Math.abs(v))+')':'+'+fmt.format(v);
+  const thStyle='background:#1b2e22;color:#fff;font-weight:600;padding:8px 14px;text-align:center;font-size:12px;min-width:80px;border-left:1px solid #2d4a3e';
+  const tdStyleBase='padding:6px 14px;text-align:center;font-size:13px;font-weight:500;border-left:1px solid #edf2ef;';
+
+  // Rebuild header
   const thBase=headerRow.children[0].outerHTML;
   headerRow.innerHTML=thBase;
   months.forEach(m=>{
     const th=document.createElement('th');
-    th.style.cssText='background:#1b2e22;color:#fff;font-weight:600;padding:8px 14px;text-align:center;font-size:12px;min-width:80px;border-left:1px solid #2d4a3e';
+    th.style.cssText=thStyle;
     th.textContent=m;
     headerRow.appendChild(th);
   });
 
-  // Construir futures row
-  const tdBase=futuresRow.children[0].outerHTML;
-  futuresRow.innerHTML=tdBase;
-  months.forEach(m=>{
-    const val=monthData[m];
-    const td=document.createElement('td');
-    const neg=val<0;
-    const fmt=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
-    td.style.cssText='padding:6px 14px;text-align:center;font-size:13px;font-weight:500;border-left:1px solid #edf2ef;'+(neg?'color:#c0392b':'color:#1a5c1a');
-    td.textContent=neg?'('+fmt.format(Math.abs(val))+')':'+'+fmt.format(val);
-    futuresRow.appendChild(td);
-  });
+  // Rebuild tbody — uma linha Futures (Compra) e uma linha Futures (Venda) se houver
+  tbody.innerHTML='';
+
+  // Linha Compra (negativo) — só mostra se houver compras
+  const hasCompra=Object.keys(compraData).length>0;
+  const hasVenda=Object.keys(vendaData).length>0;
+
+  if(hasCompra){
+    const tr=document.createElement('tr');
+    const label=hasVenda?'Futures (Purchase)':'Futures';
+    tr.innerHTML=`<td style="padding:6px 14px;font-size:12px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">${label}</td>`;
+    months.forEach(m=>{
+      const v=compraData[m]||0;
+      const td=document.createElement('td');
+      td.style.cssText=tdStyleBase+(v>0?'color:#c0392b':'color:#c0392b');
+      td.textContent=v?'('+fmt.format(v)+')':'—';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+
+  if(hasVenda){
+    const tr=document.createElement('tr');
+    const label=hasCompra?'Futures (Sale)':'Futures';
+    tr.innerHTML=`<td style="padding:6px 14px;font-size:12px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">${label}</td>`;
+    months.forEach(m=>{
+      const v=vendaData[m]||0;
+      const td=document.createElement('td');
+      td.style.cssText=tdStyleBase+'color:#1a5c1a';
+      td.textContent=v?'+'+fmt.format(v):'—';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+
+  // Linha Net (se tiver os dois)
+  if(hasCompra&&hasVenda){
+    const tr=document.createElement('tr');
+    tr.style.borderTop='2px solid #dde8e2';
+    tr.innerHTML=`<td style="padding:6px 14px;font-size:12px;font-weight:700;color:#1b2e22;background:#f0f5f2;border-right:1px solid #dde8e2">Net</td>`;
+    months.forEach(m=>{
+      const net=(vendaData[m]||0)-(compraData[m]||0);
+      const td=document.createElement('td');
+      td.style.cssText=tdStyleBase+'font-weight:700;'+(net<0?'color:#c0392b':net>0?'color:#1a5c1a':'color:#888');
+      td.textContent=net===0?'—':net<0?'('+fmt.format(Math.abs(net))+')':'+'+fmt.format(net);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  }
+
+  // Dummy para manter compatibilidade com o futuresRow original
+  let futuresRow=document.getElementById('riskFuturesRow');
+  if(!futuresRow){futuresRow=document.createElement('tr');futuresRow.id='riskFuturesRow';tbody.appendChild(futuresRow);}
+  futuresRow.style.display='none';
 }
 
 function renderInf(){
@@ -1964,6 +2022,7 @@ function renderInf(){
       <td>${r.sacas}</td><td>${r.qual||'—'}</td>
       <td><span class="badge ${espBadge}">${r.especie||'ARABICA'}</span></td>
       <td class="${d<0?'dif-neg':'dif-pos'}">${fmt2(d)}</td>
+      <td style="font-size:10px;color:#2d4a3e;font-weight:500">${r.certificate||'—'}</td>
       <td style="font-size:11px;color:#4a7a60">${r.term||'—'}</td>
       <td style="font-size:11px;text-align:center">${r.lots||'—'}</td>
       <td style="font-size:11px;color:#7a5a00">${r.hedge_date?fmtDate(r.hedge_date):'—'}</td>
@@ -1981,10 +2040,11 @@ async function addInfRow(){
   const fTermVal=document.getElementById('fTerm')?.value||null;
   const fLotsVal=document.getElementById('fLots')?.value||null;
   const fHedgeDateVal=document.getElementById('fHedgeDate')?.value||null;
+  const fCertVal=document.getElementById('fCertificate')?.value||null;
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in Date, Bags and Diff.');return;}
   const btn=document.getElementById('btnAddInf');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:fTermVal,lots:fLotsVal,hedge_date:fHedgeDateVal})});
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:fTermVal,lots:fLotsVal,hedge_date:fHedgeDateVal,certificate:fCertVal})});
     if(!res.ok)throw new Error(await res.text());
     const[novo]=await res.json();infRows.unshift(novo);
     document.getElementById('fSacas').value='';document.getElementById('fQual').value='';document.getElementById('fDif').value='';document.getElementById('fEspecie').value='ARABICA';
@@ -1992,6 +2052,7 @@ async function addInfRow(){
     if(document.getElementById('fLots')){document.getElementById('fLots').value='';document.getElementById('fLots').dataset.userEdited='false';}
     if(document.getElementById('fLots-badge'))document.getElementById('fLots-badge').textContent='';
     if(document.getElementById('fHedgeDate'))document.getElementById('fHedgeDate').value='';
+    if(document.getElementById('fCertificate'))document.getElementById('fCertificate').value='';
     renderInf();
   }catch(e){alert('Error saving: '+e.message);}
   finally{btn.disabled=false;btn.textContent='+ Add';}
@@ -2011,6 +2072,7 @@ function openInfEdit(id){
   document.getElementById('eDif').value=r.dif;document.getElementById('eEspecie').value=r.especie||'ARABICA';
   document.getElementById('eTerm').value=r.term||'';document.getElementById('eLots').value=r.lots||'';
   document.getElementById('eHedgeDate').value=r.hedge_date||'';
+  document.getElementById('eCertificate').value=r.certificate||'';
   document.getElementById('infModalOverlay').classList.add('open');
 }
 function closeInfModal(){infEditingId=null;document.getElementById('infModalOverlay').classList.remove('open');}
@@ -2027,7 +2089,8 @@ async function saveInfEdit(){
     const eTerm=document.getElementById('eTerm').value||null;
     const eLots=document.getElementById('eLots').value||null;
     const eHedgeDate=document.getElementById('eHedgeDate').value||null;
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots,hedge_date:eHedgeDate})});
+    const eCertificate=document.getElementById('eCertificate').value||null;
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots,hedge_date:eHedgeDate,certificate:eCertificate})});
     if(!res.ok)throw new Error(await res.text());
     const[updated]=await res.json();
     const idx=infRows.findIndex(r=>r.id===infEditingId);if(idx!==-1)infRows[idx]=updated;
@@ -2191,16 +2254,18 @@ async function salvarImagemInformativo(){
       const de=document.getElementById('fDtDe').value;
       const ate=document.getElementById('fDtAte').value;
       // Filtrar infRows usando hedge_date (se preenchida) ou data do lançamento
+      // Obrigatório hedge_date preenchido
       const valid=infRows.filter(r=>{
-        if(!r.term||!r.lots)return false;
-        const dataRisk=r.hedge_date||r.data;
+        if(!r.term||!r.lots||!r.hedge_date)return false;
+        const dataRisk=r.hedge_date;
         if(de&&dataRisk<de)return false;
         if(ate&&dataRisk>ate)return false;
         return true;
       });
       if(!valid.length)return '';
-      const monthData={};
+      const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       const TMAP={K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
+      const compraData={};const vendaData={};const allM=new Set();
       valid.forEach(h=>{
         const t=(h.term||'').toUpperCase().replace('#','');
         const m=t.match(/([A-Z]+)([KNUZHX])(\d{2})$/);
@@ -2210,33 +2275,36 @@ async function salvarImagemInformativo(){
         if(!div)return;
         const sacas=(parseFloat(h.lots)||0)*div;
         const tipo=(h.tipo||'').toUpperCase();
-        const sinal=(tipo==='VENDA'||tipo==='SALE')?1:-1;
-        if(!monthData[my])monthData[my]=0;
-        monthData[my]+=sinal*sacas;
+        allM.add(my);
+        if(tipo==='VENDA'||tipo==='SALE'){vendaData[my]=(vendaData[my]||0)+sacas;}
+        else{compraData[my]=(compraData[my]||0)+sacas;}
       });
-      const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const months=Object.keys(monthData).sort((a,b)=>{
-        const[ma,ya]=a.split('-');const[mb,yb]=b.split('-');
-        const d=parseInt(ya)-parseInt(yb);if(d)return d;
-        return MO.indexOf(ma)-MO.indexOf(mb);
-      });
+      const months=[...allM].sort((a,b)=>{const[ma,ya]=a.split('-');const[mb,yb]=b.split('-');const d=parseInt(ya)-parseInt(yb);if(d)return d;return MO.indexOf(ma)-MO.indexOf(mb);});
       if(!months.length)return '';
       const thS='background:#1b2e22;color:#fff;font-weight:600;padding:8px 14px;text-align:center;font-size:11px;border-left:1px solid #2d4a3e';
-      const fmt=v=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}).format(Math.abs(v));
+      const tdS='padding:6px 14px;text-align:center;font-size:12px;font-weight:500;border-left:1px solid #edf2ef';
+      const fmtN=v=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0}).format(Math.abs(v));
+      const hasC=Object.keys(compraData).length>0;const hasV=Object.keys(vendaData).length>0;
+      const rowC=hasC?`<tr>
+        <td style="padding:6px 14px;font-size:11px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">${hasV?'Futures (Purchase)':'Futures'}</td>
+        ${months.map(m=>{const v=compraData[m]||0;return `<td style="${tdS};color:#c0392b">${v?'('+fmtN(v)+')':'—'}</td>`;}).join('')}
+      </tr>`:'';
+      const rowV=hasV?`<tr>
+        <td style="padding:6px 14px;font-size:11px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">${hasC?'Futures (Sale)':'Futures'}</td>
+        ${months.map(m=>{const v=vendaData[m]||0;return `<td style="${tdS};color:#1a5c1a">${v?'+'+fmtN(v):'—'}</td>`;}).join('')}
+      </tr>`:'';
+      const rowNet=(hasC&&hasV)?`<tr style="border-top:2px solid #dde8e2">
+        <td style="padding:6px 14px;font-size:11px;font-weight:700;color:#1b2e22;background:#f0f5f2;border-right:1px solid #dde8e2">Net</td>
+        ${months.map(m=>{const net=(vendaData[m]||0)-(compraData[m]||0);return `<td style="${tdS};font-weight:700;color:${net<0?'#c0392b':net>0?'#1a5c1a':'#888'}">${net===0?'—':net<0?'('+fmtN(net)+')':'+'+fmtN(net)}</td>`;}).join('')}
+      </tr>`:'';
       return `<div style="margin-bottom:.75rem">
         <div style="font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">Risk Daily Report</div>
         <table style="width:100%;border-collapse:collapse;font-size:12px;border-radius:8px;overflow:hidden;border:1px solid #dde8e2">
           <thead><tr>
-            <th style="${thS};text-align:left;min-width:120px">Risk Daily Report</th>
+            <th style="${thS};text-align:left;min-width:140px">Risk Daily Report</th>
             ${months.map(m=>`<th style="${thS}">${m}</th>`).join('')}
           </tr></thead>
-          <tbody><tr>
-            <td style="padding:6px 14px;font-size:11px;color:#4a7a60;background:#f7faf8;border-right:1px solid #dde8e2">Futures</td>
-            ${months.map(m=>{
-              const v=monthData[m];const neg=v<0;
-              return `<td style="padding:6px 14px;text-align:center;font-size:12px;font-weight:500;color:${neg?'#c0392b':'#1a5c1a'};border-left:1px solid #edf2ef">${neg?'('+fmt(v)+')':'+'+fmt(v)}</td>`;
-            }).join('')}
-          </tr></tbody>
+          <tbody>${rowC}${rowV}${rowNet}</tbody>
         </table>
       </div>`;
     })();
@@ -2268,7 +2336,7 @@ async function salvarImagemInformativo(){
     const thStyle='padding:8px 12px;text-align:left;font-size:9px;font-weight:600;color:#5a7a68;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #dde8e2;background:#f5f9f6;white-space:nowrap';
     const tdStyle='padding:8px 12px;border-bottom:1px solid #edf3ef;font-size:11px;color:#1a1a1a';
     document.getElementById('ipf-table').innerHTML=
-      `<thead><tr>${['Date','Type','Bags','Quality','Variety','Diff','Term','Lots','Hedge Date'].map(h=>`<th style="${thStyle}">${h}</th>`).join('')}</tr></thead>`+
+      `<thead><tr>${['Date','Type','Bags','Quality','Variety','Diff','Certificate','Term','Lots','Hedge Date'].map(h=>`<th style="${thStyle}">${h}</th>`).join('')}</tr></thead>`+
       `<tbody>${sorted.map((r,i)=>{
         const d=Number(r.dif);
         const bg=i%2===0?'#fff':'#fafcfb';
@@ -2279,6 +2347,7 @@ async function salvarImagemInformativo(){
           <td style="${tdStyle}">${r.qual||'—'}</td>
           <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.especie==='CONILON'?'#f0e8ff':'#fef3e2'};color:${r.especie==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
           <td style="${tdStyle};font-weight:500;color:${d<0?'#922020':'#1e5c1e'}">${fmt2(d)}</td>
+          <td style="${tdStyle};color:#2d4a3e;font-weight:500">${r.certificate||'—'}</td>
           <td style="${tdStyle};color:#4a7a60">${r.term||'—'}</td>
           <td style="${tdStyle};text-align:center">${r.lots||'—'}</td>
           <td style="${tdStyle};color:#7a5a00">${r.hedge_date?fmtDate(r.hedge_date):'—'}</td>
