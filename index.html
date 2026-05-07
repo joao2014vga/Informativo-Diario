@@ -588,12 +588,11 @@ select.cont-fg-input{cursor:pointer}
         <input type="date" id="fHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa (pode ser diferente da data do lançamento)">
       </div>
       <div><label class="fg-label">Certificate</label>
-        <select id="fCertificate" class="fg-input"><option value="">— None —</option>
-<option value="RAINFOREST ALLIANCE">RAINFOREST ALLIANCE</option>
-<option value="EUDR">EUDR</option>
-<option value="CAFE PRACTICES">CAFE PRACTICES</option>
-<option value="UTZ">UTZ</option>
-<option value="4C SERVICES">4C SERVICES</option></select>
+        <div class="cert-drop">
+        <button type="button" id="cert-inf-btn" class="cert-drop-btn" onclick="certToggle('cert-inf')">— None —</button>
+        <div id="cert-inf-panel" class="cert-drop-panel"></div>
+        <input type="hidden" id="cert-inf-hidden" value="">
+      </div>
       </div>
       <div style="display:flex;flex-direction:column"><label class="fg-label" style="visibility:hidden">x</label><button class="btn-add-inf" id="btnAddInf" onclick="addInfRow()">+ Add</button></div>
     </div>
@@ -805,12 +804,11 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Term</label><input type="text" id="eTerm" class="fg-input" placeholder="ex: #NYU26"/></div>
       <div><label class="fg-label">Lots</label><input type="number" id="eLots" class="fg-input" step="0.5" placeholder="—"/></div>
       <div><label class="fg-label">Hedge Date</label><input type="date" id="eHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa"/></div>
-      <div><label class="fg-label">Certificate</label><select id="eCertificate" class="fg-input"><option value="">— None —</option>
-<option value="RAINFOREST ALLIANCE">RAINFOREST ALLIANCE</option>
-<option value="EUDR">EUDR</option>
-<option value="CAFE PRACTICES">CAFE PRACTICES</option>
-<option value="UTZ">UTZ</option>
-<option value="4C SERVICES">4C SERVICES</option></select></div>
+      <div><label class="fg-label">Certificate</label><div class="cert-drop">
+        <button type="button" id="cert-modal-btn" class="cert-drop-btn" onclick="certToggle('cert-modal')">— None —</button>
+        <div id="cert-modal-panel" class="cert-drop-panel"></div>
+        <input type="hidden" id="cert-modal-hidden" value="">
+      </div></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel-m" onclick="closeInfModal()">Cancel</button>
