@@ -202,7 +202,15 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
 .mbar-item{padding:14px 1.5rem;border-right:1px solid #dde8e2}
 .mbar-item:last-child{border-right:none}
-.term-opt:hover{background:#e8f4ee!important}.mbar-label{font-size:10px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.term-opt:hover{background:#e8f4ee!important}.cert-drop{position:relative;display:inline-block;width:100%}
+.cert-drop-btn{width:100%;background:#fff;border:1px solid #c8dbd0;border-radius:8px;padding:6px 10px;font-size:11px;color:#1b2e22;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:34px}
+.cert-drop-btn:focus{outline:2px solid #4a7a60}
+.cert-drop-panel{display:none;position:fixed;z-index:99999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 4px;min-width:200px}
+.cert-drop-panel.open{display:block}
+.cert-opt{display:flex;align-items:center;gap:8px;padding:5px 10px;font-size:11px;cursor:pointer;border-radius:6px;color:#1b2e22}
+.cert-opt:hover{background:#e8f4ee}
+.cert-opt input{accent-color:#2d4a3e;width:14px;height:14px}
+.mbar-label{font-size:10px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
 .mbar-val{font-size:24px;font-weight:600;color:#1a1a1a}
 .mbar-val.neg{color:#922020}.mbar-val.pos{color:#1e5c1e}
 .inf-card{background:#fff;border:1px solid #dde8e2;border-radius:12px;overflow:hidden;margin-bottom:1rem}
@@ -391,7 +399,11 @@ select.cont-fg-input{cursor:pointer}
   <div class="ig ig-4">
     <div class="icard"><label class="ilabel">Produtor</label><input type="text" id="i-producer" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: SCHMITT"></div>
     <div class="icard"><label class="ilabel">Corretor</label><input type="text" id="i-broker-name" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: VB"></div>
-    <div class="icard"><label class="ilabel">Certificate</label><select id="i-certificate" oninput="buildResumo()" style="font-size:11px"><option value="">— None —</option><option value="RAINFOREST ALLIANCE">RAINFOREST ALLIANCE</option><option value="EUDR">EUDR</option><option value="CAFE PRACTICES">CAFE PRACTICES</option><option value="UTZ">UTZ</option><option value="4C SERVICES">4C SERVICES</option></select></div>
+    <div class="icard"><label class="ilabel">Certificate</label><div class="cert-drop">
+        <button type="button" id="cert-pricing-btn" class="cert-drop-btn" onclick="certToggle('cert-pricing')">— None —</button>
+        <div id="cert-pricing-panel" class="cert-drop-panel"></div>
+        <input type="hidden" id="cert-pricing-hidden" value="">
+      </div></div>
     <div class="icard"><label class="ilabel">Quality</label><input type="text" id="i-quality" oninput="this.value=this.value.toUpperCase();calc()" placeholder="Ex: BC2"></div>
   </div>
   <div class="ig ig-4">
@@ -1132,6 +1144,64 @@ function normalizarContrato(v){
   return `${prefix}-${num}/${ano}`;
 }
 
+
+// ── Certificate multi-select ─────────────────────────────────
+const CERT_LIST=['RAINFOREST ALLIANCE','EUDR','CAFE PRACTICES','UTZ','4C SERVICES'];
+
+function certToggle(id){
+  const panel=document.getElementById(id+'-panel');
+  if(!panel)return;
+  const btn=document.getElementById(id+'-btn');
+  const rect=btn.getBoundingClientRect();
+  panel.style.left=rect.left+'px';
+  panel.style.top=(rect.bottom+2)+'px';
+  panel.style.width=Math.max(rect.width,200)+'px';
+  panel.classList.toggle('open');
+  // fechar ao clicar fora
+  if(panel.classList.contains('open')){
+    setTimeout(()=>{
+      const close=e=>{if(!panel.contains(e.target)&&e.target!==btn){panel.classList.remove('open');document.removeEventListener('mousedown',close);}};
+      document.addEventListener('mousedown',close);
+    },10);
+  }
+}
+
+function certUpdate(id, onChange){
+  const panel=document.getElementById(id+'-panel');
+  const checks=[...panel.querySelectorAll('input[type=checkbox]')];
+  const selected=checks.filter(c=>c.checked).map(c=>c.value);
+  document.getElementById(id+'-btn').textContent=selected.length?selected.join(', '):'— None —';
+  document.getElementById(id+'-hidden').value=selected.join('; ');
+  if(onChange)onChange();
+}
+
+function certBuildPanel(id, onChange){
+  const panel=document.getElementById(id+'-panel');
+  if(!panel)return;
+  panel.innerHTML=CERT_LIST.map(c=>`
+    <label class="cert-opt">
+      <input type="checkbox" value="${c}" onchange="certUpdate('${id}',${onChange})"> ${c}
+    </label>`).join('');
+}
+
+function certSetValue(id, val){
+  const panel=document.getElementById(id+'-panel');
+  if(!panel)return;
+  const vals=(val||'').split(/[;,]/).map(v=>v.trim()).filter(Boolean);
+  panel.querySelectorAll('input[type=checkbox]').forEach(c=>{c.checked=vals.includes(c.value);});
+  certUpdate(id, null);
+}
+
+function certGetValue(id){
+  return document.getElementById(id+'-hidden')?.value||'';
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  certBuildPanel('cert-pricing','buildResumo()');
+  certBuildPanel('cert-inf',null);
+  certBuildPanel('cert-modal',null);
+});
+
 function parseBrNum(v){
   if(v===undefined||v===null||v==='')return 0;
   // Aceita tanto ponto quanto vírgula como separador decimal
@@ -1272,7 +1342,7 @@ function gerarResumo(diff1416,diff1718){
   if(crop)p.push('Safra '+crop);
   const term=document.getElementById('v-term')?document.getElementById('v-term').value:'';
   const lots=document.getElementById('v-lots')?document.getElementById('v-lots').value:'';
-  const cert=document.getElementById('i-certificate')?document.getElementById('i-certificate').value:'';
+  const cert=certGetValue('cert-pricing');
   if(cert)p.push('Cert: '+cert);
   if(term)p.push('Term: '+term);
   if(lots)p.push('Lots: '+lots);
@@ -1542,7 +1612,7 @@ async function excluirNeg(id){
 function carregarNeg(h){
   const set=(id,val)=>{const e=document.getElementById(id);if(e)e.value=val||'';};
   set('i-producer',h.produtor);set('i-broker-name',h.corretor);set('i-quality',h.quality);set('i-crop',h.safra);
-  set('v-bags',h.bags);set('v-preco',h.brl);set('v-dolar',h.usd);set('v-kc',h.kc);if(h.term)set('v-term',h.term);if(h.lots)set('v-lots',h.lots);if(h.certificate)set('i-certificate',h.certificate);
+  set('v-bags',h.bags);set('v-preco',h.brl);set('v-dolar',h.usd);set('v-kc',h.kc);if(h.term)set('v-term',h.term);if(h.lots)set('v-lots',h.lots);if(h.certificate)certSetValue('cert-pricing',h.certificate);
   set('v-p1718',h.p1718);set('v-premio',h.premio);set('v-off',h.off);
   set('i-modalidade',h.modalidade||'NORMAL');set('v-producer',h.producer||'N');
   const sel=document.getElementById('v-cidade');
@@ -1611,7 +1681,7 @@ async function salvarEditNeg(id){
 
 function snapshot(){
   const get=id=>{const e=document.getElementById(id);return e?(e.value||e.textContent||''):''};
-  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),certificate:get('i-certificate'),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),term:get('v-term'),lots:get('v-lots'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
+  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),certificate:certGetValue('cert-pricing'),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),term:get('v-term'),lots:get('v-lots'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
 }
 
 function abrirModal(){
@@ -2040,7 +2110,7 @@ async function addInfRow(){
   const fTermVal=document.getElementById('fTerm')?.value||null;
   const fLotsVal=document.getElementById('fLots')?.value||null;
   const fHedgeDateVal=document.getElementById('fHedgeDate')?.value||null;
-  const fCertVal=document.getElementById('fCertificate')?.value||null;
+  const fCertVal=certGetValue('cert-inf')||null;
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in Date, Bags and Diff.');return;}
   const btn=document.getElementById('btnAddInf');btn.disabled=true;btn.textContent='Saving...';
   try{
@@ -2052,7 +2122,7 @@ async function addInfRow(){
     if(document.getElementById('fLots')){document.getElementById('fLots').value='';document.getElementById('fLots').dataset.userEdited='false';}
     if(document.getElementById('fLots-badge'))document.getElementById('fLots-badge').textContent='';
     if(document.getElementById('fHedgeDate'))document.getElementById('fHedgeDate').value='';
-    if(document.getElementById('fCertificate'))document.getElementById('fCertificate').value='';
+    certSetValue('cert-inf','');
     renderInf();
   }catch(e){alert('Error saving: '+e.message);}
   finally{btn.disabled=false;btn.textContent='+ Add';}
@@ -2072,7 +2142,7 @@ function openInfEdit(id){
   document.getElementById('eDif').value=r.dif;document.getElementById('eEspecie').value=r.especie||'ARABICA';
   document.getElementById('eTerm').value=r.term||'';document.getElementById('eLots').value=r.lots||'';
   document.getElementById('eHedgeDate').value=r.hedge_date||'';
-  document.getElementById('eCertificate').value=r.certificate||'';
+  certSetValue('cert-modal',r.certificate||'');
   document.getElementById('infModalOverlay').classList.add('open');
 }
 function closeInfModal(){infEditingId=null;document.getElementById('infModalOverlay').classList.remove('open');}
@@ -2089,7 +2159,7 @@ async function saveInfEdit(){
     const eTerm=document.getElementById('eTerm').value||null;
     const eLots=document.getElementById('eLots').value||null;
     const eHedgeDate=document.getElementById('eHedgeDate').value||null;
-    const eCertificate=document.getElementById('eCertificate').value||null;
+    const eCertificate=certGetValue('cert-modal')||null;
     const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots,hedge_date:eHedgeDate,certificate:eCertificate})});
     if(!res.ok)throw new Error(await res.text());
     const[updated]=await res.json();
