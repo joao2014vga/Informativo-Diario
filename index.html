@@ -2001,6 +2001,27 @@ function valIrParaPricing(){
     if(termEl)termEl.value='#NY'+e.kc_mes.toUpperCase();
   }
   calc();calcLots();
+
+  // Sobrepor diffs calculados com valores reais do espelho
+  if(e.diff_17_18!==undefined&&e.diff_17_18!==''){
+    const v=parseFloat(e.diff_17_18);
+    const el=document.getElementById('o-d1718');
+    if(el){el.textContent=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(v>=0?'c-pos':'c-neg');}
+    sv('t-f40','<span style="color:'+(v>=0?'var(--pos)':'var(--neg)')+'">'+v.toFixed(4)+'</span> cts/lb');
+  }
+  if(e.diff_14_16!==undefined&&e.diff_14_16!==''){
+    const v=parseFloat(e.diff_14_16);
+    const el=document.getElementById('o-d1416');
+    if(el){el.textContent=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(v>=0?'c-pos':'c-neg');}
+    sv('t-f41','<span style="color:'+(v>=0?'var(--pos)':'var(--neg)')+'">'+v.toFixed(4)+'</span> cts/lb');
+  }
+  if(e.bica_diff!==undefined&&e.bica_diff!==''){
+    const v=parseFloat(e.bica_diff);
+    const el=document.getElementById('o-bicadiff');
+    if(el){el.textContent=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(v>=0?'c-pos':'c-neg');}
+    sv('t-f44','<span style="color:'+(v>=0?'var(--pos)':'var(--neg)')+'">'+v.toFixed(4)+'</span> cts/lb');
+  }
+
   switchPTab(1); // ir para aba Precificação
 }
 
