@@ -96,7 +96,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f2;color:#1a1a1a;mi
 .mr-lbl small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:2px;font-weight:400}
 .mr-val{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.4rem);font-weight:600;letter-spacing:-.02em;text-align:right;color:#fff}
 .mr-unit{font-size:11px;color:rgba(255,255,255,.6);display:block;text-align:right;margin-top:2px;letter-spacing:.08em;font-family:var(--mono)}
-.c-neg{color:var(--neg)}.c-pos{color:var(--pos)}.c-gold{color:var(--green)}.c-info{color:var(--info)}
+.c-neg{color:var(--neg)}.c-pos{color:var(--pos)}.c-gold{color:#fff}.c-info{color:var(--info)}
 .stbl{width:100%;border-collapse:collapse;margin-bottom:1.25rem}
 .stbl td{padding:.5rem .85rem;border-bottom:1px solid var(--border);font-size:12px;color:var(--text)}
 .stbl td:last-child{text-align:right;font-weight:500}
@@ -618,7 +618,7 @@ select.cont-fg-input{cursor:pointer}
 </div><!-- /ppanel-1 -->
 
 <!-- P1 -->
-<div class="p-panel" id="ppanel-4">
+<div class="p-panel" id="ppanel-2">
   <div class="ig ig-3">
     <div class="icard"><label class="ilabel">BRL Price Bica / 60kg</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="p1-preco" value="1530" step="0.01" oninput="calcDiff()"></div></div>
     <div class="icard"><label class="ilabel">USD BRL</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="p1-dolar" value="5.0692" step="0.0001" oninput="calcDiff()"></div></div>
@@ -634,7 +634,7 @@ select.cont-fg-input{cursor:pointer}
 </div>
 
 <!-- P2 -->
-<div class="p-panel" id="ppanel-2">
+<div class="p-panel" id="ppanel-3">
   <div class="ig ig-3">
     <div class="icard"><label class="ilabel">Diff</label><div class="irow"><input type="number" id="p2-diff" value="-62.09" step="0.01" oninput="calcPreco()"><span class="ipfx">cts/lb</span></div></div>
     <div class="icard"><label class="ilabel">KC (Tela NY)</label><div class="irow"><input type="number" id="p2-tela" value="290.25" step="0.01" oninput="calcPreco()"><span class="ipfx">cts/lb</span></div></div>
@@ -650,7 +650,7 @@ select.cont-fg-input{cursor:pointer}
 </div>
 
 <!-- P3 Histórico -->
-<div class="p-panel" id="ppanel-3">
+<div class="p-panel" id="ppanel-4">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="filtro-btn active" data-filtro="todos" onclick="filtrarHist(this)">Todos</button>
