@@ -195,6 +195,55 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .import-title{font-size:13px;font-weight:600;color:#2d4a3e;margin-bottom:.5rem}
 .import-textarea{width:100%;border:1px solid #c8ddd2;border-radius:8px;padding:8px 10px;font-size:12px;font-family:monospace;color:#1a1a1a;outline:none;min-height:70px;resize:vertical}
 .btn-import{background:#2d4a3e;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600;margin-top:.5rem}
+/* VALIDAÇÃO */
+.val-upload-area{border:2px dashed var(--green-dim);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;margin-bottom:1rem;position:relative}
+.val-upload-area:hover,.val-upload-area.drag{border-color:var(--green);background:var(--green-light)}
+.val-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.val-upload-label{font-size:13px;color:var(--muted);pointer-events:none}
+.val-upload-label strong{color:var(--green)}
+.val-img-preview{max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--border);margin-top:.75rem;display:none}
+.val-extract-btn{background:var(--green);border:none;border-radius:8px;padding:.55rem 1.4rem;font-family:var(--mono);font-size:12px;color:#fff;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;display:inline-flex;align-items:center;gap:6px;margin-top:.75rem}
+.val-extract-btn:disabled{background:#7a9e8a;cursor:not-allowed}
+.val-extract-btn.loading::after{content:'';display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-left:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.val-status{font-size:12px;color:var(--muted);margin-top:.5rem;min-height:18px}
+.val-status.err{color:var(--neg)}
+.val-status.ok{color:var(--pos)}
+
+.val-section{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);margin:1.25rem 0 .75rem;display:flex;align-items:center;gap:10px;font-weight:500}
+.val-section::after{content:'';flex:1;height:1px;background:var(--green-light)}
+
+.val-conf-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:1.5rem}
+.val-conf-table th{text-align:left;padding:7px 10px;font-weight:600;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface2);text-transform:uppercase;letter-spacing:.06em}
+.val-conf-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.val-conf-table tr:last-child td{border-bottom:none}
+.val-conf-table tr:hover td{background:var(--surface2)}
+.val-td-campo{font-weight:600;color:var(--text);width:22%}
+.val-td-esp{color:var(--green);width:20%}
+.val-td-dig{width:20%}
+.val-td-dig input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none}
+.val-td-dig input:focus{border-color:var(--green-dim)}
+.val-td-status{width:14%;text-align:center}
+.val-td-obs{width:24%}
+.val-td-obs input{width:100%;background:transparent;border:none;border-bottom:1px dashed var(--border2);font-family:var(--mono);font-size:10px;color:var(--muted);outline:none;padding:2px 4px}
+.val-td-obs input:focus{border-bottom-color:var(--green-dim)}
+.badge-ok{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:var(--green-light);color:var(--green)}
+.badge-err{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:#fde8e8;color:#922020}
+.badge-agt{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:var(--surface2);color:var(--muted)}
+.val-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.val-sum-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem;text-align:center}
+.val-sum-num{font-size:28px;font-weight:600;font-family:var(--serif)}
+.val-sum-lbl{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.08em;text-transform:uppercase}
+.val-sum-ok .val-sum-num{color:var(--green)}
+.val-sum-err .val-sum-num{color:#c0392b}
+.val-sum-agt .val-sum-num{color:var(--muted)}
+.val-goto-pricing{background:var(--green);border:none;border-radius:8px;padding:.6rem 1.4rem;font-family:var(--mono);font-size:12px;color:#fff;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px;margin-top:.5rem}
+.val-goto-pricing:disabled{background:#7a9e8a;cursor:not-allowed}
+.val-digisul-paste{width:100%;min-height:38px;font-family:var(--mono);font-size:11px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;resize:none;outline:none}
+.val-digisul-paste:focus{border-color:var(--green-dim)}
+.val-paste-btn{background:transparent;border:1px solid var(--green-dim);border-radius:7px;padding:.4rem .9rem;font-family:var(--mono);font-size:11px;color:var(--green);cursor:pointer;text-transform:uppercase;margin-top:.5rem}
+.val-paste-btn:hover{background:var(--green-light)}
+
 
 /* INFORMATIVO */
 #panel-informativo{padding:1.25rem 1.5rem}
@@ -386,13 +435,83 @@ select.cont-fg-input{cursor:pointer}
   <p class="subtitle">Precificação completa</p>
 </header>
 <div class="p-tabs">
-  <button class="p-tab-btn active" onclick="switchPTab(0)">Precificação Completa</button>
-  <button class="p-tab-btn" onclick="switchPTab(1)">Preço R$ → Diff</button>
-  <button class="p-tab-btn" onclick="switchPTab(2)">Diff → Preço R$</button>
-  <button class="p-tab-btn" onclick="switchPTab(3)">Histórico</button>
+  <button class="p-tab-btn active" onclick="switchPTab(0)" id="ptab-0">Validação</button>
+  <button class="p-tab-btn" onclick="switchPTab(1)" id="ptab-1">Precificação Completa</button>
+  <button class="p-tab-btn" onclick="switchPTab(2)" id="ptab-2">Preço R$ → Diff</button>
+  <button class="p-tab-btn" onclick="switchPTab(3)" id="ptab-3">Diff → Preço R$</button>
+  <button class="p-tab-btn" onclick="switchPTab(4)" id="ptab-4">Histórico</button>
 </div>
-<!-- P0 -->
+<!-- P0 VALIDAÇÃO -->
 <div class="p-panel active" id="ppanel-0">
+<div style="max-width:860px;margin:0 auto">
+
+  <!-- Upload espelho -->
+  <div class="val-section">Espelho</div>
+  <div class="val-upload-area" id="valUploadArea">
+    <input type="file" id="valFileInput" accept="image/*" onchange="valOnFileChange(event)">
+    <div class="val-upload-label" id="valUploadLabel">
+      <strong>Clique ou arraste</strong> a imagem do espelho aqui
+    </div>
+    <img id="valImgPreview" class="val-img-preview" alt="preview">
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <button class="val-extract-btn" id="valExtractBtn" onclick="valExtrair()" disabled>
+      ✦ Extrair dados do espelho
+    </button>
+    <span class="val-status" id="valStatus"></span>
+  </div>
+
+  <!-- Tabela de conferência -->
+  <div id="valConfSection" style="display:none">
+    <div class="val-section">Conferência — Espelho × Digisul</div>
+
+    <div class="val-summary">
+      <div class="val-sum-card val-sum-ok"><div class="val-sum-num" id="valSumOk">—</div><div class="val-sum-lbl">✓ OK</div></div>
+      <div class="val-sum-card val-sum-err"><div class="val-sum-num" id="valSumErr">—</div><div class="val-sum-lbl">⚠ Verificar</div></div>
+      <div class="val-sum-card val-sum-agt"><div class="val-sum-num" id="valSumAgt">—</div><div class="val-sum-lbl">Aguardando</div></div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem">
+      <table class="val-conf-table">
+        <thead><tr>
+          <th>Campo (Digisul)</th>
+          <th>Espelho</th>
+          <th>Digisul (cole abaixo)</th>
+          <th>Status</th>
+          <th>Observação (motivo edição)</th>
+        </tr></thead>
+        <tbody id="valConfBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Cola linha Digisul -->
+    <div class="val-section">Colar linha da Digisul</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:.5rem">
+        Exporte o relatório da Digisul → copie a linha do contrato → clique em "Aplicar"
+      </div>
+      <textarea class="val-digisul-paste" id="valDigisulPaste" rows="2"
+        placeholder="Cole aqui a linha exportada da Digisul (Ctrl+V após copiar no Excel)..."></textarea>
+      <button class="val-paste-btn" onclick="valAplicarDigisul()">↓ Aplicar valores da Digisul</button>
+    </div>
+
+    <!-- Ir para Pricing -->
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:2rem">
+      <button class="val-goto-pricing" id="valGotoPricing" onclick="valIrParaPricing()">
+        → Ir para Pricing (pré-preenchido)
+      </button>
+      <button onclick="valSalvarConferencia()" style="background:transparent;border:1px solid var(--green-dim);border-radius:8px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:11px;color:var(--green);cursor:pointer;text-transform:uppercase">
+        💾 Salvar conferência
+      </button>
+      <span id="valSaveStatus" style="font-size:11px;color:var(--muted)"></span>
+    </div>
+  </div>
+
+</div>
+</div><!-- /ppanel-0 validação -->
+
+<!-- P1 Precificação -->
+<div class="p-panel" id="ppanel-1">
 <div class="two-col">
 <div class="col-left">
   <div class="sec">Identificação</div>
@@ -496,10 +615,10 @@ select.cont-fg-input{cursor:pointer}
   </details>
 </div><!-- /col-right -->
 </div><!-- /two-col -->
-</div><!-- /ppanel-0 -->
+</div><!-- /ppanel-1 -->
 
 <!-- P1 -->
-<div class="p-panel" id="ppanel-1">
+<div class="p-panel" id="ppanel-4">
   <div class="ig ig-3">
     <div class="icard"><label class="ilabel">BRL Price Bica / 60kg</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="p1-preco" value="1530" step="0.01" oninput="calcDiff()"></div></div>
     <div class="icard"><label class="ilabel">USD BRL</label><div class="irow"><span class="ipfx">R$</span><input type="number" id="p1-dolar" value="5.0692" step="0.0001" oninput="calcDiff()"></div></div>
@@ -1546,9 +1665,418 @@ function calcPreco(){
 
 function switchPTab(i){
   document.querySelectorAll('.p-tab-btn').forEach((b,j)=>b.classList.toggle('active',i===j));
-  document.querySelectorAll('.p-panel').forEach((p,j)=>p.classList.toggle('active',i===j));
-  if(i===3)fetchHist();
+  // painel 0 = validação (ppanel-0), painéis 1-4 = pricing/diff/diff2/hist (ppanel-1,2,3,4)
+  const panels=['ppanel-0','ppanel-1','ppanel-2','ppanel-3','ppanel-4'];
+  panels.forEach((id,j)=>{
+    const el=document.getElementById(id);
+    if(el)el.classList.toggle('active',i===j);
+  });
+  if(i===4)fetchHist();
 }
+
+
+/* ── VALIDAÇÃO ── */
+const VERCEL_URL='https://brascof-api.vercel.app'; // ← SUBSTITUIR após deploy
+
+// Mapeamento campos: {label, colDigisul (índice 0-based), tipo, tolNum}
+// Ordem igual ao relatório Digisul exportado
+const VAL_CAMPOS=[
+  {l:'Filial',          col:0,  tipo:'ignorar'},
+  {l:'Contrato',        col:1,  tipo:'ignorar'},
+  {l:'Fornecedor',      col:2,  tipo:'parcial'},
+  {l:'Modalidade CTR',  col:3,  tipo:'txt'},
+  {l:'Sacas',           col:4,  tipo:'num', tol:0},
+  {l:'Emissão',         col:5,  tipo:'data'},
+  {l:'Vencimento',      col:6,  tipo:'data'},
+  {l:'Média (R$)',      col:7,  tipo:'num', tol:1},
+  {l:'Modalidade',      col:8,  tipo:'txt'},
+  {l:'% 17/18',         col:9,  tipo:'num', tol:0.01},
+  {l:'% Quebra',        col:10, tipo:'num', tol:0.01},
+  {l:'Padrão',          col:11, tipo:'txt'},
+  {l:'Bebida',          col:12, tipo:'ignorar'},
+  {l:'% Grinder',       col:13, tipo:'num', tol:0.01},
+  {l:'Mês Bolsa',       col:14, tipo:'mes'},
+  {l:'Diferencial',     col:15, tipo:'num', tol:0.05},
+  {l:'Data Fixação',    col:16, tipo:'data'},
+  {l:'Valor Fixado',    col:17, tipo:'num', tol:0.05},
+  {l:'Dólar',           col:18, tipo:'num', tol:0.001},
+  {l:'Bica Corrida',    col:19, tipo:'txt', warn:true},
+  {l:'Futuro',          col:20, tipo:'data'},
+  {l:'Safra',           col:21, tipo:'safra'},
+  {l:'Dif. Bica',       col:22, tipo:'num', tol:0.05},
+  {l:'Dif. Fob GTLB',   col:23, tipo:'num', tol:0.05},
+  {l:'Dif. Fob MTGB',   col:24, tipo:'num', tol:0.05},
+  {l:'Dif. Fob MOKA',   col:25, tipo:'ignorar'},
+  {l:'Dif. Fob GRINDER',col:26, tipo:'num', tol:0.05},
+  {l:'Dif. Fob LG',     col:27, tipo:'ignorar'},
+];
+
+const MES_MAP={F:'Jan',G:'Fev',H:'Mar',J:'Abr',K:'Mai',M:'Jun',N:'Jul',Q:'Ago',U:'Set',V:'Out',X:'Nov',Z:'Dez'};
+function parseMesBolsa(raw){
+  if(!raw)return'';
+  const m=String(raw).trim().match(/^([A-Z])(\d+)$/);
+  if(!m)return String(raw);
+  return (MES_MAP[m[1]]||m[1])+'/20'+m[2];
+}
+function excelSerial(n){
+  if(!n||isNaN(n))return'';
+  const d=new Date(Math.round((Number(n)-25569)*86400*1000));
+  return d.toLocaleDateString('pt-BR');
+}
+function normStr(v){return String(v||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');}
+function normNum(v){return parseFloat(String(v||'').replace(',','.').replace(/\s/g,''));}
+function normSafra(v){
+  const s=String(v||'').trim();
+  // "2026/2027" → "26/27"
+  return s.replace(/20(\d{2})\/20(\d{2})/,'$1/$2');
+}
+
+let valEspelhoData=null;
+let valDigisulCols=[];
+// edições manuais: {col: valor_editado}
+let valDigisulEdits={};
+// observações: {col: texto_obs}
+let valObs={};
+
+function valOnFileChange(e){
+  const f=e.target.files[0];
+  if(!f)return;
+  const prev=document.getElementById('valImgPreview');
+  const label=document.getElementById('valUploadLabel');
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    prev.src=ev.target.result;
+    prev.style.display='block';
+    label.innerHTML='<strong>'+f.name+'</strong> · clique para trocar';
+  };
+  reader.readAsDataURL(f);
+  document.getElementById('valExtractBtn').disabled=false;
+  document.getElementById('valStatus').textContent='';
+}
+
+async function valExtrair(){
+  const f=document.getElementById('valFileInput').files[0];
+  if(!f)return;
+  const btn=document.getElementById('valExtractBtn');
+  const status=document.getElementById('valStatus');
+  btn.disabled=true;btn.classList.add('loading');
+  status.textContent='Extraindo campos...';status.className='val-status';
+
+  const base64=await new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=rej;
+    r.readAsDataURL(f);
+  });
+
+  try{
+    const resp=await fetch(VERCEL_URL+'/api/extrair-espelho',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({image:base64,mediaType:f.type})
+    });
+    if(!resp.ok){const t=await resp.text();throw new Error('API '+resp.status+': '+t.slice(0,200));}
+    valEspelhoData=await resp.json();
+    status.textContent='✓ Dados extraídos com sucesso';status.className='val-status ok';
+    valRenderConferencia();
+    document.getElementById('valConfSection').style.display='block';
+  }catch(e){
+    status.textContent='Erro: '+e.message;status.className='val-status err';
+  }finally{
+    btn.disabled=false;btn.classList.remove('loading');
+  }
+}
+
+function valGetEspelhoVal(campo){
+  if(!valEspelhoData)return'';
+  const e=valEspelhoData;
+  const map={
+    'Modalidade CTR':  e.modalidade||'',
+    'Fornecedor':      e.producer_name||'',
+    'Sacas':           e.bags||'',
+    'Emissão':         e.date||'',
+    'Vencimento':      e.pay_date||'',
+    'Média (R$)':      e.brl_price_bica||'',
+    'Modalidade':      e.freight||'',
+    '% 17/18':         e.perc_17_18||'',
+    '% Quebra':        e.offgrades||'',
+    'Padrão':          e.quality||'',
+    '% Grinder':       0.8,
+    'Mês Bolsa':       parseMesBolsa(e.kc_mes),
+    'Diferencial':     e.bica_diff||'',
+    'Data Fixação':    e.date||'',
+    'Valor Fixado':    e.kc||'',
+    'Dólar':           e.usd_brl||'',
+    'Bica Corrida':    'Sim',
+    'Futuro':          e.pay_date||'',
+    'Safra':           e.crop||'',
+    'Dif. Bica':       e.bica_diff||'',
+    'Dif. Fob GTLB':   e.diff_17_18||'',
+    'Dif. Fob MTGB':   e.diff_14_16||'',
+    'Dif. Fob GRINDER':e.grinders_diff||'',
+  };
+  return map[campo]!==undefined?map[campo]:'—';
+}
+
+function valComparar(campo, tipo, tol, espVal, digVal){
+  if(tipo==='ignorar')return null;
+  if(digVal===''||digVal===undefined||digVal===null)return'agt';
+  const de=String(digVal).trim();
+  if(de==='')return'agt';
+
+  if(tipo==='num'){
+    const ne=normNum(espVal), nd=normNum(de);
+    if(isNaN(ne)||isNaN(nd))return'err';
+    return Math.abs(ne-nd)<=(tol||0.05)?'ok':'err';
+  }
+  if(tipo==='data'){
+    // digisul pode ser serial ou dd/mm/yyyy
+    let dStr=de;
+    if(/^\d{5}$/.test(de)||(!isNaN(Number(de))&&Number(de)>40000)){
+      dStr=excelSerial(Number(de));
+    }
+    return normStr(dStr)===normStr(String(espVal))?'ok':'err';
+  }
+  if(tipo==='mes'){
+    // digisul pode ser serial → formatar como Mmm/AAAA
+    let mStr=de;
+    if(!isNaN(Number(de))&&Number(de)>40000){
+      const d=new Date(Math.round((Number(de)-25569)*86400*1000));
+      const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      mStr=meses[d.getMonth()]+'/'+d.getFullYear();
+    }
+    return normStr(mStr)===normStr(String(espVal))?'ok':'err';
+  }
+  if(tipo==='safra'){
+    const es=normSafra(String(espVal));
+    const ds=normSafra(de);
+    return normStr(es)===normStr(ds)?'ok':'err';
+  }
+  if(tipo==='parcial'){
+    const en=normStr(String(espVal)), dn=normStr(de);
+    return (en&&(dn.includes(en)||en.includes(dn)))?'ok':'err';
+  }
+  // txt
+  return normStr(de)===normStr(String(espVal))?'ok':'err';
+}
+
+function valFormatDig(tipo, raw){
+  if(raw===undefined||raw===null||raw==='')return'';
+  const s=String(raw).trim();
+  if(tipo==='data'&&!isNaN(Number(s))&&Number(s)>40000)return excelSerial(Number(s));
+  if(tipo==='mes'&&!isNaN(Number(s))&&Number(s)>40000){
+    const d=new Date(Math.round((Number(s)-25569)*86400*1000));
+    const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    return meses[d.getMonth()]+'/'+d.getFullYear();
+  }
+  if(tipo==='safra')return normSafra(s).replace(/^(\d{2})\/?(\d{2})$/,'20$1/20$2').replace(/20(\d{2})\/20(\d{2})/,'$1/$2');
+  return s;
+}
+
+function valRenderConferencia(){
+  const tbody=document.getElementById('valConfBody');
+  if(!tbody)return;
+  tbody.innerHTML='';
+  VAL_CAMPOS.forEach((c,idx)=>{
+    const espVal=valGetEspelhoVal(c.l);
+    const rawDig=valDigisulCols[c.col]!==undefined?valDigisulCols[c.col]:'';
+    const digDisplay=valDigisulEdits[c.col]!==undefined?valDigisulEdits[c.col]:valFormatDig(c.tipo,rawDig);
+    const obsVal=valObs[c.col]||'';
+    const status=valComparar(c.l,c.tipo,c.tol,espVal,digDisplay);
+
+    let badgeHtml='<span class="badge-agt">Aguardando</span>';
+    if(status==='ok')badgeHtml='<span class="badge-ok">✓ OK</span>';
+    else if(status==='err')badgeHtml='<span class="badge-err">⚠ Verificar</span>';
+    else if(status===null)badgeHtml='<span style="color:var(--muted);font-size:10px">—</span>';
+
+    const espDisp=c.tipo==='ignorar'?'—':(c.tipo==='safra'?normSafra(String(espVal)):espVal);
+    const digInput=c.tipo==='ignorar'
+      ?`<span style="color:var(--muted);font-size:10px">—</span>`
+      :`<input value="${digDisplay}" onchange="valEditDig(${c.col},this.value)" oninput="valEditDig(${c.col},this.value)" placeholder="—">`;
+
+    tbody.insertAdjacentHTML('beforeend',`
+      <tr>
+        <td class="val-td-campo">${c.l}</td>
+        <td class="val-td-esp">${espDisp!==undefined&&espDisp!==''?espDisp:'—'}</td>
+        <td class="val-td-dig">${digInput}</td>
+        <td class="val-td-status">${badgeHtml}</td>
+        <td class="val-td-obs"><input value="${obsVal}" placeholder="motivo da edição..." onchange="valEditObs(${c.col},this.value)"></td>
+      </tr>`);
+  });
+  valAtualizarResumo();
+}
+
+function valEditDig(col, val){
+  valDigisulEdits[col]=val;
+  valAtualizarResumo();
+  // Re-render apenas a linha afetada sem reconstruir tudo
+  const rows=document.querySelectorAll('#valConfBody tr');
+  VAL_CAMPOS.forEach((c,idx)=>{
+    if(c.col!==col)return;
+    const espVal=valGetEspelhoVal(c.l);
+    const digDisplay=valDigisulEdits[c.col]!==undefined?valDigisulEdits[c.col]:valFormatDig(c.tipo,valDigisulCols[c.col]||'');
+    const status=valComparar(c.l,c.tipo,c.tol,espVal,digDisplay);
+    const cell=rows[idx]?.children[3];
+    if(!cell)return;
+    if(status==='ok')cell.innerHTML='<span class="badge-ok">✓ OK</span>';
+    else if(status==='err')cell.innerHTML='<span class="badge-err">⚠ Verificar</span>';
+    else if(status===null)cell.innerHTML='<span style="color:var(--muted);font-size:10px">—</span>';
+    else cell.innerHTML='<span class="badge-agt">Aguardando</span>';
+  });
+}
+
+function valEditObs(col, val){valObs[col]=val;}
+
+function valAtualizarResumo(){
+  let ok=0,err=0,agt=0;
+  VAL_CAMPOS.forEach(c=>{
+    if(c.tipo==='ignorar')return;
+    const espVal=valGetEspelhoVal(c.l);
+    const digDisplay=valDigisulEdits[c.col]!==undefined?valDigisulEdits[c.col]:valFormatDig(c.tipo,valDigisulCols[c.col]||'');
+    const s=valComparar(c.l,c.tipo,c.tol,espVal,digDisplay);
+    if(s==='ok')ok++;
+    else if(s==='err')err++;
+    else if(s==='agt')agt++;
+  });
+  const n=v=>document.getElementById(v);
+  if(n('valSumOk'))n('valSumOk').textContent=ok;
+  if(n('valSumErr'))n('valSumErr').textContent=err;
+  if(n('valSumAgt'))n('valSumAgt').textContent=agt;
+}
+
+function valAplicarDigisul(){
+  const raw=document.getElementById('valDigisulPaste').value.trim();
+  if(!raw){alert('Cole a linha da Digisul primeiro.');return;}
+  // Tentar TSV (tab-separated) ou CSV
+  const sep=raw.includes('\t')? '\t' : ';';
+  valDigisulCols=raw.split(sep).map(v=>v.trim().replace(/^"|"$/g,''));
+  valDigisulEdits={};
+  valRenderConferencia();
+  document.getElementById('valDigisulPaste').value='';
+}
+
+function valIrParaPricing(){
+  if(!valEspelhoData){alert('Extraia o espelho primeiro.');return;}
+  const e=valEspelhoData;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el&&v!==undefined&&v!=='')el.value=v;};
+  set('i-producer',e.producer_name);
+  set('i-broker-name',e.broker_name);
+  set('i-quality',e.quality);
+  set('i-crop',e.crop);
+  set('v-bags',e.bags);
+  set('v-preco',e.brl_price_bica);
+  set('v-dolar',e.usd_brl);
+  set('v-kc',e.kc);
+  set('v-p1718',e.perc_17_18);
+  set('v-premio',e.premio);
+  set('v-off',e.offgrades);
+  if(e.grinders_diff!==undefined)set('v-grindiff',e.grinders_diff);
+  if(e.fundo_rs!==undefined)set('v-fundo',e.fundo_rs);
+  if(e.def1500_rs!==undefined)set('v-def1500',e.def1500_rs);
+  // Modalidade
+  const modEl=document.getElementById('i-modalidade');
+  if(modEl&&e.modalidade){modEl.value=e.modalidade==='Futuro'?'FUTURO':'NORMAL';}
+  // Cidade freight
+  if(e.freight){
+    const sel=document.getElementById('v-cidade');
+    if(sel){
+      const fn=e.freight.toUpperCase().trim().replace(/[\u0300-\u036f]/g,'').normalize('NFD');
+      for(let o of sel.options){
+        if(o.value.normalize('NFD').replace(/[\u0300-\u036f]/g,'')===fn){o.selected=true;break;}
+      }
+    }
+  }
+  // Data
+  if(e.date){
+    const parts=e.date.split('/');
+    if(parts.length===3)set('i-date',parts[2]+'-'+parts[1]+'-'+parts[0]);
+  }
+  if(e.pay_date){
+    const parts=e.pay_date.split('/');
+    if(parts.length===3)set('i-paydate',parts[2]+'-'+parts[1]+'-'+parts[0]);
+  }
+  // Term via kc_mes
+  if(e.kc_mes){
+    const termEl=document.getElementById('v-term');
+    if(termEl)termEl.value='#NY'+e.kc_mes.toUpperCase();
+  }
+  calc();calcLots();
+  switchPTab(1); // ir para aba Precificação
+}
+
+async function valSalvarConferencia(){
+  if(!valEspelhoData){alert('Nenhum espelho extraído ainda.');return;}
+  const statusEl=document.getElementById('valSaveStatus');
+  statusEl.textContent='Salvando...';
+
+  // Montar digisul_json com edições
+  const digObj={};
+  VAL_CAMPOS.forEach(c=>{
+    const raw=valDigisulEdits[c.col]!==undefined?valDigisulEdits[c.col]:(valDigisulCols[c.col]||'');
+    digObj[c.l]=raw;
+  });
+
+  // Montar conferencia_obs
+  const obsObj={};
+  Object.keys(valObs).forEach(col=>{
+    if(valObs[col])obsObj[VAL_CAMPOS.find(c=>c.col==col)?.l||col]=valObs[col];
+  });
+
+  const payload={
+    espelho_json: valEspelhoData,
+    digisul_json: digObj,
+    conferencia_obs: obsObj,
+    // campos principais para salvar junto
+    produtor: valEspelhoData.producer_name||'',
+    corretor: valEspelhoData.broker_name||'',
+    quality:  valEspelhoData.quality||'',
+    safra:    valEspelhoData.crop||'',
+    bags:     valEspelhoData.bags||null,
+    brl:      valEspelhoData.brl_price_bica||'',
+    usd:      valEspelhoData.usd_brl||'',
+    kc:       valEspelhoData.kc||'',
+    bica_diff:valEspelhoData.bica_diff||'',
+    d1416:    valEspelhoData.diff_14_16||'',
+    d1718:    valEspelhoData.diff_17_18||'',
+    freight:  valEspelhoData.freight||'',
+    modalidade:valEspelhoData.modalidade||'NORMAL',
+    tipo:     'simulacao',
+    data:     new Date().toLocaleString('pt-BR'),
+  };
+
+  try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/negociacoes`,{
+      method:'POST',
+      headers:authH({'Prefer':'return=representation'}),
+      body:JSON.stringify(payload)
+    });
+    if(!res.ok)throw new Error(await res.text());
+    const[saved]=await res.json();
+    negRows.unshift(saved);
+    statusEl.textContent='✓ Salvo! ID #'+saved.id;
+    setTimeout(()=>statusEl.textContent='',4000);
+  }catch(e){
+    statusEl.textContent='Erro: '+e.message.slice(0,80);
+  }
+}
+
+// Drag & drop na área de upload
+document.addEventListener('DOMContentLoaded',function(){
+  const area=document.getElementById('valUploadArea');
+  if(!area)return;
+  area.addEventListener('dragover',e=>{e.preventDefault();area.classList.add('drag');});
+  area.addEventListener('dragleave',()=>area.classList.remove('drag'));
+  area.addEventListener('drop',e=>{
+    e.preventDefault();area.classList.remove('drag');
+    const f=e.dataTransfer.files[0];
+    if(!f||!f.type.startsWith('image/'))return;
+    document.getElementById('valFileInput').files;
+    // Simular change
+    const dt=new DataTransfer();dt.items.add(f);
+    document.getElementById('valFileInput').files=dt.files;
+    valOnFileChange({target:{files:dt.files}});
+  });
+});
 
 /* ── HISTÓRICO ── */
 let histFiltro='todos',negRows=[];
