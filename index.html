@@ -1976,13 +1976,21 @@ function valIrParaPricing(){
   // Modalidade
   const modEl=document.getElementById('i-modalidade');
   if(modEl&&e.modalidade){modEl.value=e.modalidade==='Futuro'?'FUTURO':'NORMAL';}
-  // Cidade freight
+  // Cidade freight — normaliza acentos e espaços para comparar
   if(e.freight){
     const sel=document.getElementById('v-cidade');
     if(sel){
-      const fn=e.freight.toUpperCase().trim().replace(/[\u0300-\u036f]/g,'').normalize('NFD');
+      const normFn=v=>v.toUpperCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+      const fn=normFn(e.freight);
+      let found=false;
       for(let o of sel.options){
-        if(o.value.normalize('NFD').replace(/[\u0300-\u036f]/g,'')===fn){o.selected=true;break;}
+        if(normFn(o.value)===fn){o.selected=true;found=true;break;}
+      }
+      // Se não achou exato, tenta por contém
+      if(!found){
+        for(let o of sel.options){
+          if(normFn(o.value).includes(fn)||fn.includes(normFn(o.value))){o.selected=true;break;}
+        }
       }
     }
   }
@@ -2000,27 +2008,25 @@ function valIrParaPricing(){
     const termEl=document.getElementById('v-term');
     if(termEl)termEl.value='#NY'+e.kc_mes.toUpperCase();
   }
+
+  // Rodar cálculo com os inputs preenchidos
   calc();calcLots();
 
-  // Sobrepor diffs calculados com valores reais do espelho
-  if(e.diff_17_18!==undefined&&e.diff_17_18!==''){
-    const v=parseFloat(e.diff_17_18);
-    const el=document.getElementById('o-d1718');
-    if(el){el.textContent=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(v>=0?'c-pos':'c-neg');}
-    sv('t-f40','<span style="color:'+(v>=0?'var(--pos)':'var(--neg)')+'">'+v.toFixed(4)+'</span> cts/lb');
-  }
-  if(e.diff_14_16!==undefined&&e.diff_14_16!==''){
-    const v=parseFloat(e.diff_14_16);
-    const el=document.getElementById('o-d1416');
-    if(el){el.textContent=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(v>=0?'c-pos':'c-neg');}
-    sv('t-f41','<span style="color:'+(v>=0?'var(--pos)':'var(--neg)')+'">'+v.toFixed(4)+'</span> cts/lb');
-  }
-  if(e.bica_diff!==undefined&&e.bica_diff!==''){
-    const v=parseFloat(e.bica_diff);
-    const el=document.getElementById('o-bicadiff');
-    if(el){el.textContent=v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(v>=0?'c-pos':'c-neg');}
-    sv('t-f44','<span style="color:'+(v>=0?'var(--pos)':'var(--neg)')+'">'+v.toFixed(4)+'</span> cts/lb');
-  }
+  // Sobrepor diffs com valores reais do espelho APÓS o calc()
+  // Usar setTimeout para garantir que o calc() terminou de atualizar o DOM
+  setTimeout(()=>{
+    const fmtDiff=(v,idVal,idNet,idTab)=>{
+      if(v===undefined||v===''||isNaN(parseFloat(v)))return;
+      const n=parseFloat(v);
+      const el=document.getElementById(idVal);
+      if(el){el.textContent=n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(n>=0?'c-pos':'c-neg');}
+      if(idNet)sv(idNet,'espelho: '+n.toFixed(2)+' cts/lb');
+      if(idTab)sv(idTab,'<span style="color:'+(n>=0?'var(--pos)':'var(--neg)')+'">'+n.toFixed(4)+'</span> cts/lb <span style="font-size:9px;color:var(--muted)">(espelho)</span>');
+    };
+    fmtDiff(e.diff_17_18,'o-d1718','o-d1718net','t-f40');
+    fmtDiff(e.diff_14_16,'o-d1416','o-d1416net','t-f41');
+    fmtDiff(e.bica_diff, 'o-bicadiff',null,'t-f44');
+  },100);
 
   switchPTab(1); // ir para aba Precificação
 }
