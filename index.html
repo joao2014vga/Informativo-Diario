@@ -1689,7 +1689,7 @@ const VAL_CAMPOS=[
   {l:'Emissão',         col:5,  tipo:'data'},
   {l:'Vencimento',      col:6,  tipo:'data'},
   {l:'Média c ICMS',   col:7,  tipo:'num', tol:1},
-  {l:'Modalidade',      col:8,  tipo:'txt'},
+  {l:'Modalidade',      col:8,  tipo:'modalidade'},
   {l:'% 17/18',         col:9,  tipo:'num', tol:0.01},
   {l:'% Quebra',        col:10, tipo:'num', tol:0.01},
   {l:'Padrão',          col:11, tipo:'txt'},
@@ -1809,7 +1809,7 @@ function valGetEspelhoVal(campo){
     'Sacas':           e.bags||'',
     'Emissão':         (()=>{const d=new Date();return d.toLocaleDateString('pt-BR');})(),
     'Vencimento':      e.pay_date||'',
-    'Média (R$)':      e.brl_price_bica||'',
+    'Média c ICMS':    e.brl_price_bica||'',
     'Modalidade':      e.freight||'',
     '% 17/18':         e.perc_17_18||'',
     '% Quebra':        e.offgrades||'',
@@ -1817,7 +1817,7 @@ function valGetEspelhoVal(campo){
     '% Grinder':       0.8,
     'Mês Bolsa':       parseMesBolsa(e.kc_mes||e.kc_term||''),
     'Diferencial':     e.bica_diff||'',
-    'Data Fixação':    e.date||'',
+    'Data Fixação':    (()=>{const d=new Date();return d.toLocaleDateString('pt-BR');})(),
     'Valor Fixado':    e.kc||'',
     'Dólar':           e.usd_brl||'',
     'Bica Corrida':    'Sim',
@@ -1858,7 +1858,9 @@ function valComparar(campo, tipo, tol, espVal, digVal){
       const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
       mStr=meses[d.getMonth()]+'/'+d.getFullYear();
     }
-    return normStr(mStr)===normStr(String(espVal))?'ok':'err';
+    // Normaliza: remove "/" e espaços para comparar "Dec/2027" = "Dec 2027" = "Dec2027"
+    const normMes=v=>String(v).toLowerCase().replace(/[/\s]+/g,'');
+    return normMes(mStr)===normMes(String(espVal))?'ok':'err';
   }
   if(tipo==='safra'){
     const es=normSafra(String(espVal));
@@ -1868,6 +1870,17 @@ function valComparar(campo, tipo, tol, espVal, digVal){
   if(tipo==='parcial'){
     const en=normStr(String(espVal)), dn=normStr(de);
     return (en&&(dn.includes(en)||en.includes(dn)))?'ok':'err';
+  }
+  if(tipo==='modalidade'){
+    const nd=normStr(de); const ne=normStr(String(espVal));
+    // "A Retirar" na Digisul + qualquer cidade no espelho = OK
+    if(nd.includes('aretirar')||nd.includes('retirar'))return'ok';
+    // "Café Posto" na Digisul + "Posto" no espelho = OK
+    if(nd.includes('cafeposto')||nd.includes('posto')){
+      return ne.includes('posto')?'ok':'err';
+    }
+    // fallback: comparação parcial
+    return (nd.includes(ne)||ne.includes(nd))?'ok':'err';
   }
   // txt
   return normStr(de)===normStr(String(espVal))?'ok':'err';
