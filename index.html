@@ -1688,13 +1688,13 @@ const VAL_CAMPOS=[
   {l:'Sacas',           col:4,  tipo:'num', tol:0},
   {l:'Emissão',         col:5,  tipo:'data'},
   {l:'Vencimento',      col:6,  tipo:'data'},
-  {l:'Média (R$)',      col:7,  tipo:'num', tol:1},
+  {l:'Média c ICMS',   col:7,  tipo:'num', tol:1},
   {l:'Modalidade',      col:8,  tipo:'txt'},
   {l:'% 17/18',         col:9,  tipo:'num', tol:0.01},
   {l:'% Quebra',        col:10, tipo:'num', tol:0.01},
   {l:'Padrão',          col:11, tipo:'txt'},
   {l:'Bebida',          col:12, tipo:'ignorar'},
-  {l:'% Grinder',       col:13, tipo:'num', tol:0.01},
+  {l:'% Grinder',       col:13, tipo:'ignorar'},
   {l:'Mês Bolsa',       col:14, tipo:'mes'},
   {l:'Diferencial',     col:15, tipo:'num', tol:0.05},
   {l:'Data Fixação',    col:16, tipo:'data'},
@@ -1711,12 +1711,25 @@ const VAL_CAMPOS=[
   {l:'Dif. Fob LG',     col:27, tipo:'ignorar'},
 ];
 
-const MES_MAP={F:'Jan',G:'Fev',H:'Mar',J:'Abr',K:'Mai',M:'Jun',N:'Jul',Q:'Ago',U:'Set',V:'Out',X:'Nov',Z:'Dez'};
+// Tabela completa de meses bolsa
+const MES_BOLSA_MAP={
+  'K26':'May/2026','N26':'Jul/2026','U26':'Sep/2026','Z26':'Dec/2026',
+  'H27':'Mar/2027','K27':'May/2027','N27':'Jul/2027','U27':'Sep/2027','Z27':'Dec/2027',
+  'H28':'Mar/2028','K28':'May/2028','N28':'Jul/2028','U28':'Sep/2028','Z28':'Dec/2028',
+  'H29':'Mar/2029','K29':'May/2029','N29':'Jul/2029','U29':'Sep/2029','Z29':'Dec/2029',
+};
+const MES_MAP={F:'Jan',G:'Fev',H:'Mar',J:'Abr',K:'May',M:'Jun',N:'Jul',Q:'Ago',U:'Sep',V:'Out',X:'Nov',Z:'Dec'};
 function parseMesBolsa(raw){
   if(!raw)return'';
-  const m=String(raw).trim().match(/^([A-Z])(\d+)$/);
+  // Normaliza: remove espaços, uppercase ex "KC Z27" → "Z27", "kc z27" → "Z27"
+  const s=String(raw).trim().toUpperCase().replace(/^KC\s*/,'').replace(/\s+/g,'');
+  // Tenta lookup direto na tabela
+  if(MES_BOLSA_MAP[s])return MES_BOLSA_MAP[s];
+  // Fallback: parseia letra+ano
+  const m=s.match(/^([A-Z])(\d+)$/);
   if(!m)return String(raw);
-  return (MES_MAP[m[1]]||m[1])+'/20'+m[2];
+  const ano=m[2].length===2?'20'+m[2]:m[2];
+  return (MES_MAP[m[1]]||m[1])+'/'+ano;
 }
 function excelSerial(n){
   if(!n||isNaN(n))return'';
@@ -1794,7 +1807,7 @@ function valGetEspelhoVal(campo){
     'Modalidade CTR':  e.modalidade||'',
     'Fornecedor':      e.producer_name||'',
     'Sacas':           e.bags||'',
-    'Emissão':         e.date||'',
+    'Emissão':         (()=>{const d=new Date();return d.toLocaleDateString('pt-BR');})(),
     'Vencimento':      e.pay_date||'',
     'Média (R$)':      e.brl_price_bica||'',
     'Modalidade':      e.freight||'',
@@ -1802,7 +1815,7 @@ function valGetEspelhoVal(campo){
     '% Quebra':        e.offgrades||'',
     'Padrão':          e.quality||'',
     '% Grinder':       0.8,
-    'Mês Bolsa':       parseMesBolsa(e.kc_mes),
+    'Mês Bolsa':       parseMesBolsa(e.kc_mes||e.kc_term||''),
     'Diferencial':     e.bica_diff||'',
     'Data Fixação':    e.date||'',
     'Valor Fixado':    e.kc||'',
