@@ -2991,7 +2991,7 @@ async function salvarImagemInformativo(){
         const bg=i%2===0?'#fff':'#fafcfb';
         return `<tr style="background:${bg}">
           <td style="${tdStyle}">${fmtDate(r.data)}</td>
-          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo}</span></td>
+          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo==='COMPRA'?'PURCHASE':r.tipo==='VENDA'?'SALE':r.tipo}</span></td>
           <td style="${tdStyle}">${r.sacas}</td>
           <td style="${tdStyle}">${r.qual||'—'}</td>
           <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.especie==='CONILON'?'#f0e8ff':'#fef3e2'};color:${r.especie==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
