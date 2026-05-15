@@ -576,6 +576,7 @@ select.cont-fg-input{cursor:pointer}
     <div class="rcard rcard-diff"><div class="rlbl">17/18 Diff</div><div><div class="rval" id="o-d1718">—</div><div id="o-d1718net" style="font-size:9px;color:var(--muted2)"></div></div><div class="runit">cts / libra</div></div>
     <div class="rcard rcard-diff"><div class="rlbl">14/16 Diff</div><div><div class="rval" id="o-d1416">—</div><div id="o-d1416net" style="font-size:9px;color:var(--muted2)"></div></div><div class="runit">cts / libra</div></div>
     <div class="rcard rcard-diff"><div class="rlbl">Bica Diff</div><div class="rval c-neg" id="o-bicadiff">—</div><div class="runit">cts / libra</div></div>
+    <div id="val-diff-lock-badge" style="display:none;font-size:10px;color:var(--green);background:var(--green-light);border-radius:6px;padding:3px 10px;margin-top:6px;text-align:center;letter-spacing:.05em">🔒 Diffs fixados pelo espelho · <button onclick="valUnlockDiffs()" style="background:none;border:none;color:var(--green);cursor:pointer;font-size:10px;text-decoration:underline">desbloquear</button></div>
   </div>
   <div class="resumo-box">
     <div class="sec" style="margin-bottom:.5rem">Resumo</div>
@@ -1093,6 +1094,7 @@ select.cont-fg-input{cursor:pointer}
 const SUPA_URL='https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
 let accessToken=null,refreshToken=null,userRole='visualizador';
+let valDiffsLocked=false; // trava os diffs quando preenchido pelo espelho
 function authH(x={}){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(accessToken||SUPA_KEY),...x}}
 
 /* ── AUTH ── */
@@ -1415,11 +1417,14 @@ function calc(){
   const bicaDiff=bicaFot-kc;
   const expFobCts=expFobC/F;
   const nyLots=bags*((100-off)/100)/283.5;
-  const bd=document.getElementById('o-bicadiff');if(bd){bd.textContent=fmt(bicaDiff,2);bd.className='rval '+cc(bicaDiff);}
-  const d14=document.getElementById('o-d1416');if(d14){d14.textContent=fmt(diff1416,2);d14.className='rval '+cc(diff1416);}
-  const d17=document.getElementById('o-d1718');if(d17){d17.textContent=fmt(diff1718,2);d17.className='rval '+cc(diff1718);}
-  sv('o-d1416net','net: '+fmt(d1416net,2)+' cts/lb');
-  sv('o-d1718net','net: '+fmt(d1718net,2)+' cts/lb');
+  // Só atualiza diffs se não estiver travado pelo espelho
+  if(!valDiffsLocked){
+    const bd=document.getElementById('o-bicadiff');if(bd){bd.textContent=fmt(bicaDiff,2);bd.className='rval '+cc(bicaDiff);}
+    const d14=document.getElementById('o-d1416');if(d14){d14.textContent=fmt(diff1416,2);d14.className='rval '+cc(diff1416);}
+    const d17=document.getElementById('o-d1718');if(d17){d17.textContent=fmt(diff1718,2);d17.className='rval '+cc(diff1718);}
+    sv('o-d1416net','net: '+fmt(d1416net,2)+' cts/lb');
+    sv('o-d1718net','net: '+fmt(d1718net,2)+' cts/lb');
+  }
   sv('o-expfob','USD '+fmt(expFobC,2));sv('o-expcts',fmt(expFobCts,2));
   const bf=document.getElementById('o-bicafot');if(bf){bf.textContent=fmt(bicaFot,2);bf.className='rval '+cc(bicaDiff);}
   const vLots=document.getElementById('v-lots');
@@ -1664,6 +1669,9 @@ function calcPreco(){
 }
 
 function switchPTab(i){
+  // Se navegar para Pricing manualmente (sem ser pelo valIrParaPricing), desbloqueia diffs
+  if(i===1 && !window._viaEspelho) valDiffsLocked=false;
+  window._viaEspelho=false;
   document.querySelectorAll('.p-tab-btn').forEach((b,j)=>b.classList.toggle('active',i===j));
   // painel 0 = validação (ppanel-0), painéis 1-4 = pricing/diff/diff2/hist (ppanel-1,2,3,4)
   const panels=['ppanel-0','ppanel-1','ppanel-2','ppanel-3','ppanel-4'];
@@ -2035,10 +2043,11 @@ function valIrParaPricing(){
     if(termEl)termEl.value='#NY'+e.kc_mes.toUpperCase();
   }
 
-  // Rodar cálculo com os inputs preenchidos
+  // Rodar cálculo com os inputs preenchidos (sem travar ainda)
+  valDiffsLocked=false;
   calc();calcLots();
 
-  // Sobrepor diffs com valores reais do espelho APÓS o calc()
+  // Travar diffs e sobrescrever com valores do espelho
   // Usar setTimeout para garantir que o calc() terminou de atualizar o DOM
   setTimeout(()=>{
     const fmtDiff=(v,idVal,idNet,idTab)=>{
@@ -2052,9 +2061,15 @@ function valIrParaPricing(){
     fmtDiff(e.diff_17_18,'o-d1718','o-d1718net','t-f40');
     fmtDiff(e.diff_14_16,'o-d1416','o-d1416net','t-f41');
     fmtDiff(e.bica_diff, 'o-bicadiff',null,'t-f44');
+    valDiffsLocked=true; // trava — qualquer edição manual não vai recalcular os diffs
   },100);
 
-  switchPTab(1); // ir para aba Precificação
+  window._viaEspelho=true; switchPTab(1); // ir para aba Precificação via espelho
+  // Mostrar badge de diffs travados
+  setTimeout(()=>{
+    const badge=document.getElementById('val-diff-lock-badge');
+    if(badge)badge.style.display='block';
+  },150);
 }
 
 async function valSalvarConferencia(){
@@ -2130,6 +2145,14 @@ document.addEventListener('DOMContentLoaded',function(){
     valOnFileChange({target:{files:dt.files}});
   });
 });
+
+
+function valUnlockDiffs(){
+  valDiffsLocked=false;
+  const badge=document.getElementById('val-diff-lock-badge');
+  if(badge)badge.style.display='none';
+  calc(); // recalcula com os valores atuais dos inputs
+}
 
 /* ── HISTÓRICO ── */
 let histFiltro='todos',negRows=[];
@@ -2991,7 +3014,7 @@ async function salvarImagemInformativo(){
         const bg=i%2===0?'#fff':'#fafcfb';
         return `<tr style="background:${bg}">
           <td style="${tdStyle}">${fmtDate(r.data)}</td>
-          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo==='COMPRA'?'PURCHASE':r.tipo==='VENDA'?'SALE':r.tipo}</span></td>
+          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo}</span></td>
           <td style="${tdStyle}">${r.sacas}</td>
           <td style="${tdStyle}">${r.qual||'—'}</td>
           <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.especie==='CONILON'?'#f0e8ff':'#fef3e2'};color:${r.especie==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
