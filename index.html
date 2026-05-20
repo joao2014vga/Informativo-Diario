@@ -243,6 +243,10 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .val-digisul-paste:focus{border-color:var(--green-dim)}
 .val-paste-btn{background:transparent;border:1px solid var(--green-dim);border-radius:7px;padding:.4rem .9rem;font-family:var(--mono);font-size:11px;color:var(--green);cursor:pointer;text-transform:uppercase;margin-top:.5rem}
 .val-paste-btn:hover{background:var(--green-light)}
+.val-clear-btn{background:transparent;border:1px solid #c0392b;border-radius:8px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:12px;color:#c0392b;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;display:inline-flex;align-items:center;gap:6px;margin-top:.75rem}
+.val-clear-btn:hover{background:#fde8e8}
+.btn-clear-pricing{background:transparent;border:1px solid #c0392b;border-radius:8px;padding:6px 14px;font-family:var(--mono);font-size:11px;color:#c0392b;cursor:pointer;text-transform:uppercase;letter-spacing:.06em}
+.btn-clear-pricing:hover{background:#fde8e8}
 
 
 /* INFORMATIVO */
@@ -458,6 +462,9 @@ select.cont-fg-input{cursor:pointer}
     <button class="val-extract-btn" id="valExtractBtn" onclick="valExtrair()" disabled>
       ✦ Extrair dados do espelho
     </button>
+    <button class="val-clear-btn" id="valClearBtn" onclick="valLimpar()">
+      ✕ Limpar validação
+    </button>
     <span class="val-status" id="valStatus"></span>
   </div>
 
@@ -582,6 +589,7 @@ select.cont-fg-input{cursor:pointer}
     <div class="resumo-text" id="resumo-text">Preencha os campos para gerar o resumo.</div>
     <div class="resumo-actions">
       <button class="btn-copy" id="btn-copy" onclick="copiarResumo()">Copiar texto</button>
+      <button class="btn-clear-pricing" onclick="limparPricing()">✕ Limpar</button>
       <button class="btn-save-neg" id="btn-salvar-neg" onclick="abrirModal()">Salvar negociação</button>
       <button class="btn-print-neg" id="btn-print-neg" onclick="printNegociacao()" title="Salvar como imagem">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -2131,6 +2139,63 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 });
 
+
+/* ── LIMPAR VALIDAÇÃO ── */
+function valLimpar(){
+  if(!confirm('Limpar a validação atual?'))return;
+  // Reset upload
+  document.getElementById('valFileInput').value='';
+  document.getElementById('valImgPreview').src='';
+  document.getElementById('valImgPreview').style.display='none';
+  document.getElementById('valUploadLabel').innerHTML='<strong>Clique ou arraste</strong> a imagem do espelho aqui';
+  document.getElementById('valExtractBtn').disabled=true;
+  document.getElementById('valStatus').textContent='';
+  document.getElementById('valStatus').className='val-status';
+  // Reset conferência
+  valEspelhoData=null;
+  valDigisulCols=[];
+  valDigisulEdits={};
+  valObs={};
+  document.getElementById('valConfSection').style.display='none';
+  document.getElementById('valConfBody').innerHTML='';
+  document.getElementById('valDigisulPaste').value='';
+  document.getElementById('valSumOk').textContent='—';
+  document.getElementById('valSumErr').textContent='—';
+  document.getElementById('valSumAgt').textContent='—';
+  document.getElementById('valSaveStatus').textContent='';
+}
+
+/* ── LIMPAR PRICING ── */
+function limparPricing(){
+  if(!confirm('Limpar todos os campos da Precificação?'))return;
+  // Identificação
+  ['i-producer','i-broker-name','i-quality','i-crop'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  // Selects
+  const mod=document.getElementById('i-modalidade');if(mod)mod.value='NORMAL';
+  const prod=document.getElementById('v-producer');if(prod)prod.value='N';
+  const brok=document.getElementById('v-broker');if(brok)brok.value='N';
+  const cid=document.getElementById('v-cidade');if(cid)cid.value=cid.options[0]?.value||'';
+  // Datas
+  ['i-date','i-paydate'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  // Inputs numéricos
+  ['v-bags','v-preco','v-dolar','v-kc','v-term','v-lots','v-p1718','v-premio','v-off','v-grindiff','v-fundo','v-def1500'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  // Certificate
+  try{certSetValue('cert-pricing','');}catch(e){}
+  // Outputs diffs
+  valDiffsLocked=false;
+  ['o-bicadiff','o-d1416','o-d1718'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.textContent='—';el.className='rval';}
+  });
+  ['o-d1416net','o-d1718net'].forEach(id=>{sv(id,'');});
+  const badge=document.getElementById('val-diff-lock-badge');
+  if(badge)badge.style.display='none';
+  calc();calcLots();
+}
+
 /* ── HISTÓRICO ── */
 let histFiltro='todos',negRows=[];
 
@@ -2991,7 +3056,7 @@ async function salvarImagemInformativo(){
         const bg=i%2===0?'#fff':'#fafcfb';
         return `<tr style="background:${bg}">
           <td style="${tdStyle}">${fmtDate(r.data)}</td>
-          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo==='COMPRA'?'PURCHASE':r.tipo==='VENDA'?'SALE':r.tipo}</span></td>
+          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo}</span></td>
           <td style="${tdStyle}">${r.sacas}</td>
           <td style="${tdStyle}">${r.qual||'—'}</td>
           <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.especie==='CONILON'?'#f0e8ff':'#fef3e2'};color:${r.especie==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
@@ -3029,7 +3094,7 @@ function exportInfExcel(){
   const compras=byDate.filter(r=>r.tipo==='COMPRA'),vendas=byDate.filter(r=>r.tipo==='VENDA');
   const dc=medW(compras),dv=medW(vendas);
   const wb=XLSX.utils.book_new();
-  const ws=XLSX.utils.aoa_to_sheet([['DAILY ACTIVITY REPORT · BRASCOF'],['Gerado em:',new Date().toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})],[],['DATE','TYPE','BAGS','QUALITY','VARIETY','DIFF'],...byDate.map(r=>[fmtDate(r.data),(r.tipo==='COMPRA'?'PURCHASE':r.tipo==='VENDA'?'SALE':r.tipo),r.sacas,r.qual,r.especie||'ARABICA',Number(r.dif)])]);
+  const ws=XLSX.utils.aoa_to_sheet([['DAILY ACTIVITY REPORT · BRASCOF'],['Gerado em:',new Date().toLocaleDateString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric'})],[],['DATE','TYPE','BAGS','QUALITY','VARIETY','DIFF'],...byDate.map(r=>[fmtDate(r.data),r.tipo,r.sacas,r.qual,r.especie||'ARABICA',Number(r.dif)])]);
   ws['!cols']=[{wch:14},{wch:10},{wch:10},{wch:12},{wch:12},{wch:14}];
   ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:5}}];
   const de=document.getElementById('fDtDe').value,ate=document.getElementById('fDtAte').value;
