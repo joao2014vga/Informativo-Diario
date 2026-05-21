@@ -3271,7 +3271,7 @@ function exportContExcel(){
 
   // Título + cabeçalho igual à planilha original
   const titulo='☕  CONTROLE COMERCIAL — CONTRATOS DE CAFÉ';
-  const cabecalho=['MG/SP','TIPO','MODALIDADE','OBSERVAÇÃO EXTRA','CONTRATO','STATUS','VENDEDOR','CORRETOR','SACAS','VALOR','MODALIDADE','CNPJ/CPF','INSTRUÇÃO DE\nFATURAMENTO','E-MAIL DE\nPROGRAMAÇÃO','CONTRATO DE\nCOMPRA E VENDA\nFUTURO','VENCIMENTO'];
+  const cabecalho=['MG/SP','TIPO','MODALIDADE','OBSERVAÇÃO EXTRA','CONTRATO','STATUS','VENDEDOR','CORRETOR','SACAS','VALOR','MODALIDADE','CNPJ/CPF','INSTRUÇÃO DE\nFATURAMENTO','E-MAIL DE\nPROGRAMAÇÃO','CONTRATO DE\nCOMPRA E VENDA\nFUTURO','VENCIMENTO','FINALIZADO'];
 
   const linhas=data.map(r=>[
     r.filial||'',
@@ -3289,13 +3289,14 @@ function exportContExcel(){
     r.instrucao_faturamento||'',
     r.email_programacao||'',
     r.contrato_futuro||'',
-    r.vencimento||''
+    r.vencimento||'',
+    r.finalizado?'Sim':'Não'
   ]);
 
   const ws=XLSX.utils.aoa_to_sheet([[titulo],...[cabecalho],...linhas]);
 
   // Merge da linha de título (A1:P1)
-  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:15}}];
+  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:16}}];
 
   // Larguras iguais à planilha original
   ws['!cols']=[
