@@ -243,10 +243,6 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .val-digisul-paste:focus{border-color:var(--green-dim)}
 .val-paste-btn{background:transparent;border:1px solid var(--green-dim);border-radius:7px;padding:.4rem .9rem;font-family:var(--mono);font-size:11px;color:var(--green);cursor:pointer;text-transform:uppercase;margin-top:.5rem}
 .val-paste-btn:hover{background:var(--green-light)}
-.val-clear-btn{background:transparent;border:1px solid #c0392b;border-radius:8px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:12px;color:#c0392b;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;display:inline-flex;align-items:center;gap:6px;margin-top:.75rem}
-.val-clear-btn:hover{background:#fde8e8}
-.btn-clear-pricing{background:transparent;border:1px solid #c0392b;border-radius:8px;padding:6px 14px;font-family:var(--mono);font-size:11px;color:#c0392b;cursor:pointer;text-transform:uppercase;letter-spacing:.06em}
-.btn-clear-pricing:hover{background:#fde8e8}
 
 
 /* INFORMATIVO */
@@ -462,9 +458,6 @@ select.cont-fg-input{cursor:pointer}
     <button class="val-extract-btn" id="valExtractBtn" onclick="valExtrair()" disabled>
       ✦ Extrair dados do espelho
     </button>
-    <button class="val-clear-btn" id="valClearBtn" onclick="valLimpar()">
-      ✕ Limpar validação
-    </button>
     <span class="val-status" id="valStatus"></span>
   </div>
 
@@ -589,7 +582,6 @@ select.cont-fg-input{cursor:pointer}
     <div class="resumo-text" id="resumo-text">Preencha os campos para gerar o resumo.</div>
     <div class="resumo-actions">
       <button class="btn-copy" id="btn-copy" onclick="copiarResumo()">Copiar texto</button>
-      <button class="btn-clear-pricing" onclick="limparPricing()">✕ Limpar</button>
       <button class="btn-save-neg" id="btn-salvar-neg" onclick="abrirModal()">Salvar negociação</button>
       <button class="btn-print-neg" id="btn-print-neg" onclick="printNegociacao()" title="Salvar como imagem">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -823,7 +815,6 @@ select.cont-fg-input{cursor:pointer}
       <button class="seg-btn" data-v="ERP LANÇADO" onclick="setContFiltro(this,'status')">ERP Lançado</button>
     </div>
     <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
-    <button class="btn-export-cont" id="btnImportPlanilha" onclick="importarPlanilha()" style="border-color:#2d4a3e;color:#2d4a3e">📥 Importar planilha histórica</button>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
     <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
@@ -845,13 +836,9 @@ select.cont-fg-input{cursor:pointer}
       <option value="Normal">Normal</option>
       <option value="Futuro">Futuro</option>
     </select>
-    <select id="cf-email" class="cont-filter-select" onchange="renderContratos()">
-      <option value="">E-mail prog.</option>
-      <option value="ENVIAR BRC">Enviar BRC</option>
-      <option value="ENVIAR PROGRAMAÇÃO">Enviar Programação</option>
-      <option value="ENVIADO BRC">Enviado BRC</option>
-      <option value="ENVIADO PROGRAMAÇÃO">Enviado Programação</option>
-    </select>
+    <input type="date" id="cf-vcto-de" class="cont-filter-input" title="Vencimento de" onchange="renderContratos()" style="width:130px">
+    <span style="font-size:11px;color:var(--muted)">até</span>
+    <input type="date" id="cf-vcto-ate" class="cont-filter-input" title="Vencimento até" onchange="renderContratos()" style="width:130px">
     <button class="btn-clear-inf" onclick="limparFiltrosCont()" style="height:32px;font-size:11px">Limpar filtros</button>
   </div>
   <div class="cont-table-wrap">
@@ -970,6 +957,15 @@ select.cont-fg-input{cursor:pointer}
     <div class="cont-form-grid two">
       <div><label class="cont-fg-label">Status ERP</label><select id="c-status-erp" class="cont-fg-input"><option value="AGUARDANDO FECHAMENTO">AGUARDANDO FECHAMENTO</option><option value="ERP LANÇADO">ERP LANÇADO</option></select></div>
       <div><label class="cont-fg-label">Obs. Extra</label><input type="text" id="c-obs" class="cont-fg-input" placeholder="OBSERVAÇÃO EXTRA"/></div>
+    </div>
+    <div class="cont-form-grid" style="margin-top:.5rem">
+      <div style="display:flex;align-items:center;gap:10px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text)">
+          <input type="checkbox" id="c-finalizado" onchange="toggleFinalizadoPreview()" style="width:16px;height:16px;accent-color:var(--green);cursor:pointer">
+          <span style="font-weight:600">Finalizado</span>
+        </label>
+        <span style="font-size:11px;color:var(--muted)">Marca a linha como concluída (translúcida)</span>
+      </div>
     </div>
     <div class="cont-section-label">Ações automáticas (editáveis)</div>
     <div class="cont-form-grid">
@@ -2140,60 +2136,8 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 
-/* ── LIMPAR VALIDAÇÃO ── */
-function valLimpar(){
-  if(!confirm('Limpar a validação atual?'))return;
-  // Reset upload
-  document.getElementById('valFileInput').value='';
-  document.getElementById('valImgPreview').src='';
-  document.getElementById('valImgPreview').style.display='none';
-  document.getElementById('valUploadLabel').innerHTML='<strong>Clique ou arraste</strong> a imagem do espelho aqui';
-  document.getElementById('valExtractBtn').disabled=true;
-  document.getElementById('valStatus').textContent='';
-  document.getElementById('valStatus').className='val-status';
-  // Reset conferência
-  valEspelhoData=null;
-  valDigisulCols=[];
-  valDigisulEdits={};
-  valObs={};
-  document.getElementById('valConfSection').style.display='none';
-  document.getElementById('valConfBody').innerHTML='';
-  document.getElementById('valDigisulPaste').value='';
-  document.getElementById('valSumOk').textContent='—';
-  document.getElementById('valSumErr').textContent='—';
-  document.getElementById('valSumAgt').textContent='—';
-  document.getElementById('valSaveStatus').textContent='';
-}
-
-/* ── LIMPAR PRICING ── */
-function limparPricing(){
-  if(!confirm('Limpar todos os campos da Precificação?'))return;
-  // Identificação
-  ['i-producer','i-broker-name','i-quality','i-crop'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
-  });
-  // Selects
-  const mod=document.getElementById('i-modalidade');if(mod)mod.value='NORMAL';
-  const prod=document.getElementById('v-producer');if(prod)prod.value='N';
-  const brok=document.getElementById('v-broker');if(brok)brok.value='N';
-  const cid=document.getElementById('v-cidade');if(cid)cid.value=cid.options[0]?.value||'';
-  // Datas
-  ['i-date','i-paydate'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  // Inputs numéricos
-  ['v-bags','v-preco','v-dolar','v-kc','v-term','v-lots','v-p1718','v-premio','v-off','v-grindiff','v-fundo','v-def1500'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
-  });
-  // Certificate
-  try{certSetValue('cert-pricing','');}catch(e){}
-  // Outputs diffs
-  valDiffsLocked=false;
-  ['o-bicadiff','o-d1416','o-d1718'].forEach(id=>{
-    const el=document.getElementById(id);if(el){el.textContent='—';el.className='rval';}
-  });
-  ['o-d1416net','o-d1718net'].forEach(id=>{sv(id,'');});
-  const badge=document.getElementById('val-diff-lock-badge');
-  if(badge)badge.style.display='none';
-  calc();calcLots();
+function toggleFinalizadoPreview(){
+  // Só para feedback visual imediato no modal — o save faz o persistir
 }
 
 /* ── HISTÓRICO ── */
@@ -3132,12 +3076,18 @@ function contFiltered(){
     if(fFilial&&r.filial!==fFilial)return false;
     if(fFrete&&r.frete!==fFrete)return false;
     if(fModalidade&&r.modalidade!==fModalidade)return false;
-    if(fEmail&&r.email_programacao!==fEmail)return false;
+    // Filtro vencimento
+    const vctoDE=document.getElementById('cf-vcto-de')?.value;
+    const vctoATE=document.getElementById('cf-vcto-ate')?.value;
+    if(vctoDE&&r.vencimento&&r.vencimento<vctoDE)return false;
+    if(vctoATE&&r.vencimento&&r.vencimento>vctoATE)return false;
     return true;
   });
 }
 
 function limparFiltrosCont(){
+  const vctoDE=document.getElementById('cf-vcto-de');if(vctoDE)vctoDE.value='';
+  const vctoATE=document.getElementById('cf-vcto-ate');if(vctoATE)vctoATE.value='';
   ['cf-contrato','cf-vendedor','cf-corretor'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   ['cf-filial','cf-frete','cf-modalidade','cf-email'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   renderContratos();
@@ -3170,6 +3120,7 @@ function renderContratos(){
     if(r.vencimento){const vd=new Date(r.vencimento);const diff=Math.round((vd-today2)/(1000*60*60*24));const[y,m,d]=r.vencimento.split('-');vencStr=`${d}/${m}/${y}`;if(diff>=0&&diff<=7)vencAlert=true;}
     const pillErp=r.status_erp==='ERP LANÇADO'?'pill-erp':'pill-aguardando';
     const pillEmail=r.email_programacao?.includes('ENVIADO')?'pill-enviado':(r.email_programacao?.includes('ENVIAR')?'pill-pendente':'pill-nao-precisa');
+    const rowStyle=r.finalizado?'opacity:0.38;':'';
     const pillFut=r.contrato_futuro==='ENVIADO'?'pill-enviado':(r.contrato_futuro==='PENDENTE'?'pill-pendente':'pill-nao-precisa');
     const pillInst=r.instrucao_faturamento==='PRECISA ENVIAR'?'pill-pendente':(r.instrucao_faturamento==='ENVIADO'?'pill-enviado':'pill-nao-precisa');
     const editBtns=isAdmin?'<button class="btn-edit-cont" onclick="abrirModalContrato('+r.id+')">✎</button><button class="btn-del-cont" onclick="delContrato('+r.id+')">✕</button>':'';
@@ -3254,6 +3205,7 @@ function abrirModalContrato(id){
     document.getElementById('c-obs').value=r.obs_extra||'';document.getElementById('c-status-erp').value=r.status_erp||'AGUARDANDO FECHAMENTO';
     document.getElementById('c-instrucao').value=r.instrucao_faturamento||'NÃO PRECISA';
     document.getElementById('c-email-prog').value=r.email_programacao||'ENVIAR BRC';
+    document.getElementById('c-finalizado').checked=r.finalizado||false;
     document.getElementById('c-futuro').value=r.contrato_futuro||'NÃO PRECISA ENVIAR';
     document.getElementById('c-especie').value=r.especie||'ARABICA';
   }
@@ -3281,6 +3233,7 @@ async function salvarContrato(){
     status_erp:document.getElementById('c-status-erp').value,
     instrucao_faturamento:document.getElementById('c-instrucao').value,
     email_programacao:document.getElementById('c-email-prog').value,
+      finalizado:document.getElementById('c-finalizado').checked,
     status_email:document.getElementById('c-email-prog').value.includes('ENVIADO')?'ENVIADO':'PENDENTE',
     contrato_futuro:document.getElementById('c-futuro').value,
     status_futuro:document.getElementById('c-futuro').value==='ENVIADO'?'ENVIADO':'PENDENTE',
