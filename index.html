@@ -392,7 +392,6 @@ select.cont-fg-input{cursor:pointer}
   .mbar-item:nth-child(3){border-top:1px solid #dde8e2}
   .form-row{grid-template-columns:1fr 1fr}
 }
-
 .cont-row-finalizado{opacity:0.32!important;filter:grayscale(0.7)!important;background:#ebebeb!important}
 .cont-row-finalizado td,.cont-row-finalizado strong,.cont-row-finalizado span{color:#aaa!important;font-style:italic}
 </style>
@@ -818,7 +817,6 @@ select.cont-fg-input{cursor:pointer}
       <button class="seg-btn" data-v="ERP LANÇADO" onclick="setContFiltro(this,'status')">ERP Lançado</button>
     </div>
     <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
-    <button class="btn-export-cont" id="btnImportPlanilha" onclick="importarPlanilha()" style="border-color:#2d4a3e;color:#2d4a3e">📥 Importar planilha histórica</button>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
     <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
@@ -840,13 +838,10 @@ select.cont-fg-input{cursor:pointer}
       <option value="Normal">Normal</option>
       <option value="Futuro">Futuro</option>
     </select>
-    <select id="cf-email" class="cont-filter-select" onchange="renderContratos()">
-      <option value="">E-mail prog.</option>
-      <option value="ENVIAR BRC">Enviar BRC</option>
-      <option value="ENVIAR PROGRAMAÇÃO">Enviar Programação</option>
-      <option value="ENVIADO BRC">Enviado BRC</option>
-      <option value="ENVIADO PROGRAMAÇÃO">Enviado Programação</option>
-    </select>
+    <span style="font-size:11px;color:var(--muted);white-space:nowrap">Vencimento:</span>
+    <input type="date" id="cf-vcto-de" class="cont-filter-input" title="De" onchange="renderContratos()" style="width:130px">
+    <span style="font-size:11px;color:var(--muted)">até</span>
+    <input type="date" id="cf-vcto-ate" class="cont-filter-input" title="Até" onchange="renderContratos()" style="width:130px">
     <button class="btn-clear-inf" onclick="limparFiltrosCont()" style="height:32px;font-size:11px">Limpar filtros</button>
   </div>
   <div class="cont-table-wrap">
@@ -3067,7 +3062,7 @@ function contFiltered(){
   const fFilial=document.getElementById('cf-filial')?.value||'';
   const fFrete=document.getElementById('cf-frete')?.value||'';
   const fModalidade=document.getElementById('cf-modalidade')?.value||'';
-  const fEmail=document.getElementById('cf-email')?.value||'';
+  // filtro email removido
   return contRows.filter(r=>{
     if(contFiltroTipo!=='todos'&&r.tipo!==contFiltroTipo)return false;
     if(contFiltroStatus!=='todos'&&r.status_erp!==contFiltroStatus)return false;
@@ -3077,14 +3072,17 @@ function contFiltered(){
     if(fFilial&&r.filial!==fFilial)return false;
     if(fFrete&&r.frete!==fFrete)return false;
     if(fModalidade&&r.modalidade!==fModalidade)return false;
-    if(fEmail&&r.email_programacao!==fEmail)return false;
+    const vctoDE=document.getElementById('cf-vcto-de')?.value;
+    const vctoATE=document.getElementById('cf-vcto-ate')?.value;
+    if(vctoDE&&r.vencimento&&r.vencimento<vctoDE)return false;
+    if(vctoATE&&r.vencimento&&r.vencimento>vctoATE)return false;
     return true;
   });
 }
 
 function limparFiltrosCont(){
   ['cf-contrato','cf-vendedor','cf-corretor'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['cf-filial','cf-frete','cf-modalidade','cf-email'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['cf-filial','cf-frete','cf-modalidade','cf-vcto-de','cf-vcto-ate'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   renderContratos();
 }
 
