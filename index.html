@@ -392,6 +392,9 @@ select.cont-fg-input{cursor:pointer}
   .mbar-item:nth-child(3){border-top:1px solid #dde8e2}
   .form-row{grid-template-columns:1fr 1fr}
 }
+
+.cont-row-finalizado{opacity:0.32!important;filter:grayscale(0.7)!important;background:#ebebeb!important}
+.cont-row-finalizado td,.cont-row-finalizado strong,.cont-row-finalizado span{color:#aaa!important;font-style:italic}
 </style>
 </head>
 <body>
@@ -815,6 +818,7 @@ select.cont-fg-input{cursor:pointer}
       <button class="seg-btn" data-v="ERP LANÇADO" onclick="setContFiltro(this,'status')">ERP Lançado</button>
     </div>
     <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
+    <button class="btn-export-cont" id="btnImportPlanilha" onclick="importarPlanilha()" style="border-color:#2d4a3e;color:#2d4a3e">📥 Importar planilha histórica</button>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
     <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
@@ -836,9 +840,13 @@ select.cont-fg-input{cursor:pointer}
       <option value="Normal">Normal</option>
       <option value="Futuro">Futuro</option>
     </select>
-    <input type="date" id="cf-vcto-de" class="cont-filter-input" title="Vencimento de" onchange="renderContratos()" style="width:130px">
-    <span style="font-size:11px;color:var(--muted)">até</span>
-    <input type="date" id="cf-vcto-ate" class="cont-filter-input" title="Vencimento até" onchange="renderContratos()" style="width:130px">
+    <select id="cf-email" class="cont-filter-select" onchange="renderContratos()">
+      <option value="">E-mail prog.</option>
+      <option value="ENVIAR BRC">Enviar BRC</option>
+      <option value="ENVIAR PROGRAMAÇÃO">Enviar Programação</option>
+      <option value="ENVIADO BRC">Enviado BRC</option>
+      <option value="ENVIADO PROGRAMAÇÃO">Enviado Programação</option>
+    </select>
     <button class="btn-clear-inf" onclick="limparFiltrosCont()" style="height:32px;font-size:11px">Limpar filtros</button>
   </div>
   <div class="cont-table-wrap">
@@ -958,14 +966,12 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="cont-fg-label">Status ERP</label><select id="c-status-erp" class="cont-fg-input"><option value="AGUARDANDO FECHAMENTO">AGUARDANDO FECHAMENTO</option><option value="ERP LANÇADO">ERP LANÇADO</option></select></div>
       <div><label class="cont-fg-label">Obs. Extra</label><input type="text" id="c-obs" class="cont-fg-input" placeholder="OBSERVAÇÃO EXTRA"/></div>
     </div>
-    <div class="cont-form-grid" style="margin-top:.5rem">
-      <div style="display:flex;align-items:center;gap:10px">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text)">
-          <input type="checkbox" id="c-finalizado" onchange="toggleFinalizadoPreview()" style="width:16px;height:16px;accent-color:var(--green);cursor:pointer">
-          <span style="font-weight:600">Finalizado</span>
-        </label>
-        <span style="font-size:11px;color:var(--muted)">Marca a linha como concluída (translúcida)</span>
-      </div>
+    <div style="margin:.5rem 0;display:flex;align-items:center;gap:10px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text);font-weight:600">
+        <input type="checkbox" id="c-finalizado" style="width:17px;height:17px;accent-color:#c0392b;cursor:pointer">
+        Finalizado
+      </label>
+      <span style="font-size:11px;color:var(--muted)">Linha ficará translúcida na tabela</span>
     </div>
     <div class="cont-section-label">Ações automáticas (editáveis)</div>
     <div class="cont-form-grid">
@@ -2135,11 +2141,6 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 });
 
-
-function toggleFinalizadoPreview(){
-  // Só para feedback visual imediato no modal — o save faz o persistir
-}
-
 /* ── HISTÓRICO ── */
 let histFiltro='todos',negRows=[];
 
@@ -3076,18 +3077,12 @@ function contFiltered(){
     if(fFilial&&r.filial!==fFilial)return false;
     if(fFrete&&r.frete!==fFrete)return false;
     if(fModalidade&&r.modalidade!==fModalidade)return false;
-    // Filtro vencimento
-    const vctoDE=document.getElementById('cf-vcto-de')?.value;
-    const vctoATE=document.getElementById('cf-vcto-ate')?.value;
-    if(vctoDE&&r.vencimento&&r.vencimento<vctoDE)return false;
-    if(vctoATE&&r.vencimento&&r.vencimento>vctoATE)return false;
+    if(fEmail&&r.email_programacao!==fEmail)return false;
     return true;
   });
 }
 
 function limparFiltrosCont(){
-  const vctoDE=document.getElementById('cf-vcto-de');if(vctoDE)vctoDE.value='';
-  const vctoATE=document.getElementById('cf-vcto-ate');if(vctoATE)vctoATE.value='';
   ['cf-contrato','cf-vendedor','cf-corretor'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   ['cf-filial','cf-frete','cf-modalidade','cf-email'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   renderContratos();
@@ -3120,11 +3115,11 @@ function renderContratos(){
     if(r.vencimento){const vd=new Date(r.vencimento);const diff=Math.round((vd-today2)/(1000*60*60*24));const[y,m,d]=r.vencimento.split('-');vencStr=`${d}/${m}/${y}`;if(diff>=0&&diff<=7)vencAlert=true;}
     const pillErp=r.status_erp==='ERP LANÇADO'?'pill-erp':'pill-aguardando';
     const pillEmail=r.email_programacao?.includes('ENVIADO')?'pill-enviado':(r.email_programacao?.includes('ENVIAR')?'pill-pendente':'pill-nao-precisa');
-    const rowStyle=r.finalizado?'opacity:0.38;':'';
     const pillFut=r.contrato_futuro==='ENVIADO'?'pill-enviado':(r.contrato_futuro==='PENDENTE'?'pill-pendente':'pill-nao-precisa');
     const pillInst=r.instrucao_faturamento==='PRECISA ENVIAR'?'pill-pendente':(r.instrucao_faturamento==='ENVIADO'?'pill-enviado':'pill-nao-precisa');
     const editBtns=isAdmin?'<button class="btn-edit-cont" onclick="abrirModalContrato('+r.id+')">✎</button><button class="btn-del-cont" onclick="delContrato('+r.id+')">✕</button>':'';
     const tr=document.createElement('tr');
+    if(r.finalizado)tr.classList.add('cont-row-finalizado');
     tr.innerHTML=`<td style="min-width:130px;white-space:nowrap"><strong>${r.contrato||'—'}</strong></td>
       <td>${r.filial||'—'}</td><td>${r.tipo||'—'}</td><td>${r.modalidade||'—'}</td>
       <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vendedor||''}">${r.vendedor||'—'}</td>
