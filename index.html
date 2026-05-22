@@ -351,6 +351,11 @@ tbody tr:hover{background:#fafcfb}
 .cont-table{width:100%;border-collapse:collapse;font-size:12px}
 .cont-table thead tr{background:#f5f9f6}
 .cont-table th{padding:9px 10px;text-align:left;font-size:10px;font-weight:600;color:#5a7a68;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #dde8e2;white-space:nowrap}
+.cont-th-sort{cursor:pointer;user-select:none}
+.cont-th-sort:hover{color:#1b4332;background:#edf3ef}
+.cont-th-sort::after{content:' ⇅';font-size:9px;opacity:.5}
+.cont-th-sort.asc::after{content:' ↑';opacity:1;color:#1b4332}
+.cont-th-sort.desc::after{content:' ↓';opacity:1;color:#1b4332}
 .cont-table td{padding:8px 10px;border-bottom:1px solid #edf3ef;color:#1a1a1a;font-size:12px;vertical-align:middle}
 .cont-table tbody tr:last-child td{border-bottom:none}
 .cont-table tbody tr:hover{background:#fafcfb}
@@ -851,7 +856,7 @@ select.cont-fg-input{cursor:pointer}
     <div style="overflow-x:auto">
       <table class="cont-table">
         <thead><tr>
-          <th style="min-width:130px;white-space:nowrap">Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
+          <th style="min-width:130px;white-space:nowrap" class="cont-th-sort" id="thContrato" onclick="toggleSortContrato()">Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
           <th>Vendedor</th><th>Corretor</th><th>Sacas</th><th>Variety</th><th>Valor</th><th>Frete</th>
           <th>Status ERP</th><th>Instr. Fat.</th><th>E-mail Prog.</th><th>Cont. Futuro</th>
           <th>Vencimento</th><th style="width:70px"></th>
@@ -1102,6 +1107,7 @@ const SUPA_URL='https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
 let accessToken=null,refreshToken=null,userRole='visualizador';
 let valDiffsLocked=false;
+let contSortDir=null; // null=padrão, 'asc'=crescente, 'desc'=decrescente
 function authH(x={}){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(accessToken||SUPA_KEY),...x}}
 
 /* ── AUTH ── */
@@ -3215,8 +3221,31 @@ function setContFiltro(btn,kind){
   renderContratos();
 }
 
+
+function getContNumero(contrato){
+  // Extrai número entre - e / ex: "BRC-0356/26" → 356
+  const m=String(contrato||'').match(/-(\d+)\//);
+  return m?parseInt(m[1],10):999999;
+}
+
+function toggleSortContrato(){
+  if(contSortDir===null||contSortDir==='desc') contSortDir='asc';
+  else if(contSortDir==='asc') contSortDir='desc';
+  else contSortDir=null;
+  // Atualizar classe do th
+  const th=document.getElementById('thContrato');
+  if(th){th.className='cont-th-sort'+(contSortDir?' '+contSortDir:'');}
+  renderContratos();
+}
+
 function renderContratos(){
-  const data=contFiltered();
+  let data=contFiltered();
+  // Ordenar por número de contrato se ativo
+  if(contSortDir==='asc'){
+    data=[...data].sort((a,b)=>getContNumero(a.contrato)-getContNumero(b.contrato));
+  } else if(contSortDir==='desc'){
+    data=[...data].sort((a,b)=>getContNumero(b.contrato)-getContNumero(a.contrato));
+  }
   const today=new Date(todayStr());
   const in7=contRows.filter(r=>{if(!r.vencimento)return false;const d=new Date(r.vencimento);const diff=(d-today)/(1000*60*60*24);return diff>=0&&diff<=7;}).length;
   const aguardando=contRows.filter(r=>r.status_erp==='AGUARDANDO FECHAMENTO').length;
