@@ -146,6 +146,10 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f2;color:#1a1a1a;mi
 .pricing-watermark img{width:320px;height:320px;object-fit:contain}
 #panel-pricing .page{position:relative;z-index:1}
 .btn-save-neg{background:var(--green);border:1px solid var(--green);border-radius:7px;padding:.45rem 1rem;font-family:var(--mono);font-size:11px;color:#fff;cursor:pointer;text-transform:uppercase}
+.btn-clear{background:transparent;border:1px solid #c0392b;border-radius:7px;padding:.45rem .9rem;font-family:var(--mono);font-size:11px;color:#c0392b;cursor:pointer;text-transform:uppercase;letter-spacing:.05em}
+.btn-clear:hover{background:#fde8e8}
+.val-clear-btn{background:transparent;border:1px solid #c0392b;border-radius:8px;padding:.52rem 1rem;font-family:var(--mono);font-size:12px;color:#c0392b;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;display:inline-flex;align-items:center;gap:6px}
+.val-clear-btn:hover{background:#fde8e8}
 .btn-export-csv{background:transparent;border:1px solid var(--green-dim);border-radius:7px;padding:.4rem .9rem;font-family:var(--mono);font-size:11px;color:var(--green);cursor:pointer;text-transform:uppercase}
 .btn-export-csv:hover{background:var(--green-light)}
 .filtro-btn{background:transparent;border:1px solid var(--border);border-radius:20px;padding:.3rem .9rem;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;transition:all .2s}
@@ -460,6 +464,8 @@ select.cont-fg-input{cursor:pointer}
     <button class="val-extract-btn" id="valExtractBtn" onclick="valExtrair()" disabled>
       ✦ Extrair dados do espelho
     </button>
+    <button class="val-clear-btn" onclick="valLimpar()">✕ Limpar validação</button>
+    <button class="val-clear-btn" onclick="valDirParaPricing()" style="border-color:var(--green-dim);color:var(--green)">→ Ir para Pricing</button>
     <span class="val-status" id="valStatus"></span>
   </div>
 
@@ -499,7 +505,7 @@ select.cont-fg-input{cursor:pointer}
 
     <!-- Ir para Pricing -->
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:2rem">
-      <button class="val-goto-pricing" id="valGotoPricing" onclick="valIrParaPricing()">
+      <button class="val-goto-pricing" id="valGotoPricing" onclick="valDirParaPricing()">
         → Ir para Pricing (pré-preenchido)
       </button>
       <button onclick="valSalvarConferencia()" style="background:transparent;border:1px solid var(--green-dim);border-radius:8px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:11px;color:var(--green);cursor:pointer;text-transform:uppercase">
@@ -578,12 +584,14 @@ select.cont-fg-input{cursor:pointer}
     <div class="rcard rcard-diff"><div class="rlbl">17/18 Diff</div><div><div class="rval" id="o-d1718">—</div><div id="o-d1718net" style="font-size:9px;color:var(--muted2)"></div></div><div class="runit">cts / libra</div></div>
     <div class="rcard rcard-diff"><div class="rlbl">14/16 Diff</div><div><div class="rval" id="o-d1416">—</div><div id="o-d1416net" style="font-size:9px;color:var(--muted2)"></div></div><div class="runit">cts / libra</div></div>
     <div class="rcard rcard-diff"><div class="rlbl">Bica Diff</div><div class="rval c-neg" id="o-bicadiff">—</div><div class="runit">cts / libra</div></div>
+    <div id="val-diff-lock-badge" style="display:none;font-size:10px;color:var(--green);background:var(--green-light);border-radius:6px;padding:3px 10px;margin-top:4px;text-align:center">🔒 Diffs fixados pelo espelho · <button onclick="valUnlockDiffs()" style="background:none;border:none;color:var(--green);cursor:pointer;font-size:10px;text-decoration:underline;font-family:inherit">desbloquear</button></div>
   </div>
   <div class="resumo-box">
     <div class="sec" style="margin-bottom:.5rem">Resumo</div>
     <div class="resumo-text" id="resumo-text">Preencha os campos para gerar o resumo.</div>
     <div class="resumo-actions">
       <button class="btn-copy" id="btn-copy" onclick="copiarResumo()">Copiar texto</button>
+      <button class="btn-clear" onclick="limparPricing()">✕ Limpar</button>
       <button class="btn-save-neg" id="btn-salvar-neg" onclick="abrirModal()">Salvar negociação</button>
       <button class="btn-print-neg" id="btn-print-neg" onclick="printNegociacao()" title="Salvar como imagem">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -663,12 +671,7 @@ select.cont-fg-input{cursor:pointer}
     </div>
     <button class="btn-export-csv" onclick="exportarHistExcel()">Exportar Excel</button>
   </div>
-  <div class="import-box" id="importBox">
-    <div class="import-title">📥 Migrar histórico do localStorage (uma única vez)</div>
-    <p style="font-size:12px;color:#6b8c7a;margin-bottom:.5rem">No simulador antigo, abra o console do navegador (F12) e execute: <code style="background:#f0f4f2;padding:2px 5px;border-radius:4px;font-size:11px">console.log(localStorage.getItem('brascof_historico'))</code> — cole o resultado abaixo.</p>
-    <textarea class="import-textarea" id="importJson" placeholder='[{"id":...}]'></textarea>
-    <button class="btn-import" onclick="importarHistorico()">Importar para Supabase</button>
-  </div>
+
   <div id="hist-lista"><div class="hist-vazio">Carregando histórico...</div></div>
 </div>
 
@@ -1098,6 +1101,7 @@ select.cont-fg-input{cursor:pointer}
 const SUPA_URL='https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
 let accessToken=null,refreshToken=null,userRole='visualizador';
+let valDiffsLocked=false;
 function authH(x={}){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(accessToken||SUPA_KEY),...x}}
 
 /* ── AUTH ── */
@@ -1420,11 +1424,13 @@ function calc(){
   const bicaDiff=bicaFot-kc;
   const expFobCts=expFobC/F;
   const nyLots=bags*((100-off)/100)/283.5;
-  const bd=document.getElementById('o-bicadiff');if(bd){bd.textContent=fmt(bicaDiff,2);bd.className='rval '+cc(bicaDiff);}
-  const d14=document.getElementById('o-d1416');if(d14){d14.textContent=fmt(diff1416,2);d14.className='rval '+cc(diff1416);}
-  const d17=document.getElementById('o-d1718');if(d17){d17.textContent=fmt(diff1718,2);d17.className='rval '+cc(diff1718);}
-  sv('o-d1416net','net: '+fmt(d1416net,2)+' cts/lb');
-  sv('o-d1718net','net: '+fmt(d1718net,2)+' cts/lb');
+  if(!valDiffsLocked){
+    const bd=document.getElementById('o-bicadiff');if(bd){bd.textContent=fmt(bicaDiff,2);bd.className='rval '+cc(bicaDiff);}
+    const d14=document.getElementById('o-d1416');if(d14){d14.textContent=fmt(diff1416,2);d14.className='rval '+cc(diff1416);}
+    const d17=document.getElementById('o-d1718');if(d17){d17.textContent=fmt(diff1718,2);d17.className='rval '+cc(diff1718);}
+    sv('o-d1416net','net: '+fmt(d1416net,2)+' cts/lb');
+    sv('o-d1718net','net: '+fmt(d1718net,2)+' cts/lb');
+  }
   sv('o-expfob','USD '+fmt(expFobC,2));sv('o-expcts',fmt(expFobCts,2));
   const bf=document.getElementById('o-bicafot');if(bf){bf.textContent=fmt(bicaFot,2);bf.className='rval '+cc(bicaDiff);}
   const vLots=document.getElementById('v-lots');
@@ -1437,7 +1443,18 @@ function calc(){
   sv('t-f40','<span style="color:'+(diff1718>=0?'var(--pos)':'var(--neg)')+'">'+fmt(diff1718,4)+'</span> cts/lb');
   sv('t-f41','<span style="color:'+(diff1416>=0?'var(--pos)':'var(--neg)')+'">'+fmt(diff1416,4)+'</span> cts/lb');
   sv('t-f44','<span style="color:'+(bicaDiff>=0?'var(--pos)':'var(--neg)')+'">'+fmt(bicaDiff,4)+'</span> cts/lb');
-  gerarResumo(diff1416,diff1718);tsUpdate();
+  // Se diffs travados pelo espelho, usar os valores exibidos nos elementos
+  if(valDiffsLocked){
+    const d14el=document.getElementById('o-d1416');
+    const d17el=document.getElementById('o-d1718');
+    const bd=document.getElementById('o-bicadiff');
+    const d14locked=d14el?parseFloat(d14el.textContent.replace(',','.')):diff1416;
+    const d17locked=d17el?parseFloat(d17el.textContent.replace(',','.')):diff1718;
+    gerarResumo(d14locked,d17locked);
+  } else {
+    gerarResumo(diff1416,diff1718);
+  }
+  tsUpdate();
 }
 
 function gerarResumo(diff1416,diff1718){
@@ -1669,6 +1686,9 @@ function calcPreco(){
 }
 
 function switchPTab(i){
+  // Se navegar para Pricing manualmente (não via espelho), desbloqueia diffs
+  if(i===1&&!window._viaEspelho){valDiffsLocked=false;const b=document.getElementById('val-diff-lock-badge');if(b)b.style.display='none';}
+  window._viaEspelho=false;
   document.querySelectorAll('.p-tab-btn').forEach((b,j)=>b.classList.toggle('active',i===j));
   // painel 0 = validação (ppanel-0), painéis 1-4 = pricing/diff/diff2/hist (ppanel-1,2,3,4)
   const panels=['ppanel-0','ppanel-1','ppanel-2','ppanel-3','ppanel-4'];
@@ -2059,7 +2079,24 @@ function valIrParaPricing(){
     fmtDiff(e.bica_diff, 'o-bicadiff',null,'t-f44');
   },100);
 
-  switchPTab(1); // ir para aba Precificação
+  // Travar diffs com valores do espelho após calc()
+  setTimeout(()=>{
+    const fmtD=(v,idVal,idNet)=>{
+      if(v===undefined||v===''||isNaN(parseFloat(v)))return;
+      const n=parseFloat(v);
+      const el=document.getElementById(idVal);
+      if(el){el.textContent=n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});el.className='rval '+(n>=0?'c-pos':'c-neg');}
+      if(idNet){const en=document.getElementById(idNet);if(en)en.textContent='espelho: '+n.toFixed(2)+' cts/lb';}
+    };
+    fmtD(e.diff_17_18,'o-d1718','o-d1718net');
+    fmtD(e.diff_14_16,'o-d1416','o-d1416net');
+    fmtD(e.bica_diff,'o-bicadiff',null);
+    valDiffsLocked=true;
+    const badge=document.getElementById('val-diff-lock-badge');
+    if(badge)badge.style.display='block';
+  },120);
+  window._viaEspelho=true;
+  switchPTab(1);
 }
 
 async function valSalvarConferencia(){
@@ -2135,6 +2172,90 @@ document.addEventListener('DOMContentLoaded',function(){
     valOnFileChange({target:{files:dt.files}});
   });
 });
+
+
+/* ── LIMPAR VALIDAÇÃO ── */
+
+
+async function valDirParaPricing(){
+  if(valEspelhoData){
+    // Já extraiu — preenche e trava diffs
+    valIrParaPricing();
+  } else {
+    const imgFile=document.getElementById('valFileInput')?.files[0];
+    if(imgFile){
+      // Tem imagem mas não extraiu ainda — extrai primeiro, depois vai para pricing
+      const status=document.getElementById('valStatus');
+      if(status){status.textContent='Extraindo antes de ir para Pricing...';status.className='val-status';}
+      await valExtrair();
+      // Após extrair, valEspelhoData já está preenchido
+      if(valEspelhoData) valIrParaPricing();
+    } else {
+      // Sem imagem e sem espelho — vai vazio, diffs livres
+      valDiffsLocked=false;
+      const badge=document.getElementById('val-diff-lock-badge');
+      if(badge)badge.style.display='none';
+      switchPTab(1);
+    }
+  }
+}
+
+function valUnlockDiffs(){
+  valDiffsLocked=false;
+  const badge=document.getElementById('val-diff-lock-badge');
+  if(badge)badge.style.display='none';
+  calc();
+}
+
+function valLimpar(){
+  if(!confirm('Limpar a validação atual?'))return;
+  document.getElementById('valFileInput').value='';
+  const prev=document.getElementById('valImgPreview');
+  if(prev){prev.src='';prev.style.display='none';}
+  const lbl=document.getElementById('valUploadLabel');
+  if(lbl)lbl.innerHTML='<strong>Clique ou arraste</strong> a imagem do espelho aqui';
+  document.getElementById('valExtractBtn').disabled=true;
+  const st=document.getElementById('valStatus');
+  if(st){st.textContent='';st.className='val-status';}
+  valEspelhoData=null;
+  valDigisulCols=[];
+  valDigisulEdits={};
+  valObs={};
+  const conf=document.getElementById('valConfSection');
+  if(conf)conf.style.display='none';
+  const body=document.getElementById('valConfBody');
+  if(body)body.innerHTML='';
+  const paste=document.getElementById('valDigisulPaste');
+  if(paste)paste.value='';
+  ['valSumOk','valSumErr','valSumAgt'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—';});
+  const sv=document.getElementById('valSaveStatus');
+  if(sv)sv.textContent='';
+}
+
+/* ── LIMPAR PRICING ── */
+function limparPricing(){
+  if(!confirm('Limpar todos os campos da Precificação?'))return;
+  ['i-producer','i-broker-name','i-quality','i-crop'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  const mod=document.getElementById('i-modalidade');if(mod)mod.value='NORMAL';
+  const prod=document.getElementById('v-producer');if(prod)prod.value='N';
+  const brok=document.getElementById('v-broker');if(brok)brok.value='N';
+  const cid=document.getElementById('v-cidade');if(cid&&cid.options.length)cid.selectedIndex=0;
+  ['i-date','i-paydate'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['v-bags','v-preco','v-dolar','v-kc','v-term','v-p1718','v-premio','v-off','v-grindiff','v-fundo','v-def1500'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  valDiffsLocked=false;
+  ['o-bicadiff','o-d1416','o-d1718'].forEach(id=>{
+    const el=document.getElementById(id);if(el){el.textContent='—';el.className='rval';}
+  });
+  ['o-d1416net','o-d1718net'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='';});
+  const badge=document.getElementById('val-diff-lock-badge');
+  if(badge)badge.style.display='none';
+  if(typeof calc==='function')calc();
+  if(typeof calcLots==='function')calcLots();
+}
 
 /* ── HISTÓRICO ── */
 let histFiltro='todos',negRows=[];
