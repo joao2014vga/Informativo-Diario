@@ -961,6 +961,40 @@ select.cont-fg-input{cursor:pointer}
 </div>
 
 <!-- MODAL CONTRATO -->
+<!-- Modal Dividir Contrato -->
+<div class="cont-modal-overlay" id="contDividirOverlay" style="z-index:600">
+  <div class="cont-modal-box" style="max-width:560px">
+    <div class="cont-modal-title">✂️ Dividir Contrato — <span id="dividir-cont-nome" style="color:#3a6b52;font-size:14px"></span></div>
+    <div style="font-size:12px;color:#6b8c7a;margin-bottom:1rem;background:#f5f9f6;border-radius:8px;padding:.6rem 1rem">
+      Total original: <strong id="dividir-total" style="color:#1b3a2e"></strong> sacas · Distribua entre as duas partes
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+      <div style="background:#f5f9f6;border:1px solid #d0e4d8;border-radius:10px;padding:1rem">
+        <div style="font-size:11px;font-weight:700;color:#3a6b52;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Parte A</div>
+        <label class="cont-fg-label">Contrato</label>
+        <input class="cont-fg-input" id="div-cont-a" placeholder="ex: BRV-0040/26 A" style="margin-bottom:.75rem">
+        <label class="cont-fg-label">Sacas</label>
+        <input class="cont-fg-input" id="div-sacas-a" type="number" placeholder="0" oninput="dividirCalcSaldo()" style="margin-bottom:.75rem">
+        <label class="cont-fg-label">Vencimento</label>
+        <input class="cont-fg-input" id="div-vcto-a" type="date">
+      </div>
+      <div style="background:#f5f9f6;border:1px solid #d0e4d8;border-radius:10px;padding:1rem">
+        <div style="font-size:11px;font-weight:700;color:#3a6b52;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Parte B</div>
+        <label class="cont-fg-label">Contrato</label>
+        <input class="cont-fg-input" id="div-cont-b" placeholder="ex: BRV-0040/26 B" style="margin-bottom:.75rem">
+        <label class="cont-fg-label">Sacas (saldo automático)</label>
+        <input class="cont-fg-input" id="div-sacas-b" type="number" style="margin-bottom:.75rem;background:#e8f0ec" readonly>
+        <label class="cont-fg-label">Vencimento</label>
+        <input class="cont-fg-input" id="div-vcto-b" type="date">
+      </div>
+    </div>
+    <div class="cont-modal-actions">
+      <button class="cont-btn-cancel" onclick="fecharDividir()">Cancelar</button>
+      <button class="cont-btn-save" onclick="confirmarDividir()">✓ Confirmar divisão</button>
+    </div>
+  </div>
+</div>
+
 <div class="cont-modal-overlay" id="contModalOverlay">
   <div class="cont-modal-box">
     <div class="cont-modal-title" id="contModalTitle">Novo Contrato</div>
@@ -2298,23 +2332,20 @@ function abrirDividir(){
   _dividirOriginal={
     id: contEditingId,
     contrato, sacas, vcto,
-    // Pegar todos os outros campos do modal
-    filial: document.getElementById('c-filial').value,
-    tipo: document.getElementById('c-tipo').value,
-    modalidade: document.getElementById('c-modalidade').value,
-    vendedor: document.getElementById('c-vendedor').value,
-    corretor: document.getElementById('c-corretor').value,
-    empresa_produtor: document.getElementById('c-empresa-produtor').value,
-    sacas_val: sacas,
+    filial_val: document.getElementById('c-filial')?.value||'',
+    tipo: document.getElementById('c-tipo')?.value||'',
+    modalidade: document.getElementById('c-modalidade')?.value||'',
+    vendedor: document.getElementById('c-vendedor')?.value||'',
+    corretor: document.getElementById('c-corretor')?.value||'',
+    empresa_produtor: document.getElementById('c-empresa-produtor')?.value||'',
     especie: document.getElementById('c-especie')?.value||'ARABICA',
-    valor: document.getElementById('c-valor').value,
-    frete: document.getElementById('c-frete').value,
-    status_erp: document.getElementById('c-status-erp').value,
-    obs_extra: document.getElementById('c-obs').value,
-    instrucao_faturamento: document.getElementById('c-instrucao-fat').value,
-    email_programacao: document.getElementById('c-email-prog').value,
-    contrato_futuro: document.getElementById('c-contrato-futuro').value,
-    filial_val: document.getElementById('c-filial').value,
+    valor: document.getElementById('c-valor')?.value||'',
+    frete: document.getElementById('c-frete')?.value||'',
+    status_erp: document.getElementById('c-status-erp')?.value||'',
+    obs_extra: document.getElementById('c-obs')?.value||'',
+    instrucao_faturamento: document.getElementById('c-instrucao')?.value||'',
+    email_programacao: document.getElementById('c-email-prog')?.value||'',
+    contrato_futuro: document.getElementById('c-futuro')?.value||'',
   };
   // Preencher modal
   document.getElementById('dividir-cont-nome').textContent=contrato;
@@ -3570,7 +3601,7 @@ async function exportContImagem(){
     const isBRC=(r.contrato||'').toUpperCase().startsWith('BRC');
     return `<tr>
       <td><strong>${r.contrato||'—'}</strong></td>
-      <td><span class="${isBRC?'cp-badge-c':'cp-badge-v'}">${isBRC?'COMPRA':'VENDA'}</span></td>
+      <td><span class="${isBRC?'cp-badge-c':'cp-badge-v'}">${isBRC?'PURCHASE':'SALE'}</span></td>
       <td style="text-align:right">${fmtNum(sacas)}</td>
       <td style="text-align:right">R$ ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
       <td style="text-align:right;font-weight:600">${fmtMoeda(total)}</td>
@@ -3581,12 +3612,12 @@ async function exportContImagem(){
   // Totais linha
   const totaisHtml=`
     ${totalPagSacas>0?`<div class="cp-tot-card">
-      <div class="cp-tot-label">Total Aprox. Pagamento (BRC)</div>
+      <div class="cp-tot-label">Total Approx. Payment (BRC)</div>
       <div class="cp-tot-val cp-tot-pag">${fmtMoeda(totalPagVal)}</div>
       <div style="font-size:10px;color:#c0392b;margin-top:2px">${fmtNum(totalPagSacas)} sacas</div>
     </div>`:''}
     ${totalRecSacas>0?`<div class="cp-tot-card">
-      <div class="cp-tot-label">Total Aprox. Recebimento (BRV)</div>
+      <div class="cp-tot-label">Total Approx. Receipt (BRV)</div>
       <div class="cp-tot-val cp-tot-rec">${fmtMoeda(totalRecVal)}</div>
       <div style="font-size:10px;color:#1a5c1a;margin-top:2px">${fmtNum(totalRecSacas)} sacas</div>
     </div>`:''}`;
@@ -3596,14 +3627,22 @@ async function exportContImagem(){
     <div class="cp-header">
       <div>
         <div class="cp-header-title">☕ CONTROLE COMERCIAL — CONTRATOS DE CAFÉ</div>
-        <div class="cp-header-sub">Gerado em ${hoje} · ${data.length} contrato(s)</div>
+        <div class="cp-header-sub">${(()=>{
+        const de=document.getElementById('cf-vcto-de')?.value;
+        const ate=document.getElementById('cf-vcto-ate')?.value;
+        const fmtD=v=>v?new Date(v+'T00:00:00').toLocaleDateString('pt-BR'):'';
+        if(de&&ate)return 'Filter '+fmtD(de)+' to '+fmtD(ate);
+        if(de)return 'Filter from '+fmtD(de);
+        if(ate)return 'Filter to '+fmtD(ate);
+        return 'Generated on '+hoje+' · '+data.length+' contract(s)';
+      })()}</div>
       </div>
       <img src="https://joao2014vga.github.io/Informativo-Diario/brascof-logo.png" style="height:36px;opacity:.9" onerror="this.style.display='none'">
     </div>
     <table class="cp-table">
       <thead><tr>
-        <th>Contrato</th><th>Tipo</th><th style="text-align:right">Sacas</th>
-        <th style="text-align:right">Valor/Saca</th><th style="text-align:right">Total Pagamento</th><th>Vencimento</th>
+        <th>Contract</th><th>Type</th><th style="text-align:right">Bags</th>
+        <th style="text-align:right">Value/Bag</th><th style="text-align:right">Total Payment</th><th>Due Date</th>
       </tr></thead>
       <tbody>${linhas}</tbody>
     </table>
@@ -3632,7 +3671,7 @@ function exportContExcel(){
   if(!data.length){alert('Nenhum contrato para exportar.');return;}
 
   // Título + cabeçalho igual à planilha original
-  const titulo='☕  CONTROLE COMERCIAL — CONTRATOS DE CAFÉ';
+  const titulo='☕  COMMERCIAL CONTROL — COFFEE CONTRACTS';
   const cabecalho=['MG/SP','TIPO','MODALIDADE','OBSERVAÇÃO EXTRA','CONTRATO','STATUS','VENDEDOR','CORRETOR','SACAS','VALOR','MODALIDADE','CNPJ/CPF','INSTRUÇÃO DE\nFATURAMENTO','E-MAIL DE\nPROGRAMAÇÃO','CONTRATO DE\nCOMPRA E VENDA\nFUTURO','VENCIMENTO','FINALIZADO'];
 
   const linhas=data.map(r=>[
