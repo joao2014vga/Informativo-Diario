@@ -2659,8 +2659,9 @@ function renderRisk(){
   const de=document.getElementById('fDtDe').value;
   const ate=document.getElementById('fDtAte').value;
 
-  // OBRIGATÓRIO ter hedge_date preenchido para aparecer no Risk
-  const valid=infRows.filter(r=>{
+  // Respeitar filtros de tipo e espécie ativos + obrigatório ter hedge_date
+  const base=infFiltered();
+  const valid=base.filter(r=>{
     if(!r.term||!r.lots||!r.hedge_date)return false;
     const dataRisk=r.hedge_date;
     if(de&&dataRisk<de)return false;
@@ -2760,20 +2761,7 @@ function renderRisk(){
     tbody.appendChild(tr);
   }
 
-  // Linha Net (se tiver os dois)
-  if(hasCompra&&hasVenda){
-    const tr=document.createElement('tr');
-    tr.style.borderTop='2px solid #dde8e2';
-    tr.innerHTML=`<td style="padding:6px 14px;font-size:12px;font-weight:700;color:#1b2e22;background:#f0f5f2;border-right:1px solid #dde8e2">Net</td>`;
-    months.forEach(m=>{
-      const net=(vendaData[m]||0)-(compraData[m]||0);
-      const td=document.createElement('td');
-      td.style.cssText=tdStyleBase+'font-weight:700;'+(net<0?'color:#c0392b':net>0?'color:#1a5c1a':'color:#888');
-      td.textContent=net===0?'—':net<0?'('+fmt.format(Math.abs(net))+')':'+'+fmt.format(net);
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  }
+  // Linha Net removida
 
   // Dummy para manter compatibilidade com o futuresRow original
   let futuresRow=document.getElementById('riskFuturesRow');
@@ -2782,16 +2770,16 @@ function renderRisk(){
 }
 
 function renderInf(){
-  const base=infGetByDate().filter(r=>infFilterEspecie==='todos'||(r.especie||'ARABICA')===infFilterEspecie);
-  const compras=base.filter(r=>r.tipo==='COMPRA'),vendas=base.filter(r=>r.tipo==='VENDA');
+  // Todos os totais e componentes respeitam os filtros ativos
+  const data=infFiltered();
+  const compras=data.filter(r=>r.tipo==='COMPRA'),vendas=data.filter(r=>r.tipo==='VENDA');
   document.getElementById('mQC').textContent=sumQ(compras).toLocaleString('pt-BR');
   setValColor('mDC',medW(compras));
   document.getElementById('mQV').textContent=sumQ(vendas).toLocaleString('pt-BR');
   setValColor('mDV',medW(vendas));
-  const data=infFiltered();
   const tbody=document.getElementById('infBody');tbody.innerHTML='';
   document.getElementById('infEmpty').style.display=data.length?'none':'block';
-  renderQualidade(infFiltered());
+  renderQualidade(data);
   renderRisk();
   const isAdmin=userRole==='admin';
   data.forEach(r=>{
@@ -2875,7 +2863,7 @@ async function saveInfEdit(){
     if(!res.ok)throw new Error(await res.text());
     const[updated]=await res.json();
     const idx=infRows.findIndex(r=>r.id===infEditingId);if(idx!==-1)infRows[idx]=updated;
-    closeInfModal();renderInf();renderRisk();
+    closeInfModal();renderInf();
   }catch(e){alert('Erro: '+e.message);}
   finally{btn.disabled=false;btn.textContent='Salvar alterações';}
 }
