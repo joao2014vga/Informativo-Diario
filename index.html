@@ -403,6 +403,23 @@ select.cont-fg-input{cursor:pointer}
 }
 .cont-row-finalizado{opacity:0.32!important;filter:grayscale(0.7)!important;background:#ebebeb!important}
 .cont-row-finalizado td,.cont-row-finalizado strong,.cont-row-finalizado span{color:#aaa!important;font-style:italic}
+#cont-print-frame{position:fixed;left:-9999px;top:0;width:900px;background:#fff;padding:2rem;font-family:'Segoe UI',Arial,sans-serif;z-index:-1}
+.cp-header{background:#1b3a2e;color:#fff;padding:1rem 1.25rem;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:0}
+.cp-header-title{font-size:15px;font-weight:700;letter-spacing:.04em}
+.cp-header-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
+.cp-table{width:100%;border-collapse:collapse;font-size:12px}
+.cp-table th{background:#f0f4f2;color:#3a6b52;font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:7px 10px;text-align:left;border-bottom:2px solid #d0e4d8}
+.cp-table td{padding:8px 10px;border-bottom:1px solid #e8f0ec;vertical-align:middle}
+.cp-table tr:nth-child(even) td{background:#f9fbf9}
+.cp-badge-c{background:#fde8e8;color:#922020;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700}
+.cp-badge-v{background:#e8f5e9;color:#1a5c1a;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700}
+.cp-totais{display:flex;gap:16px;padding:1rem 1.25rem;background:#f5f9f6;border-top:2px solid #d0e4d8;border-radius:0 0 8px 8px;justify-content:flex-end}
+.cp-tot-card{text-align:right}
+.cp-tot-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6b8c7a;font-weight:600}
+.cp-tot-val{font-size:18px;font-weight:700;margin-top:2px}
+.cp-tot-pag{color:#c0392b}
+.cp-tot-rec{color:#1a5c1a}
+.cp-footer{font-size:9px;color:#8aab97;text-align:center;margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -825,6 +842,7 @@ select.cont-fg-input{cursor:pointer}
       <button class="seg-btn" data-v="ERP LANÇADO" onclick="setContFiltro(this,'status')">ERP Lançado</button>
     </div>
     <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
+    <button class="btn-export-cont" onclick="exportContImagem()" id="btnContImg">📷 Salvar imagem</button>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
     <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
@@ -969,12 +987,16 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="cont-fg-label">Status ERP</label><select id="c-status-erp" class="cont-fg-input"><option value="AGUARDANDO FECHAMENTO">AGUARDANDO FECHAMENTO</option><option value="ERP LANÇADO">ERP LANÇADO</option></select></div>
       <div><label class="cont-fg-label">Obs. Extra</label><input type="text" id="c-obs" class="cont-fg-input" placeholder="OBSERVAÇÃO EXTRA"/></div>
     </div>
-    <div style="margin:.5rem 0;display:flex;align-items:center;gap:10px">
+    <div style="margin:.5rem 0;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text);font-weight:600">
         <input type="checkbox" id="c-finalizado" style="width:17px;height:17px;accent-color:#c0392b;cursor:pointer">
         Finalizado
       </label>
-      <span style="font-size:11px;color:var(--muted)">Linha ficará translúcida na tabela</span>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#7a5aaa;font-weight:600">
+        <input type="checkbox" id="c-dividido" style="width:17px;height:17px;accent-color:#7a5aaa;cursor:pointer" disabled>
+        Dividido
+      </label>
+      <button onclick="abrirDividir()" style="background:transparent;border:1px solid #d0e4d8;border-radius:7px;padding:4px 12px;font-size:11px;color:#3a6b52;cursor:pointer;font-family:var(--mono);text-transform:uppercase" id="btnDividirCont">✂️ Dividir contrato</button>
     </div>
     <div class="cont-section-label">Ações automáticas (editáveis)</div>
     <div class="cont-form-grid">
@@ -1063,6 +1085,7 @@ select.cont-fg-input{cursor:pointer}
   <div class="pf-footer">Brascof · Fator fixo: 1,3228 · Milling Loss: 0,25% · Dry Mill: USD 3/saca · Juros: 11% a.a.</div>
 </div>
 <!-- FRAME PRINT INFORMATIVO -->
+<div id="cont-print-frame"></div>
 <div id="inf-print-frame" style="position:fixed;left:-9999px;top:0;width:1100px;background:#f0f4f2;padding:1.5rem;font-family:'Segoe UI',Arial,sans-serif;z-index:-1">
 
   <!-- Header -->
@@ -2263,6 +2286,114 @@ function limparPricing(){
   if(typeof calcLots==='function')calcLots();
 }
 
+
+/* ── DIVIDIR CONTRATO ── */
+let _dividirOriginal=null;
+
+function abrirDividir(){
+  const contrato=document.getElementById('c-contrato').value||'';
+  const sacas=parseFloat(document.getElementById('c-sacas').value)||0;
+  const vcto=document.getElementById('c-vencimento').value||'';
+  if(!sacas){alert('Informe as sacas antes de dividir.');return;}
+  _dividirOriginal={
+    id: contEditingId,
+    contrato, sacas, vcto,
+    // Pegar todos os outros campos do modal
+    filial: document.getElementById('c-filial').value,
+    tipo: document.getElementById('c-tipo').value,
+    modalidade: document.getElementById('c-modalidade').value,
+    vendedor: document.getElementById('c-vendedor').value,
+    corretor: document.getElementById('c-corretor').value,
+    empresa_produtor: document.getElementById('c-empresa-produtor').value,
+    sacas_val: sacas,
+    especie: document.getElementById('c-especie')?.value||'ARABICA',
+    valor: document.getElementById('c-valor').value,
+    frete: document.getElementById('c-frete').value,
+    status_erp: document.getElementById('c-status-erp').value,
+    obs_extra: document.getElementById('c-obs').value,
+    instrucao_faturamento: document.getElementById('c-instrucao-fat').value,
+    email_programacao: document.getElementById('c-email-prog').value,
+    contrato_futuro: document.getElementById('c-contrato-futuro').value,
+    filial_val: document.getElementById('c-filial').value,
+  };
+  // Preencher modal
+  document.getElementById('dividir-cont-nome').textContent=contrato;
+  document.getElementById('dividir-total').textContent=sacas.toLocaleString('pt-BR');
+  document.getElementById('div-cont-a').value=contrato+' A';
+  document.getElementById('div-cont-b').value=contrato+' B';
+  document.getElementById('div-sacas-a').value='';
+  document.getElementById('div-sacas-b').value=sacas;
+  document.getElementById('div-vcto-a').value=vcto;
+  document.getElementById('div-vcto-b').value='';
+  document.getElementById('contDividirOverlay').classList.add('open');
+}
+
+function fecharDividir(){
+  document.getElementById('contDividirOverlay').classList.remove('open');
+}
+
+function dividirCalcSaldo(){
+  const total=_dividirOriginal?.sacas||0;
+  const a=parseFloat(document.getElementById('div-sacas-a').value)||0;
+  const saldo=Math.max(0,total-a);
+  document.getElementById('div-sacas-b').value=saldo||'';
+}
+
+async function confirmarDividir(){
+  const o=_dividirOriginal;
+  if(!o){return;}
+  const contA=document.getElementById('div-cont-a').value.trim();
+  const contB=document.getElementById('div-cont-b').value.trim();
+  const sacasA=parseFloat(document.getElementById('div-sacas-a').value)||0;
+  const sacasB=parseFloat(document.getElementById('div-sacas-b').value)||0;
+  const vctoA=document.getElementById('div-vcto-a').value;
+  const vctoB=document.getElementById('div-vcto-b').value;
+  if(!contA||!contB||!sacasA||!sacasB){alert('Preencha todos os campos.');return;}
+  if(sacasA+sacasB!==o.sacas){
+    if(!confirm(`Atenção: ${sacasA}+${sacasB}=${sacasA+sacasB} ≠ ${o.sacas} sacas originais. Continuar mesmo assim?`))return;
+  }
+  const btn=document.querySelector('#contDividirOverlay .cont-btn-save');
+  btn.disabled=true;btn.textContent='Salvando...';
+
+  const base={
+    filial:o.filial_val,tipo:o.tipo,modalidade:o.modalidade,
+    vendedor:o.vendedor,corretor:o.corretor,empresa_produtor:o.empresa_produtor,
+    especie:o.especie,valor:o.valor,frete:o.frete,status_erp:o.status_erp,
+    obs_extra:o.obs_extra,instrucao_faturamento:o.instrucao_faturamento,
+    email_programacao:o.email_programacao,contrato_futuro:o.contrato_futuro,
+  };
+
+  try{
+    // 1. Marcar original como dividido
+    await fetch(`${SUPA_URL}/rest/v1/contratos?id=eq.${o.id}`,{
+      method:'PATCH',headers:authH(),
+      body:JSON.stringify({dividido:true,finalizado:false})
+    });
+
+    // 2. Criar Parte A
+    await fetch(`${SUPA_URL}/rest/v1/contratos`,{
+      method:'POST',headers:authH({'Prefer':'return=representation'}),
+      body:JSON.stringify({...base,contrato:contA,sacas:sacasA,vencimento:vctoA||null})
+    });
+
+    // 3. Criar Parte B
+    await fetch(`${SUPA_URL}/rest/v1/contratos`,{
+      method:'POST',headers:authH({'Prefer':'return=representation'}),
+      body:JSON.stringify({...base,contrato:contB,sacas:sacasB,vencimento:vctoB||null})
+    });
+
+    fecharDividir();
+    document.getElementById('contModalOverlay').classList.remove('open');
+    alert('Contrato dividido com sucesso!');
+    // Recarregar contratos
+    const res=await fetch(`${SUPA_URL}/rest/v1/contratos?order=id.desc&limit=500`,{headers:authH()});
+    if(res.ok){contRows=await res.json();renderContratos();}
+  }catch(e){
+    alert('Erro ao dividir: '+e.message);
+  }finally{
+    btn.disabled=false;btn.textContent='✓ Confirmar divisão';
+  }
+}
 /* ── HISTÓRICO ── */
 let histFiltro='todos',negRows=[];
 
@@ -3189,6 +3320,8 @@ function contFiltered(){
     if(fModalidade&&r.modalidade!==fModalidade)return false;
     const vctoDE=document.getElementById('cf-vcto-de')?.value;
     const vctoATE=document.getElementById('cf-vcto-ate')?.value;
+    // Se filtro de datas ativo e contrato sem vencimento → excluir
+    if((vctoDE||vctoATE)&&!r.vencimento)return false;
     if(vctoDE&&r.vencimento&&r.vencimento<vctoDE)return false;
     if(vctoATE&&r.vencimento&&r.vencimento>vctoATE)return false;
     return true;
@@ -3256,6 +3389,7 @@ function renderContratos(){
     const editBtns=isAdmin?'<button class="btn-edit-cont" onclick="abrirModalContrato('+r.id+')">✎</button><button class="btn-del-cont" onclick="delContrato('+r.id+')">✕</button>':'';
     const tr=document.createElement('tr');
     if(r.finalizado)tr.classList.add('cont-row-finalizado');
+    if(r.dividido)tr.classList.add('cont-row-dividido');
     tr.innerHTML=`<td style="min-width:130px;white-space:nowrap"><strong>${r.contrato||'—'}</strong></td>
       <td>${r.filial||'—'}</td><td>${r.tipo||'—'}</td><td>${r.modalidade||'—'}</td>
       <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vendedor||''}">${r.vendedor||'—'}</td>
@@ -3337,6 +3471,7 @@ function abrirModalContrato(id){
     document.getElementById('c-instrucao').value=r.instrucao_faturamento||'NÃO PRECISA';
     document.getElementById('c-email-prog').value=r.email_programacao||'ENVIAR BRC';
     document.getElementById('c-finalizado').checked=r.finalizado||false;
+    document.getElementById('c-dividido').checked=r.dividido||false;
     document.getElementById('c-futuro').value=r.contrato_futuro||'NÃO PRECISA ENVIAR';
     document.getElementById('c-especie').value=r.especie||'ARABICA';
   }
@@ -3365,6 +3500,7 @@ async function salvarContrato(){
     instrucao_faturamento:document.getElementById('c-instrucao').value,
     email_programacao:document.getElementById('c-email-prog').value,
       finalizado:document.getElementById('c-finalizado').checked,
+      dividido:document.getElementById('c-dividido').checked,
     status_email:document.getElementById('c-email-prog').value.includes('ENVIADO')?'ENVIADO':'PENDENTE',
     contrato_futuro:document.getElementById('c-futuro').value,
     status_futuro:document.getElementById('c-futuro').value==='ENVIADO'?'ENVIADO':'PENDENTE',
@@ -3401,6 +3537,94 @@ async function importarPlanilha(){
   btn.disabled=false;btn.textContent='📥 Importar planilha histórica';
   alert(`Importação concluída!\n✅ Importados: ${ok}\n❌ Erros: ${err}`);
   if(ok>0){await fetchContratos();btn.style.display='none';}
+}
+
+async function exportContImagem(){
+  const data=contFiltered().filter(r=>r.vencimento&&r.vencimento.trim()!==''&&!r.finalizado);
+  if(!data.length){alert('Nenhum contrato com vencimento preenchido.');return;}
+  const btn=document.getElementById('btnContImg');
+  btn.disabled=true;btn.textContent='Gerando...';
+
+  // Calcular totais
+  let totalPagSacas=0,totalPagVal=0,totalRecSacas=0,totalRecVal=0;
+  data.forEach(r=>{
+    const sacas=parseFloat(r.sacas)||0;
+    const valor=parseFloat(String(r.valor||'').replace(/[^0-9.,]/g,'').replace(',','.'))||0;
+    const total=sacas*valor;
+    if((r.contrato||'').toUpperCase().startsWith('BRC')){
+      totalPagSacas+=sacas; totalPagVal+=total;
+    } else {
+      totalRecSacas+=sacas; totalRecVal+=total;
+    }
+  });
+
+  const fmtMoeda=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtNum=v=>v.toLocaleString('pt-BR');
+  const hoje=new Date().toLocaleDateString('pt-BR');
+
+  // Montar linhas da tabela
+  const linhas=data.map(r=>{
+    const sacas=parseFloat(r.sacas)||0;
+    const valor=parseFloat(String(r.valor||'').replace(/[^0-9.,]/g,'').replace(',','.'))||0;
+    const total=sacas*valor;
+    const isBRC=(r.contrato||'').toUpperCase().startsWith('BRC');
+    return `<tr>
+      <td><strong>${r.contrato||'—'}</strong></td>
+      <td><span class="${isBRC?'cp-badge-c':'cp-badge-v'}">${isBRC?'COMPRA':'VENDA'}</span></td>
+      <td style="text-align:right">${fmtNum(sacas)}</td>
+      <td style="text-align:right">R$ ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+      <td style="text-align:right;font-weight:600">${fmtMoeda(total)}</td>
+      <td>${r.vencimento?new Date(r.vencimento+'T00:00:00').toLocaleDateString('pt-BR'):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  // Totais linha
+  const totaisHtml=`
+    ${totalPagSacas>0?`<div class="cp-tot-card">
+      <div class="cp-tot-label">Total Aprox. Pagamento (BRC)</div>
+      <div class="cp-tot-val cp-tot-pag">${fmtMoeda(totalPagVal)}</div>
+      <div style="font-size:10px;color:#c0392b;margin-top:2px">${fmtNum(totalPagSacas)} sacas</div>
+    </div>`:''}
+    ${totalRecSacas>0?`<div class="cp-tot-card">
+      <div class="cp-tot-label">Total Aprox. Recebimento (BRV)</div>
+      <div class="cp-tot-val cp-tot-rec">${fmtMoeda(totalRecVal)}</div>
+      <div style="font-size:10px;color:#1a5c1a;margin-top:2px">${fmtNum(totalRecSacas)} sacas</div>
+    </div>`:''}`;
+
+  const frame=document.getElementById('cont-print-frame');
+  frame.innerHTML=`
+    <div class="cp-header">
+      <div>
+        <div class="cp-header-title">☕ CONTROLE COMERCIAL — CONTRATOS DE CAFÉ</div>
+        <div class="cp-header-sub">Gerado em ${hoje} · ${data.length} contrato(s)</div>
+      </div>
+      <img src="https://joao2014vga.github.io/Informativo-Diario/brascof-logo.png" style="height:36px;opacity:.9" onerror="this.style.display='none'">
+    </div>
+    <table class="cp-table">
+      <thead><tr>
+        <th>Contrato</th><th>Tipo</th><th style="text-align:right">Sacas</th>
+        <th style="text-align:right">Valor/Saca</th><th style="text-align:right">Total Pagamento</th><th>Vencimento</th>
+      </tr></thead>
+      <tbody>${linhas}</tbody>
+    </table>
+    <div class="cp-totais">${totaisHtml}</div>
+    <div class="cp-footer">Brascof · Relatório gerado automaticamente · ${hoje}</div>`;
+
+  frame.style.left='-9999px';
+  document.body.appendChild(frame);
+
+  try{
+    await new Promise(r=>setTimeout(r,300));
+    const canvas=await html2canvas(frame,{scale:2,useCORS:true,backgroundColor:'#fff',logging:false,width:900,windowWidth:900});
+    const link=document.createElement('a');
+    link.download='contratos_'+hoje.replace(/\//g,'-')+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }catch(e){alert('Erro ao gerar imagem: '+e.message);}
+  finally{
+    frame.style.left='-9999px';
+    btn.disabled=false;btn.textContent='📷 Salvar imagem';
+  }
 }
 
 function exportContExcel(){
