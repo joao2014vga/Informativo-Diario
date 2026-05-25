@@ -2925,8 +2925,8 @@ function renderQualidade(data){
         <div class="qual-row-label">
           <div class="qual-row-type"><span class="badge badge-c">PURCHASE</span></div>
           <div class="qual-row-stats">
-            <div class="qual-row-stat"><span class="qual-row-stat-label">Sacas</span><span class="qual-row-stat-val">${g.compra.sacas.toLocaleString('pt-BR')}</span></div>
-            <div class="qual-row-stat"><span class="qual-row-stat-label">Média Dif</span><span class="qual-row-stat-val" style="color:${colDif(medC)}">${fmtDif(medC)}</span></div>
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Bags</span><span class="qual-row-stat-val">${g.compra.sacas.toLocaleString('pt-BR')}</span></div>
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Avg Diff</span><span class="qual-row-stat-val" style="color:${colDif(medC)}">${fmtDif(medC)}</span></div>
           </div>
         </div>
         <div class="qual-bar-wrap"><div class="qual-bar qual-bar-c" style="width:${pctC}%"></div></div>
@@ -2936,8 +2936,8 @@ function renderQualidade(data){
         <div class="qual-row-label">
           <div class="qual-row-type"><span class="badge badge-v">SALE</span></div>
           <div class="qual-row-stats">
-            <div class="qual-row-stat"><span class="qual-row-stat-label">Sacas</span><span class="qual-row-stat-val">${g.venda.sacas.toLocaleString('pt-BR')}</span></div>
-            <div class="qual-row-stat"><span class="qual-row-stat-label">Média Dif</span><span class="qual-row-stat-val" style="color:${colDif(medV)}">${fmtDif(medV)}</span></div>
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Bags</span><span class="qual-row-stat-val">${g.venda.sacas.toLocaleString('pt-BR')}</span></div>
+            <div class="qual-row-stat"><span class="qual-row-stat-label">Avg Diff</span><span class="qual-row-stat-val" style="color:${colDif(medV)}">${fmtDif(medV)}</span></div>
           </div>
         </div>
         <div class="qual-bar-wrap"><div class="qual-bar qual-bar-v" style="width:${pctV}%"></div></div>
@@ -3009,8 +3009,8 @@ async function salvarImagemInformativo(){
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
             <span style="background:#e3eef9;color:#1a4f82;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600">PURCHASE</span>
             <div style="display:flex;gap:10px;font-size:10px">
-              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">SACAS</span><span style="font-weight:600">${g.compra.sacas.toLocaleString('pt-BR')}</span></div>
-              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">MÉD. DIF</span><span style="font-weight:600;color:${colD(mC)}">${fmtDif(mC)}</span></div>
+              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">BAGS</span><span style="font-weight:600">${g.compra.sacas.toLocaleString('pt-BR')}</span></div>
+              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">AVG DIFF</span><span style="font-weight:600;color:${colD(mC)}">${fmtDif(mC)}</span></div>
             </div>
           </div>
           <div style="height:6px;background:#f0f4f2;border-radius:20px;overflow:hidden"><div style="height:100%;width:${pC}%;background:linear-gradient(90deg,#1a4f82,#4a8fd4);border-radius:20px"></div></div>
@@ -3020,8 +3020,8 @@ async function salvarImagemInformativo(){
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
             <span style="background:#e3f4e3;color:#1a5c1a;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600">SALE</span>
             <div style="display:flex;gap:10px;font-size:10px">
-              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">SACAS</span><span style="font-weight:600">${g.venda.sacas.toLocaleString('pt-BR')}</span></div>
-              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">MÉD. DIF</span><span style="font-weight:600;color:${colD(mV)}">${fmtDif(mV)}</span></div>
+              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">BAGS</span><span style="font-weight:600">${g.venda.sacas.toLocaleString('pt-BR')}</span></div>
+              <div><span style="color:#8aab97;font-size:8px;display:block;text-align:right">AVG DIFF</span><span style="font-weight:600;color:${colD(mV)}">${fmtDif(mV)}</span></div>
             </div>
           </div>
           <div style="height:6px;background:#f0f4f2;border-radius:20px;overflow:hidden"><div style="height:100%;width:${pV}%;background:linear-gradient(90deg,#1a5c1a,#4caf7d);border-radius:20px"></div></div>
