@@ -853,6 +853,10 @@ select.cont-fg-input{cursor:pointer}
     </div>
     <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
     <button class="btn-export-cont" onclick="exportContImagem()" id="btnContImg">👁 Visualizar relatório</button>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer;margin-left:4px">
+      <input type="checkbox" id="chkMostrarFinalizados" onchange="exportContImagem()" style="accent-color:#1b3a2e;width:14px;height:14px">
+      Incluir finalizados
+    </label>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
     <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
@@ -885,7 +889,7 @@ select.cont-fg-input{cursor:pointer}
       <table class="cont-table">
         <thead><tr>
           <th style="min-width:130px;white-space:nowrap" class="cont-th-sort" id="thContrato" onclick="toggleSortContrato()">Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
-          <th>Vendedor</th><th>Corretor</th><th>Sacas</th><th>Variety</th><th>Valor</th><th>Frete</th>
+          <th>Vendedor</th><th>Corretor</th><th>Sacas</th><th>Variety</th><th>Quality</th><th>Valor</th><th>Frete</th>
           <th>Status ERP</th><th>Instr. Fat.</th><th>E-mail Prog.</th><th>Cont. Futuro</th>
           <th>Vencimento</th><th style="width:70px"></th>
         </tr></thead>
@@ -1039,6 +1043,7 @@ select.cont-fg-input{cursor:pointer}
     <div class="cont-form-grid four">
       <div><label class="cont-fg-label">Bags</label><input type="number" id="c-sacas" class="cont-fg-input" placeholder="0" style="text-transform:none"/></div>
       <div><label class="cont-fg-label">Variety</label><select id="c-especie" class="cont-fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
+      <div><label class="cont-fg-label">Quality</label><input type="text" id="c-quality" class="cont-fg-input" placeholder="ex: BC4, BC15..." style="text-transform:uppercase"></div>
       <div><label class="cont-fg-label">Valor R$/saca</label><input type="number" id="c-valor" class="cont-fg-input" placeholder="0.00" step="0.01" style="text-transform:none"/></div>
       <div><label class="cont-fg-label">Frete</label><select id="c-frete" class="cont-fg-input" onchange="autoFillContrato()"><option value="Posto">POSTO</option><option value="Retirar">RETIRAR</option></select></div>
       <div><label class="cont-fg-label">Vencimento</label><input type="date" id="c-vencimento" class="cont-fg-input" style="text-transform:none"/></div>
@@ -2659,6 +2664,7 @@ async function salvarNegociacao(){
       valor:parseFloat(snap.brl)||null,
       frete:frete,
       especie:(document.getElementById('c-especie')?document.getElementById('c-especie').value:null)||null,
+      quality_cont:(document.getElementById('c-quality')?document.getElementById('c-quality').value:null)||null,
       vencimento:document.getElementById('i-paydate').value||null,
       obs_extra:'',
       status_erp:'AGUARDANDO FECHAMENTO',
@@ -3452,6 +3458,7 @@ function renderContratos(){
       <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vendedor||''}">${r.vendedor||'—'}</td>
       <td>${r.corretor||'—'}</td><td>${r.sacas||'—'}</td>
       <td><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${(r.especie||'ARABICA')==='CONILON'?'#f0e8ff':'#fef3e2'};color:${(r.especie||'ARABICA')==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
+      <td style="font-size:11px;font-weight:600;color:#1b3a2e;text-align:center">${r.quality_cont||'—'}</td>
       <td>${r.valor?'R$ '+Number(r.valor).toLocaleString('pt-BR',{minimumFractionDigits:0}):'—'}</td>
       <td>${r.frete||'—'}</td>
       <td><span class="status-pill ${pillErp}">${r.status_erp||'—'}</span></td>
@@ -3511,6 +3518,7 @@ function abrirModalContrato(id){
   if(id===null){
     document.getElementById('contModalTitle').textContent='Novo Contrato';
     ['c-contrato','c-vendedor','c-corretor','c-sacas','c-valor','c-obs','c-vencimento'].forEach(x=>document.getElementById(x).value='');
+    const qEl=document.getElementById('c-quality');if(qEl)qEl.value='';
     document.getElementById('c-filial').value='MG';document.getElementById('c-tipo').value='Compra';
     document.getElementById('c-modalidade').value='Normal';document.getElementById('c-frete').value='Posto';
     document.getElementById('c-empresa-produtor').value='Empresa';document.getElementById('c-status-erp').value='AGUARDANDO FECHAMENTO';
@@ -3531,6 +3539,7 @@ function abrirModalContrato(id){
     document.getElementById('c-dividido').checked=r.dividido||false;
     document.getElementById('c-futuro').value=r.contrato_futuro||'NÃO PRECISA ENVIAR';
     document.getElementById('c-especie').value=r.especie||'ARABICA';
+    document.getElementById('c-quality').value=r.quality_cont||'';
   }
   document.getElementById('contModalOverlay').classList.add('open');
 }
@@ -3561,6 +3570,7 @@ async function salvarContrato(){
     status_email:document.getElementById('c-email-prog').value.includes('ENVIADO')?'ENVIADO':'PENDENTE',
     contrato_futuro:document.getElementById('c-futuro').value,
     status_futuro:document.getElementById('c-futuro').value==='ENVIADO'?'ENVIADO':'PENDENTE',
+    quality_cont:(document.getElementById('c-quality')?.value||'').toUpperCase()||null,
   };
   const btn=document.getElementById('btnSaveCont');btn.disabled=true;btn.textContent='Saving...';
   try{
@@ -3597,8 +3607,9 @@ async function importarPlanilha(){
 }
 
 async function exportContImagem(){
+  const inclFin=document.getElementById('chkMostrarFinalizados')?.checked;
   const data=contFiltered()
-    .filter(r=>r.vencimento&&r.vencimento.trim()!==''&&!r.finalizado)
+    .filter(r=>r.vencimento&&r.vencimento.trim()!==''&&(inclFin||!r.finalizado))
     .sort((a,b)=>{
       const getN=c=>{const m=String(c||'').match(/-(\d+)\//);return m?parseInt(m[1],10):0;};
       return getN(b.contrato)-getN(a.contrato); // decrescente
@@ -3633,6 +3644,7 @@ async function exportContImagem(){
     return `<tr>
       <td><strong>${r.contrato||'—'}</strong></td>
       <td><span class="${isBRC?'cp-badge-c':'cp-badge-v'}">${isBRC?'PURCHASE':'SALE'}</span></td>
+      <td style="font-weight:600;color:#1b3a2e">${r.quality_cont||'—'}</td>
       <td style="text-align:right">${fmtNum(sacas)}</td>
       <td style="text-align:right">R$ ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
       <td style="text-align:right;font-weight:600">${fmtMoeda(total)}</td>
@@ -3672,13 +3684,61 @@ async function exportContImagem(){
     </div>
     <table class="cp-table">
       <thead><tr>
-        <th>Contract</th><th>Type</th><th style="text-align:right">Bags</th>
+        <th>Contract</th><th>Type</th><th>Quality</th><th style="text-align:right">Bags</th>
         <th style="text-align:right">Value/Bag</th><th style="text-align:right">Total Payment</th><th>Due Date</th>
       </tr></thead>
       <tbody>${linhas}</tbody>
     </table>
     <div class="cp-totais">${totaisHtml}</div>
     <div class="cp-footer">Brascof · Relatório gerado automaticamente · ${hoje}</div>`;
+
+  // Quality Analysis — agrupar por quality_cont
+  const qGrupos={};
+  data.forEach(r=>{
+    const q=(r.quality_cont||'').toUpperCase();
+    if(!q)return;
+    const isBRC=(r.contrato||'').toUpperCase().startsWith('BRC');
+    const sacas=parseFloat(r.sacas)||0;
+    if(!qGrupos[q])qGrupos[q]={purchase:0,sale:0};
+    if(isBRC)qGrupos[q].purchase+=sacas;
+    else qGrupos[q].sale+=sacas;
+  });
+  const qKeys=Object.keys(qGrupos).sort((a,b)=>{
+    const na=a.match(/[0-9]+/),nb=b.match(/[0-9]+/);
+    if(na&&nb){const d=parseInt(na[0])-parseInt(nb[0]);if(d)return d;}
+    return a.localeCompare(b);
+  });
+  if(qKeys.length){
+    const totalP=qKeys.reduce((s,q)=>s+qGrupos[q].purchase,0);
+    const totalS=qKeys.reduce((s,q)=>s+qGrupos[q].sale,0);
+    const cards=qKeys.map(q=>{
+      const g=qGrupos[q];
+      const pctP=totalP?Math.round((g.purchase/totalP)*100):0;
+      const pctS=totalS?Math.round((g.sale/totalS)*100):0;
+      const hasP=g.purchase>0, hasS=g.sale>0;
+      return '<div style="background:#fff;border:1px solid #dde8e2;border-radius:10px;padding:.75rem 1rem;min-width:180px">'+
+        '<div style="font-size:12px;font-weight:700;color:#1a1a1a;margin-bottom:.6rem">'+q+'</div>'+
+        (hasP?'<div style="margin-bottom:6px">'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
+          '<span style="background:#e3eef9;color:#1a4f82;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">PURCHASE</span>'+
+          '<span style="font-size:9px;color:#6b8c7a">Bags <strong>'+g.purchase.toLocaleString('pt-BR')+'</strong></span></div>'+
+          '<div style="background:#e8f0ec;border-radius:3px;height:6px;overflow:hidden">'+
+          '<div style="width:'+pctP+'%;height:100%;background:#1a4f82;border-radius:3px"></div></div></div>':'')+
+        (hasP&&hasS?'<div style="height:1px;background:#e8f0ec;margin:6px 0"></div>':'')+
+        (hasS?'<div>'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
+          '<span style="background:#e3f4e3;color:#1a5c1a;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">SALE</span>'+
+          '<span style="font-size:9px;color:#6b8c7a">Bags <strong>'+g.sale.toLocaleString('pt-BR')+'</strong></span></div>'+
+          '<div style="background:#e8f0ec;border-radius:3px;height:6px;overflow:hidden">'+
+          '<div style="width:'+pctS+'%;height:100%;background:#1a5c1a;border-radius:3px"></div></div></div>':'')+
+        '</div>';
+    }).join('');
+    const qaDiv=document.createElement('div');
+    qaDiv.style.cssText='padding:1rem 1.25rem;background:#f5f9f6;border-top:2px solid #d0e4d8';
+    qaDiv.innerHTML='<div style="font-size:10px;font-weight:700;color:#3a6b52;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Quality Analysis</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:10px">'+cards+'</div>';
+    frame.appendChild(qaDiv);
+  }
 
   frame.style.left='-9999px';
   document.body.appendChild(frame);
