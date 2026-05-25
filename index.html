@@ -404,6 +404,16 @@ select.cont-fg-input{cursor:pointer}
 .cont-row-finalizado{opacity:0.32!important;filter:grayscale(0.7)!important;background:#ebebeb!important}
 .cont-row-finalizado td,.cont-row-finalizado strong,.cont-row-finalizado span{color:#aaa!important;font-style:italic}
 #cont-print-frame{position:fixed;left:-9999px;top:0;width:900px;background:#fff;padding:2rem;font-family:'Segoe UI',Arial,sans-serif;z-index:-1}
+#cont-preview-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto}
+#cont-preview-modal.open{display:flex}
+.cont-preview-box{background:#fff;border-radius:14px;overflow:hidden;max-width:960px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.cont-preview-toolbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;background:#1b3a2e;gap:10px}
+.cont-preview-toolbar span{color:rgba(255,255,255,.8);font-size:13px}
+.cont-preview-actions{display:flex;gap:8px}
+.btn-preview-save{background:#4caf50;border:none;border-radius:7px;padding:6px 16px;font-size:12px;color:#fff;cursor:pointer;font-weight:600}
+.btn-preview-close{background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:7px;padding:6px 14px;font-size:12px;color:#fff;cursor:pointer}
+.cont-preview-content{padding:1.5rem;background:#f0f4f2;min-height:400px;display:flex;align-items:flex-start;justify-content:center}
+.cont-preview-content img{max-width:100%;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12)}
 .cp-header{background:#1b3a2e;color:#fff;padding:1rem 1.25rem;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:0}
 .cp-header-title{font-size:15px;font-weight:700;letter-spacing:.04em}
 .cp-header-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
@@ -842,7 +852,7 @@ select.cont-fg-input{cursor:pointer}
       <button class="seg-btn" data-v="ERP LANÇADO" onclick="setContFiltro(this,'status')">ERP Lançado</button>
     </div>
     <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
-    <button class="btn-export-cont" onclick="exportContImagem()" id="btnContImg">📷 Salvar imagem</button>
+    <button class="btn-export-cont" onclick="exportContImagem()" id="btnContImg">👁 Visualizar relatório</button>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
     <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
@@ -961,6 +971,22 @@ select.cont-fg-input{cursor:pointer}
 </div>
 
 <!-- MODAL CONTRATO -->
+<!-- Modal Preview Contratos -->
+<div id="cont-preview-modal">
+  <div class="cont-preview-box">
+    <div class="cont-preview-toolbar">
+      <span id="cont-preview-label">Relatório de Contratos</span>
+      <div class="cont-preview-actions">
+        <button class="btn-preview-save" onclick="salvarContImagem()">⬇ Salvar imagem</button>
+        <button class="btn-preview-close" onclick="document.getElementById('cont-preview-modal').classList.remove('open')">✕ Fechar</button>
+      </div>
+    </div>
+    <div class="cont-preview-content" id="cont-preview-content">
+      <div style="color:#6b8c7a;font-size:13px">Gerando preview...</div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Dividir Contrato -->
 <div class="cont-modal-overlay" id="contDividirOverlay" style="z-index:600">
   <div class="cont-modal-box" style="max-width:560px">
@@ -3571,7 +3597,12 @@ async function importarPlanilha(){
 }
 
 async function exportContImagem(){
-  const data=contFiltered().filter(r=>r.vencimento&&r.vencimento.trim()!==''&&!r.finalizado);
+  const data=contFiltered()
+    .filter(r=>r.vencimento&&r.vencimento.trim()!==''&&!r.finalizado)
+    .sort((a,b)=>{
+      const getN=c=>{const m=String(c||'').match(/-(\d+)\//);return m?parseInt(m[1],10):0;};
+      return getN(b.contrato)-getN(a.contrato); // decrescente
+    });
   if(!data.length){alert('Nenhum contrato com vencimento preenchido.');return;}
   const btn=document.getElementById('btnContImg');
   btn.disabled=true;btn.textContent='Gerando...';
@@ -3626,7 +3657,7 @@ async function exportContImagem(){
   frame.innerHTML=`
     <div class="cp-header">
       <div>
-        <div class="cp-header-title">☕ CONTROLE COMERCIAL — CONTRATOS DE CAFÉ</div>
+        <div class="cp-header-title">☕ COMMERCIAL CONTROL — COFFEE CONTRACTS</div>
         <div class="cp-header-sub">${(()=>{
         const de=document.getElementById('cf-vcto-de')?.value;
         const ate=document.getElementById('cf-vcto-ate')?.value;
@@ -3655,15 +3686,37 @@ async function exportContImagem(){
   try{
     await new Promise(r=>setTimeout(r,300));
     const canvas=await html2canvas(frame,{scale:2,useCORS:true,backgroundColor:'#fff',logging:false,width:900,windowWidth:900});
-    const link=document.createElement('a');
-    link.download='contratos_'+hoje.replace(/\//g,'-')+'.png';
-    link.href=canvas.toDataURL('image/png');
-    link.click();
-  }catch(e){alert('Erro ao gerar imagem: '+e.message);}
+    _contPreviewCanvas=canvas;
+    // Mostrar no modal de preview
+    const img=document.createElement('img');
+    img.src=canvas.toDataURL('image/png');
+    img.style.cssText='max-width:100%;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12)';
+    const content=document.getElementById('cont-preview-content');
+    content.innerHTML='';content.appendChild(img);
+    // Label do modal
+    const de=document.getElementById('cf-vcto-de')?.value;
+    const ate=document.getElementById('cf-vcto-ate')?.value;
+    const fmtD=v=>v?new Date(v+'T00:00:00').toLocaleDateString('pt-BR'):'';
+    const label=de&&ate?'Filter '+fmtD(de)+' to '+fmtD(ate):'Relatório · '+data.length+' contrato(s)';
+    document.getElementById('cont-preview-label').textContent=label;
+    document.getElementById('cont-preview-modal').classList.add('open');
+  }catch(e){alert('Erro ao gerar preview: '+e.message);}
   finally{
     frame.style.left='-9999px';
-    btn.disabled=false;btn.textContent='📷 Salvar imagem';
+    btn.disabled=false;btn.textContent='👁 Visualizar relatório';
   }
+}
+
+let _contPreviewCanvas=null;
+function salvarContImagem(){
+  if(!_contPreviewCanvas){alert('Gere o preview primeiro.');return;}
+  const de=document.getElementById('cf-vcto-de')?.value||'';
+  const ate=document.getElementById('cf-vcto-ate')?.value||'';
+  const nome='contratos'+(de?'_'+de:'')+(ate?'_'+ate:'')+'.png';
+  const link=document.createElement('a');
+  link.download=nome.replace(/\//g,'-');
+  link.href=_contPreviewCanvas.toDataURL('image/png');
+  link.click();
 }
 
 function exportContExcel(){
