@@ -432,7 +432,7 @@ select.cont-fg-input{cursor:pointer}
 .cp-footer{font-size:9px;color:#8aab97;text-align:center;margin-top:.75rem}
 
 /* Banner nova versão */
-#version-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#1b3a2e;color:#fff;padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;box-shadow:0 2px 12px rgba(0,0,0,.3);animation:slideDown .4s ease}
+#version-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#1b3a2e;color:#fff;padding:.75rem 1.5rem;align-items:center;justify-content:space-between;gap:1rem;box-shadow:0 2px 12px rgba(0,0,0,.3);animation:slideDown .4s ease}
 #version-banner.show{display:flex}
 @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 .version-banner-msg{font-size:13px;display:flex;align-items:center;gap:10px}
@@ -1212,7 +1212,7 @@ select.cont-fg-input{cursor:pointer}
   </div>
   <div style="display:flex;gap:8px">
     <button class="btn-dismiss-version" onclick="dismissVersionBanner()">Agora não</button>
-    <button class="btn-reload-version" onclick="window.location.reload(true)">↻ Recarregar agora</button>
+    <button class="btn-reload-version" onclick="recarregarComLogout()">↻ Recarregar agora</button>
   </div>
 </div>
 
@@ -1222,7 +1222,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-05-26-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-05-26-v4'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1237,17 +1237,38 @@ function checkVersion(){
 
 function dismissVersionBanner(){
   document.getElementById('version-banner').classList.remove('show');
-  // Salva a nova versão para não mostrar de novo até próximo deploy
   localStorage.setItem('brascof_version', APP_VERSION);
+}
+
+function recarregarComLogout(){
+  // Limpar sessão e forçar login novamente
+  localStorage.removeItem('brascof_version');
+  localStorage.removeItem('sb-access-token');
+  localStorage.removeItem('sb-refresh-token');
+  // Limpar todos os itens do supabase no localStorage
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('sb-')||k.includes('supabase'))localStorage.removeItem(k);
+  });
+  // Limpar variáveis de sessão em memória
+  if(typeof accessToken!=='undefined')accessToken=null;
+  if(typeof refreshToken!=='undefined')refreshToken=null;
+  // Recarregar para a página de login
+  location.href=location.origin+location.pathname+'?v='+Date.now();
 }
 
 // Verificar também periodicamente (a cada 5 minutos) via fetch do próprio HTML
 async function checkVersionPeriodic(){
   try{
-    const res = await fetch(window.location.href + '?v=' + Date.now(), {cache:'no-store'});
-    const text = await res.text();
-    const match = text.match(/APP_VERSION\s*=\s*'([^']+)'/);
-    if(match && match[1] !== APP_VERSION){
+    const url=location.origin+location.pathname+'?nocache='+Date.now();
+    const res=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+    if(!res.ok)return;
+    const text=await res.text();
+    // Extrair APP_VERSION do HTML baixado
+    const idx=text.indexOf('APP_VERSION');
+    if(idx===-1)return;
+    const chunk=text.substring(idx,idx+60);
+    const m=chunk.match(/'([0-9a-zA-Z_.\-]+)'/);
+    if(m&&m[1]&&m[1]!==APP_VERSION){
       document.getElementById('version-banner').classList.add('show');
     }
   }catch(e){}
@@ -1256,7 +1277,7 @@ async function checkVersionPeriodic(){
 // Checar ao carregar e a cada 5 minutos
 document.addEventListener('DOMContentLoaded', ()=>{
   checkVersion();
-  setInterval(checkVersionPeriodic, 5 * 60 * 1000);
+  setInterval(checkVersionPeriodic, 2 * 60 * 1000);
 });
 
 const SUPA_URL='https://cfrvnsnwdldnflowxqbs.supabase.co';
