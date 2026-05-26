@@ -771,6 +771,14 @@ select.cont-fg-input{cursor:pointer}
       <span class="dlabel">To</span><input type="date" id="fDtAte" class="date-in" oninput="renderInf()"/>
       <button class="btn-clear-inf" onclick="clearInfDates()">Clear</button>
     </div>
+    <div class="toolbar-sep"></div>
+    <div class="date-group">
+      <span class="dlabel" style="color:#7a5a00">Hedge</span>
+      <input type="date" id="fHedgeDe" class="date-in" oninput="renderInf()" style="border-color:#c8b87a"/>
+      <span class="dlabel">To</span>
+      <input type="date" id="fHedgeAte" class="date-in" oninput="renderInf()" style="border-color:#c8b87a"/>
+      <button class="btn-clear-inf" onclick="clearHedgeDates()" style="border-color:#c8b87a;color:#7a5a00">Clear</button>
+    </div>
     <div style="margin-left:auto;display:flex;gap:8px">
         <button class="btn-export-inf" onclick="exportInfExcel()">↓ Excel</button>
         <button class="btn-export-inf" id="btnSaveInfImg" onclick="salvarImagemInformativo()" style="gap:5px">
@@ -2813,7 +2821,15 @@ async function fetchInfRows(){
 
 function infGetByDate(){
   const de=document.getElementById('fDtDe').value,ate=document.getElementById('fDtAte').value;
-  return infRows.filter(r=>{if(de&&r.data<de)return false;if(ate&&r.data>ate)return false;return true;});
+  const hDe=document.getElementById('fHedgeDe')?.value||'';
+  const hAte=document.getElementById('fHedgeAte')?.value||'';
+  return infRows.filter(r=>{
+    if(de&&r.data<de)return false;
+    if(ate&&r.data>ate)return false;
+    if(hDe&&(!r.hedge_date||r.hedge_date<hDe))return false;
+    if(hAte&&(!r.hedge_date||r.hedge_date>hAte))return false;
+    return true;
+  });
 }
 function infFiltered(){
   return infGetByDate().filter(r=>{
@@ -2853,13 +2869,25 @@ function renderRisk(){
   const de=document.getElementById('fDtDe').value;
   const ate=document.getElementById('fDtAte').value;
 
-  // Respeitar filtros de tipo e espécie ativos + obrigatório ter hedge_date
-  const base=infFiltered();
+  // Risk filtra por hedge_date — independente da data de lançamento
+  const hDe=document.getElementById('fHedgeDe')?.value||'';
+  const hAte=document.getElementById('fHedgeAte')?.value||'';
+  const base=infRows.filter(r=>{
+    if(infFilterEspecie!=='todos'&&(r.especie||'ARABICA')!==infFilterEspecie)return false;
+    if(infFilterTipo!=='todos'&&r.tipo!==infFilterTipo)return false;
+    return true;
+  });
   const valid=base.filter(r=>{
     if(!r.term||!r.lots||!r.hedge_date)return false;
     const dataRisk=r.hedge_date;
-    if(de&&dataRisk<de)return false;
-    if(ate&&dataRisk>ate)return false;
+    // Se filtro hedge ativo, usar hedge; senão usar filtro de data normal
+    if(hDe||hAte){
+      if(hDe&&dataRisk<hDe)return false;
+      if(hAte&&dataRisk>hAte)return false;
+    } else {
+      if(de&&dataRisk<de)return false;
+      if(ate&&dataRisk>ate)return false;
+    }
     return true;
   });
 
@@ -3131,6 +3159,11 @@ function renderQualidade(data){
 function setInfTipo(btn){infFilterTipo=btn.dataset.v;document.querySelectorAll('#segTipo .seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderInf();}
 function setInfEspecie(btn){infFilterEspecie=btn.dataset.v;document.querySelectorAll('#segEspecie .seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderInf();}
 function clearInfDates(){document.getElementById('fDtDe').value='';document.getElementById('fDtAte').value='';renderInf();}
+function clearHedgeDates(){
+  const hDe=document.getElementById('fHedgeDe');if(hDe)hDe.value='';
+  const hAte=document.getElementById('fHedgeAte');if(hAte)hAte.value='';
+  renderInf();
+}
 
 async function salvarImagemInformativo(){
   const btn=document.getElementById('btnSaveInfImg');
