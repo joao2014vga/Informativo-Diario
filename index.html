@@ -1222,7 +1222,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-05-27-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-05-27-v3'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -2066,7 +2066,11 @@ function valComparar(campo, tipo, tol, espVal, digVal){
   if(de==='')return'agt';
 
   if(tipo==='num'){
+    // Tratar string vazia ou undefined como sem valor
+    if(de===''||de===undefined||de===null)return'agt';
     const ne=normNum(espVal), nd=normNum(de);
+    // Se espelho é 0 e Digisul é 0 — OK direto
+    if(ne===0&&nd===0)return'ok';
     if(isNaN(ne)||isNaN(nd))return'err';
     return Math.abs(ne-nd)<=(tol||0.05)?'ok':'err';
   }
