@@ -1222,7 +1222,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-05-26-v4'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-05-27-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1893,7 +1893,7 @@ const VAL_CAMPOS=[
   {l:'Contrato',        col:1,  tipo:'ignorar'},
   {l:'Fornecedor',      col:2,  tipo:'parcial'},
   {l:'Modalidade CTR',  col:3,  tipo:'txt'},
-  {l:'Sacas',           col:4,  tipo:'num', tol:0},
+  {l:'Sacas',           col:4,  tipo:'num', tol:1},
   {l:'Emissão',         col:5,  tipo:'data'},
   {l:'Vencimento',      col:6,  tipo:'data'},
   {l:'Média c ICMS',   col:7,  tipo:'num', tol:1},
@@ -1945,7 +1945,27 @@ function excelSerial(n){
   return d.toLocaleDateString('pt-BR');
 }
 function normStr(v){return String(v||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');}
-function normNum(v){return parseFloat(String(v||'').replace(',','.').replace(/\s/g,''));}
+function normNum(v){
+  // Remove espaços, trata separadores BR (1.330,00 → 1330.00) e US (1,330.00 → 1330.00)
+  let s=String(v||'').trim().replace(/\s/g,'');
+  // Se tem vírgula E ponto: formato BR (1.330,00) → remover ponto, trocar vírgula por ponto
+  if(s.indexOf(',')>-1&&s.indexOf('.')>-1){
+    // Verificar qual é separador decimal (o que vem por último)
+    if(s.lastIndexOf(',')>s.lastIndexOf('.')){s=s.replace(/\./g,'').replace(',','.');}
+    else{s=s.replace(/,/g,'');}
+  } else if(s.indexOf(',')>-1){
+    // Só vírgula — pode ser decimal (1,5) ou milhar (1,500)
+    const parts=s.split(',');
+    if(parts.length===2&&parts[1].length<=2){s=s.replace(',','.');}
+    else{s=s.replace(/,/g,'');}
+  } else if(s.indexOf('.')>-1){
+    // Só ponto — pode ser decimal ou milhar
+    const parts=s.split('.');
+    if(parts.length===2&&parts[1].length<=2){/* decimal, ok */}
+    else{s=s.replace(/\./g,'');} // milhar
+  }
+  return parseFloat(s);
+}
 function normSafra(v){
   const s=String(v||'').trim();
   // "2026/2027" → "26/27"
