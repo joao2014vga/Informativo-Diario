@@ -252,7 +252,7 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 /* INFORMATIVO */
 #panel-informativo{padding:1.25rem 1.5rem}
 .inf-wrap{max-width:1280px;margin:0 auto}
-.metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
+.metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
 .mbar-item{padding:12px 1rem;border-right:1px solid #dde8e2}
 .mbar-item:last-child{border-right:none}
 .term-opt:hover{background:#e8f4ee!important}.cert-drop{position:relative;display:inline-block;width:100%}
@@ -729,11 +729,33 @@ select.cont-fg-input{cursor:pointer}
 <div class="inf-wrap">
   <div class="metrics-bar">
     <div class="mbar-item"><div class="mbar-label">Total Purchases</div><div class="mbar-val" id="mQC">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Purchases Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Arábica</span></div><div class="mbar-val" id="mDC_AR">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Purchases Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Conilon</span></div><div class="mbar-val" id="mDC_CO">—</div></div>
+    <div class="mbar-item">
+      <div class="mbar-label">Purchases Diff</div>
+      <div style="display:flex;flex-direction:column;gap:2px;margin-top:2px">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Arábica</span>
+          <span class="mbar-val" id="mDC_AR" style="font-size:18px">—</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Conilon</span>
+          <span class="mbar-val" id="mDC_CO" style="font-size:18px">—</span>
+        </div>
+      </div>
+    </div>
     <div class="mbar-item"><div class="mbar-label">Total Sales</div><div class="mbar-val" id="mQV">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Sales Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Arábica</span></div><div class="mbar-val" id="mDV_AR">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Sales Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Conilon</span></div><div class="mbar-val" id="mDV_CO">—</div></div>
+    <div class="mbar-item">
+      <div class="mbar-label">Sales Diff</div>
+      <div style="display:flex;flex-direction:column;gap:2px;margin-top:2px">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Arábica</span>
+          <span class="mbar-val" id="mDV_AR" style="font-size:18px">—</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Conilon</span>
+          <span class="mbar-val" id="mDV_CO" style="font-size:18px">—</span>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="inf-card" id="formInfLancamento">
     <div class="inf-card-header"><div class="inf-card-title">New Entry</div></div>
@@ -1189,7 +1211,7 @@ select.cont-fg-input{cursor:pointer}
   </div>
 
   <!-- Métricas -->
-  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:.75rem" id="ipf-metricas"></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.75rem" id="ipf-metricas"></div>
 
   <!-- Análise por qualidade -->
   <div style="font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Quality Analysis</div>
@@ -1224,7 +1246,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-06-01-v3'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-06-01-v4'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -3302,17 +3324,25 @@ async function salvarImagemInformativo(){
       <div style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${label}</div>
       <div style="font-size:16px;font-weight:600;color:#1a1a1a">${Number(v).toLocaleString('pt-BR')}</div>
     </div>`;
+    const fmtDifCombinado=(vAR,vCO,label)=>{
+      const fmtV=(v,esp)=>`<div style="display:flex;align-items:baseline;gap:6px;margin-top:2px">
+        <span style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:42px">${esp}</span>
+        <span style="font-size:15px;font-weight:600;color:${v==null?'#8aab97':v<0?'#922020':'#1e5c1e'}">${v!=null?((v>=0?'+':'')+Number(v).toFixed(2)):'—'}</span>
+      </div>`;
+      return `<div style="background:#fff;border:1px solid #dde8e2;border-radius:8px;padding:8px 10px">
+        <div style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">${label}</div>
+        ${fmtV(vAR,'Arábica')}${fmtV(vCO,'Conilon')}
+      </div>`;
+    };
     const fmtDifM=(v,label)=>`<div style="background:#fff;border:1px solid #dde8e2;border-radius:8px;padding:8px 10px">
       <div style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${label}</div>
       <div style="font-size:16px;font-weight:600;color:${v==null?'#8aab97':v<0?'#922020':'#1e5c1e'}">${v!=null?((v>=0?'+':'')+Number(v).toFixed(2)):'—'}</div>
     </div>`;
     document.getElementById('ipf-metricas').innerHTML=
       fmtSacas(sumQ(compras),'Total Purchases')+
-      fmtDifM(medW(compras.filter(r=>(r.especie||'ARABICA')==='ARABICA')),'Purchases Diff (Arábica)')+
-      fmtDifM(medW(compras.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Purchases Diff (Conilon)')+
+      fmtDifCombinado(medW(compras.filter(r=>(r.especie||'ARABICA')==='ARABICA')),medW(compras.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Purchases Diff')+
       fmtSacas(sumQ(vendas),'Total Sales')+
-      fmtDifM(medW(vendas.filter(r=>(r.especie||'ARABICA')==='ARABICA')),'Sales Diff (Arábica)')+
-      fmtDifM(medW(vendas.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Sales Diff (Conilon)');
+      fmtDifCombinado(medW(vendas.filter(r=>(r.especie||'ARABICA')==='ARABICA')),medW(vendas.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Sales Diff');
 
     // Qualidade
     const grupos={};
