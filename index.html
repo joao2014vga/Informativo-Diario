@@ -252,8 +252,8 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 /* INFORMATIVO */
 #panel-informativo{padding:1.25rem 1.5rem}
 .inf-wrap{max-width:1280px;margin:0 auto}
-.metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
-.mbar-item{padding:14px 1.5rem;border-right:1px solid #dde8e2}
+.metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(6,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
+.mbar-item{padding:12px 1rem;border-right:1px solid #dde8e2}
 .mbar-item:last-child{border-right:none}
 .term-opt:hover{background:#e8f4ee!important}.cert-drop{position:relative;display:inline-block;width:100%}
 .cert-drop-btn{width:100%;background:#fff;border:1px solid #c8dbd0;border-radius:8px;padding:6px 10px;font-size:11px;color:#1b2e22;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:34px}
@@ -264,7 +264,7 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 .cert-opt:hover{background:#e8f4ee}
 .cert-opt input{accent-color:#2d4a3e;width:14px;height:14px}
 .mbar-label{font-size:10px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
-.mbar-val{font-size:24px;font-weight:600;color:#1a1a1a}
+.mbar-val{font-size:20px;font-weight:600;color:#1a1a1a}
 .mbar-val.neg{color:#922020}.mbar-val.pos{color:#1e5c1e}
 .inf-card{background:#fff;border:1px solid #dde8e2;border-radius:12px;overflow:hidden;margin-bottom:1rem}
 .inf-card-header{padding:10px 1.5rem;border-bottom:1px solid #dde8e2}
@@ -396,9 +396,9 @@ select.cont-fg-input{cursor:pointer}
   .cont-form-grid{grid-template-columns:1fr 1fr}
   .cont-form-grid.four{grid-template-columns:1fr 1fr}
   .cont-stats{grid-template-columns:1fr 1fr}
-  .metrics-bar{grid-template-columns:1fr 1fr}
-  .mbar-item:nth-child(2){border-right:none}
-  .mbar-item:nth-child(3){border-top:1px solid #dde8e2}
+  .metrics-bar{grid-template-columns:repeat(3,1fr)}
+  .mbar-item:nth-child(3){border-right:none}
+  .mbar-item:nth-child(4){border-top:1px solid #dde8e2}
   .form-row{grid-template-columns:1fr 1fr}
 }
 .cont-row-finalizado{opacity:0.32!important;filter:grayscale(0.7)!important;background:#ebebeb!important}
@@ -729,9 +729,11 @@ select.cont-fg-input{cursor:pointer}
 <div class="inf-wrap">
   <div class="metrics-bar">
     <div class="mbar-item"><div class="mbar-label">Total Purchases</div><div class="mbar-val" id="mQC">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Purchases Diff</div><div class="mbar-val" id="mDC">—</div></div>
+    <div class="mbar-item"><div class="mbar-label">Purchases Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Arábica</span></div><div class="mbar-val" id="mDC_AR">—</div></div>
+    <div class="mbar-item"><div class="mbar-label">Purchases Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Conilon</span></div><div class="mbar-val" id="mDC_CO">—</div></div>
     <div class="mbar-item"><div class="mbar-label">Total Sales</div><div class="mbar-val" id="mQV">—</div></div>
-    <div class="mbar-item"><div class="mbar-label">Sales Diff</div><div class="mbar-val" id="mDV">—</div></div>
+    <div class="mbar-item"><div class="mbar-label">Sales Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Arábica</span></div><div class="mbar-val" id="mDV_AR">—</div></div>
+    <div class="mbar-item"><div class="mbar-label">Sales Diff<span style="font-size:9px;opacity:.7;margin-left:4px">Conilon</span></div><div class="mbar-val" id="mDV_CO">—</div></div>
   </div>
   <div class="inf-card" id="formInfLancamento">
     <div class="inf-card-header"><div class="inf-card-title">New Entry</div></div>
@@ -741,7 +743,7 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Bags</label><input type="number" id="fSacas" class="fg-input" placeholder="0" min="0"/></div>
       <div><label class="fg-label">Quality</label><input type="text" id="fQual" class="fg-input" placeholder="BC2"/></div>
       <div><label class="fg-label">Diff</label><input type="number" id="fDif" class="fg-input" placeholder="0.00" step="0.01"/></div>
-      <div><label class="fg-label">Variety</label><select id="fEspecie" class="fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
+      <div><label class="fg-label">Variety</label><select id="fEspecie" class="fg-input"><option value="ARÁBICA">ARÁBICA</option><option value="CONILON">CONILON</option></select></div>
       <div style="position:relative"><label class="fg-label">Term</label>
         <input type="text" id="fTerm" class="fg-input" placeholder="ex: nyu26" autocomplete="off"
           oninput="termSearchInf(this.value)" onkeydown="termKeyNavInf(event)" onfocus="termSearchInf(this.value)" onblur="setTimeout(termHideInf,150)">
@@ -773,7 +775,7 @@ select.cont-fg-input{cursor:pointer}
     <div class="toolbar-sep"></div>
     <div class="seg" id="segEspecie">
       <button class="seg-btn active" data-v="todos" onclick="setInfEspecie(this)">All</button>
-      <button class="seg-btn" data-v="ARABICA" onclick="setInfEspecie(this)">Arabica</button>
+      <button class="seg-btn" data-v="ARABICA" onclick="setInfEspecie(this)">Arábica</button>
       <button class="seg-btn" data-v="CONILON" onclick="setInfEspecie(this)">Conilon</button>
     </div>
     <div class="toolbar-sep"></div>
@@ -944,7 +946,7 @@ select.cont-fg-input{cursor:pointer}
       <div>
         <div class="modal-label" style="margin-bottom:5px">Variety</div>
         <select id="modal-especie" style="width:100%;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;color:var(--text);background:var(--surface);outline:none;height:36px">
-          <option value="ARABICA">ARÁBICA</option>
+          <option value="ARÁBICA">ARÁBICA</option>
           <option value="CONILON">CONILON</option>
         </select>
       </div>
@@ -976,7 +978,7 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="fg-label">Bags</label><input type="number" id="eSacas" class="fg-input" style="text-transform:none"/></div>
       <div><label class="fg-label">Quality</label><input type="text" id="eQual" class="fg-input"/></div>
       <div><label class="fg-label">Diff</label><input type="number" id="eDif" class="fg-input" step="0.01" style="text-transform:none"/></div>
-      <div><label class="fg-label">Variety</label><select id="eEspecie" class="fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
+      <div><label class="fg-label">Variety</label><select id="eEspecie" class="fg-input"><option value="ARÁBICA">ARÁBICA</option><option value="CONILON">CONILON</option></select></div>
       <div><label class="fg-label">Term</label><input type="text" id="eTerm" class="fg-input" placeholder="ex: #NYU26"/></div>
       <div><label class="fg-label">Lots</label><input type="number" id="eLots" class="fg-input" step="0.5" placeholder="—"/></div>
       <div><label class="fg-label">Hedge Date</label><input type="date" id="eHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa"/></div>
@@ -1061,7 +1063,7 @@ select.cont-fg-input{cursor:pointer}
     </div>
     <div class="cont-form-grid four">
       <div><label class="cont-fg-label">Bags</label><input type="number" id="c-sacas" class="cont-fg-input" placeholder="0" style="text-transform:none"/></div>
-      <div><label class="cont-fg-label">Variety</label><select id="c-especie" class="cont-fg-input"><option value="ARABICA">ARABICA</option><option value="CONILON">CONILON</option></select></div>
+      <div><label class="cont-fg-label">Variety</label><select id="c-especie" class="cont-fg-input"><option value="ARÁBICA">ARÁBICA</option><option value="CONILON">CONILON</option></select></div>
       <div><label class="cont-fg-label">Quality</label><input type="text" id="c-quality" class="cont-fg-input" placeholder="ex: BC4, BC15..." style="text-transform:uppercase"></div>
       <div><label class="cont-fg-label">Valor R$/saca</label><input type="number" id="c-valor" class="cont-fg-input" placeholder="0.00" step="0.01" style="text-transform:none"/></div>
       <div><label class="cont-fg-label">Frete</label><select id="c-frete" class="cont-fg-input" onchange="autoFillContrato()"><option value="Posto">POSTO</option><option value="Retirar">RETIRAR</option></select></div>
@@ -1187,7 +1189,7 @@ select.cont-fg-input{cursor:pointer}
   </div>
 
   <!-- Métricas -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.75rem" id="ipf-metricas"></div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:.75rem" id="ipf-metricas"></div>
 
   <!-- Análise por qualidade -->
   <div style="font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Quality Analysis</div>
@@ -1222,7 +1224,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-05-27-v4'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-06-01-v3'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -2482,7 +2484,7 @@ function abrirDividir(){
     vendedor: document.getElementById('c-vendedor')?.value||'',
     corretor: document.getElementById('c-corretor')?.value||'',
     empresa_produtor: document.getElementById('c-empresa-produtor')?.value||'',
-    especie: document.getElementById('c-especie')?.value||'ARABICA',
+    especie: document.getElementById('c-especie')?.value||'ARÁBICA',
     valor: document.getElementById('c-valor')?.value||'',
     frete: document.getElementById('c-frete')?.value||'',
     status_erp: document.getElementById('c-status-erp')?.value||'',
@@ -3101,9 +3103,16 @@ function renderInf(){
   const data=infFiltered();
   const compras=data.filter(r=>r.tipo==='COMPRA'),vendas=data.filter(r=>r.tipo==='VENDA');
   document.getElementById('mQC').textContent=sumQ(compras).toLocaleString('pt-BR');
-  setValColor('mDC',medW(compras));
   document.getElementById('mQV').textContent=sumQ(vendas).toLocaleString('pt-BR');
-  setValColor('mDV',medW(vendas));
+  // Diff por espécie
+  const cAR=compras.filter(r=>(r.especie||'ARABICA')==='ARABICA');
+  const cCO=compras.filter(r=>(r.especie||'ARABICA')==='CONILON');
+  const vAR=vendas.filter(r=>(r.especie||'ARABICA')==='ARABICA');
+  const vCO=vendas.filter(r=>(r.especie||'ARABICA')==='CONILON');
+  setValColor('mDC_AR',medW(cAR));
+  setValColor('mDC_CO',medW(cCO));
+  setValColor('mDV_AR',medW(vAR));
+  setValColor('mDV_CO',medW(vCO));
   const tbody=document.getElementById('infBody');tbody.innerHTML='';
   document.getElementById('infEmpty').style.display=data.length?'none':'block';
   renderQualidade(data);
@@ -3289,19 +3298,21 @@ async function salvarImagemInformativo(){
     document.getElementById('ipf-periodo').textContent=periodo;
 
     // Métricas
-    const fmtSacas=(v,label)=>`<div style="background:#fff;border:1px solid #dde8e2;border-radius:8px;padding:10px 14px">
-      <div style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${label}</div>
-      <div style="font-size:20px;font-weight:600;color:#1a1a1a">${Number(v).toLocaleString('pt-BR')}</div>
+    const fmtSacas=(v,label)=>`<div style="background:#fff;border:1px solid #dde8e2;border-radius:8px;padding:8px 10px">
+      <div style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${label}</div>
+      <div style="font-size:16px;font-weight:600;color:#1a1a1a">${Number(v).toLocaleString('pt-BR')}</div>
     </div>`;
-    const fmtDifM=(v,label)=>`<div style="background:#fff;border:1px solid #dde8e2;border-radius:8px;padding:10px 14px">
-      <div style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${label}</div>
-      <div style="font-size:20px;font-weight:600;color:${v==null?'#8aab97':v<0?'#922020':'#1e5c1e'}">${v!=null?((v>=0?'+':'')+Number(v).toFixed(2)):'—'}</div>
+    const fmtDifM=(v,label)=>`<div style="background:#fff;border:1px solid #dde8e2;border-radius:8px;padding:8px 10px">
+      <div style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${label}</div>
+      <div style="font-size:16px;font-weight:600;color:${v==null?'#8aab97':v<0?'#922020':'#1e5c1e'}">${v!=null?((v>=0?'+':'')+Number(v).toFixed(2)):'—'}</div>
     </div>`;
     document.getElementById('ipf-metricas').innerHTML=
       fmtSacas(sumQ(compras),'Total Purchases')+
-      fmtDifM(dc,'Purchases Diff')+
+      fmtDifM(medW(compras.filter(r=>(r.especie||'ARABICA')==='ARABICA')),'Purchases Diff (Arábica)')+
+      fmtDifM(medW(compras.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Purchases Diff (Conilon)')+
       fmtSacas(sumQ(vendas),'Total Sales')+
-      fmtDifM(dv,'Sales Diff');
+      fmtDifM(medW(vendas.filter(r=>(r.especie||'ARABICA')==='ARABICA')),'Sales Diff (Arábica)')+
+      fmtDifM(medW(vendas.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Sales Diff (Conilon)');
 
     // Qualidade
     const grupos={};
@@ -3692,7 +3703,7 @@ async function salvarContrato(){
     corretor:document.getElementById('c-corretor').value.trim(),
     empresa_produtor:document.getElementById('c-empresa-produtor').value,
     sacas:parseInt(document.getElementById('c-sacas').value)||null,
-    especie:document.getElementById('c-especie').value||'ARABICA',
+    especie:document.getElementById('c-especie').value||'ARÁBICA',
     valor:parseFloat(document.getElementById('c-valor').value)||null,
     frete:document.getElementById('c-frete').value,
     vencimento:document.getElementById('c-vencimento').value||null,
