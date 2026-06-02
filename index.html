@@ -1246,7 +1246,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-06-01-v4'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-06-02-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -3127,10 +3127,11 @@ function renderInf(){
   document.getElementById('mQC').textContent=sumQ(compras).toLocaleString('pt-BR');
   document.getElementById('mQV').textContent=sumQ(vendas).toLocaleString('pt-BR');
   // Diff por espécie
-  const cAR=compras.filter(r=>(r.especie||'ARABICA')==='ARABICA');
-  const cCO=compras.filter(r=>(r.especie||'ARABICA')==='CONILON');
-  const vAR=vendas.filter(r=>(r.especie||'ARABICA')==='ARABICA');
-  const vCO=vendas.filter(r=>(r.especie||'ARABICA')==='CONILON');
+  const normEsp=v=>String(v||'ARABICA').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const cAR=compras.filter(r=>normEsp(r.especie)==='ARABICA');
+  const cCO=compras.filter(r=>normEsp(r.especie)==='CONILON');
+  const vAR=vendas.filter(r=>normEsp(r.especie)==='ARABICA');
+  const vCO=vendas.filter(r=>normEsp(r.especie)==='CONILON');
   setValColor('mDC_AR',medW(cAR));
   setValColor('mDC_CO',medW(cCO));
   setValColor('mDV_AR',medW(vAR));
@@ -3340,9 +3341,9 @@ async function salvarImagemInformativo(){
     </div>`;
     document.getElementById('ipf-metricas').innerHTML=
       fmtSacas(sumQ(compras),'Total Purchases')+
-      fmtDifCombinado(medW(compras.filter(r=>(r.especie||'ARABICA')==='ARABICA')),medW(compras.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Purchases Diff')+
+      fmtDifCombinado(medW(compras.filter(r=>normEsp(r.especie)==='ARABICA')),medW(compras.filter(r=>normEsp(r.especie)==='CONILON')),'Purchases Diff')+
       fmtSacas(sumQ(vendas),'Total Sales')+
-      fmtDifCombinado(medW(vendas.filter(r=>(r.especie||'ARABICA')==='ARABICA')),medW(vendas.filter(r=>(r.especie||'ARABICA')==='CONILON')),'Sales Diff');
+      fmtDifCombinado(medW(vendas.filter(r=>normEsp(r.especie)==='ARABICA')),medW(vendas.filter(r=>normEsp(r.especie)==='CONILON')),'Sales Diff');
 
     // Qualidade
     const grupos={};
