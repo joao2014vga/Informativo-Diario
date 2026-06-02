@@ -252,7 +252,7 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 /* INFORMATIVO */
 #panel-informativo{padding:1.25rem 1.5rem}
 .inf-wrap{max-width:1280px;margin:0 auto}
-.metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
+.metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
 .mbar-item{padding:12px 1rem;border-right:1px solid #dde8e2}
 .mbar-item:last-child{border-right:none}
 .term-opt:hover{background:#e8f4ee!important}.cert-drop{position:relative;display:inline-block;width:100%}
@@ -728,31 +728,31 @@ select.cont-fg-input{cursor:pointer}
 <div class="panel" id="panel-informativo">
 <div class="inf-wrap">
   <div class="metrics-bar">
-    <div class="mbar-item"><div class="mbar-label">Total Purchases</div><div class="mbar-val" id="mQC">—</div></div>
     <div class="mbar-item">
-      <div class="mbar-label">Purchases Diff</div>
-      <div style="display:flex;flex-direction:column;gap:2px;margin-top:2px">
+      <div class="mbar-label">Total Purchases</div>
+      <div class="mbar-val" id="mQC" style="font-size:22px">—</div>
+      <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px">
         <div style="display:flex;align-items:baseline;gap:6px">
-          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Arábica</span>
-          <span class="mbar-val" id="mDC_AR" style="font-size:18px">—</span>
+          <span style="background:#fef3e2;color:#7a4f00;padding:1px 8px;border-radius:20px;font-size:9px;font-weight:600;text-transform:uppercase;min-width:48px;display:inline-block;text-align:center">Arábica</span>
+          <span style="font-size:15px;font-weight:600;color:#1a1a1a" id="mQC_AR">—</span>
         </div>
         <div style="display:flex;align-items:baseline;gap:6px">
-          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Conilon</span>
-          <span class="mbar-val" id="mDC_CO" style="font-size:18px">—</span>
+          <span style="background:#f0e8ff;color:#4a1a7a;padding:1px 8px;border-radius:20px;font-size:9px;font-weight:600;text-transform:uppercase;min-width:48px;display:inline-block;text-align:center">Conilon</span>
+          <span style="font-size:15px;font-weight:600;color:#1a1a1a" id="mQC_CO">—</span>
         </div>
       </div>
     </div>
-    <div class="mbar-item"><div class="mbar-label">Total Sales</div><div class="mbar-val" id="mQV">—</div></div>
     <div class="mbar-item">
-      <div class="mbar-label">Sales Diff</div>
-      <div style="display:flex;flex-direction:column;gap:2px;margin-top:2px">
+      <div class="mbar-label">Total Sales</div>
+      <div class="mbar-val" id="mQV" style="font-size:22px">—</div>
+      <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px">
         <div style="display:flex;align-items:baseline;gap:6px">
-          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Arábica</span>
-          <span class="mbar-val" id="mDV_AR" style="font-size:18px">—</span>
+          <span style="background:#fef3e2;color:#7a4f00;padding:1px 8px;border-radius:20px;font-size:9px;font-weight:600;text-transform:uppercase;min-width:48px;display:inline-block;text-align:center">Arábica</span>
+          <span style="font-size:15px;font-weight:600;color:#1a1a1a" id="mQV_AR">—</span>
         </div>
         <div style="display:flex;align-items:baseline;gap:6px">
-          <span style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:48px">Conilon</span>
-          <span class="mbar-val" id="mDV_CO" style="font-size:18px">—</span>
+          <span style="background:#f0e8ff;color:#4a1a7a;padding:1px 8px;border-radius:20px;font-size:9px;font-weight:600;text-transform:uppercase;min-width:48px;display:inline-block;text-align:center">Conilon</span>
+          <span style="font-size:15px;font-weight:600;color:#1a1a1a" id="mQV_CO">—</span>
         </div>
       </div>
     </div>
@@ -1211,7 +1211,7 @@ select.cont-fg-input{cursor:pointer}
   </div>
 
   <!-- Métricas -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:.75rem" id="ipf-metricas"></div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:.75rem" id="ipf-metricas"></div>
 
   <!-- Análise por qualidade -->
   <div style="font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem">Quality Analysis</div>
@@ -1246,7 +1246,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-06-02-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-06-02-v3'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -3126,16 +3126,16 @@ function renderInf(){
   const compras=data.filter(r=>r.tipo==='COMPRA'),vendas=data.filter(r=>r.tipo==='VENDA');
   document.getElementById('mQC').textContent=sumQ(compras).toLocaleString('pt-BR');
   document.getElementById('mQV').textContent=sumQ(vendas).toLocaleString('pt-BR');
-  // Diff por espécie
   const normEsp=v=>String(v||'ARABICA').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const cAR=compras.filter(r=>normEsp(r.especie)==='ARABICA');
   const cCO=compras.filter(r=>normEsp(r.especie)==='CONILON');
   const vAR=vendas.filter(r=>normEsp(r.especie)==='ARABICA');
   const vCO=vendas.filter(r=>normEsp(r.especie)==='CONILON');
-  setValColor('mDC_AR',medW(cAR));
-  setValColor('mDC_CO',medW(cCO));
-  setValColor('mDV_AR',medW(vAR));
-  setValColor('mDV_CO',medW(vCO));
+  // Total por espécie
+  const elQC_AR=document.getElementById('mQC_AR');if(elQC_AR)elQC_AR.textContent=sumQ(cAR).toLocaleString('pt-BR');
+  const elQC_CO=document.getElementById('mQC_CO');if(elQC_CO)elQC_CO.textContent=sumQ(cCO).toLocaleString('pt-BR');
+  const elQV_AR=document.getElementById('mQV_AR');if(elQV_AR)elQV_AR.textContent=sumQ(vAR).toLocaleString('pt-BR');
+  const elQV_CO=document.getElementById('mQV_CO');if(elQV_CO)elQV_CO.textContent=sumQ(vCO).toLocaleString('pt-BR');
   const tbody=document.getElementById('infBody');tbody.innerHTML='';
   document.getElementById('infEmpty').style.display=data.length?'none':'block';
   renderQualidade(data);
@@ -3325,6 +3325,19 @@ async function salvarImagemInformativo(){
       <div style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">${label}</div>
       <div style="font-size:16px;font-weight:600;color:#1a1a1a">${Number(v).toLocaleString('pt-BR')}</div>
     </div>`;
+    const normEsp=v=>String(v||'ARABICA').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const fmtTotalEsp=(total,ar,co,label)=>`<div style="background:#fff;border:1px solid #dde8e2;border-radius:8px;padding:8px 10px">
+      <div style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px">${label}</div>
+      <div style="font-size:18px;font-weight:600;color:#1a1a1a;margin-bottom:4px">${Number(total).toLocaleString('pt-BR')}</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px">
+        <span style="background:#fef3e2;color:#7a4f00;padding:1px 7px;border-radius:20px;font-size:8px;font-weight:600;text-transform:uppercase;min-width:42px;display:inline-block;text-align:center">Arábica</span>
+        <span style="font-size:13px;font-weight:600;color:#1a1a1a">${Number(ar).toLocaleString('pt-BR')}</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px">
+        <span style="background:#f0e8ff;color:#4a1a7a;padding:1px 7px;border-radius:20px;font-size:8px;font-weight:600;text-transform:uppercase;min-width:42px;display:inline-block;text-align:center">Conilon</span>
+        <span style="font-size:13px;font-weight:600;color:#1a1a1a">${Number(co).toLocaleString('pt-BR')}</span>
+      </div>
+    </div>`;
     const fmtDifCombinado=(vAR,vCO,label)=>{
       const fmtV=(v,esp)=>`<div style="display:flex;align-items:baseline;gap:6px;margin-top:2px">
         <span style="font-size:8px;color:#6b8c7a;font-weight:600;text-transform:uppercase;min-width:42px">${esp}</span>
@@ -3340,10 +3353,8 @@ async function salvarImagemInformativo(){
       <div style="font-size:16px;font-weight:600;color:${v==null?'#8aab97':v<0?'#922020':'#1e5c1e'}">${v!=null?((v>=0?'+':'')+Number(v).toFixed(2)):'—'}</div>
     </div>`;
     document.getElementById('ipf-metricas').innerHTML=
-      fmtSacas(sumQ(compras),'Total Purchases')+
-      fmtDifCombinado(medW(compras.filter(r=>normEsp(r.especie)==='ARABICA')),medW(compras.filter(r=>normEsp(r.especie)==='CONILON')),'Purchases Diff')+
-      fmtSacas(sumQ(vendas),'Total Sales')+
-      fmtDifCombinado(medW(vendas.filter(r=>normEsp(r.especie)==='ARABICA')),medW(vendas.filter(r=>normEsp(r.especie)==='CONILON')),'Sales Diff');
+      fmtTotalEsp(sumQ(compras),sumQ(compras.filter(r=>normEsp(r.especie)==='ARABICA')),sumQ(compras.filter(r=>normEsp(r.especie)==='CONILON')),'Total Purchases')+
+      fmtTotalEsp(sumQ(vendas),sumQ(vendas.filter(r=>normEsp(r.especie)==='ARABICA')),sumQ(vendas.filter(r=>normEsp(r.especie)==='CONILON')),'Total Sales');
 
     // Qualidade
     const grupos={};
