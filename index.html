@@ -337,6 +337,7 @@ tbody tr:hover{background:#fafcfb}
 
 /* CONTRATOS */
 #panel-contratos{padding:1.25rem 1.5rem}
+#panel-dashboard{padding:0}
 .cont-wrap{max-width:1400px;margin:0 auto}
 .cont-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
 .btn-novo-contrato{background:#2d4a3e;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600}
@@ -441,6 +442,72 @@ select.cont-fg-input{cursor:pointer}
 .btn-reload-version:hover{background:#43a047}
 .btn-dismiss-version{background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:7px;padding:5px 12px;font-size:11px;color:rgba(255,255,255,.7);cursor:pointer}
 .btn-dismiss-version:hover{border-color:rgba(255,255,255,.6);color:#fff}
+
+/* ── DASHBOARD ── */
+.dash-wrap{padding:1.5rem;max-width:1200px;margin:0 auto}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+.dash-title{font-size:18px;font-weight:600;color:var(--text)}
+.dash-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dash-filters label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.dash-date-in{border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text);background:var(--surface);outline:none;font-family:inherit}
+.dash-date-in:focus{border-color:var(--green-dim)}
+.btn-dash-clear{background:transparent;border:1px solid var(--border2);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--muted);cursor:pointer;font-family:var(--mono)}
+.btn-dash-clear:hover{border-color:var(--green-dim);color:var(--green)}
+
+.dash-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem}
+.dash-sum-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;position:relative;overflow:hidden}
+.dash-sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.dash-sum-card.green::before{background:var(--green)}
+.dash-sum-card.red::before{background:#c0392b}
+.dash-sum-card.blue::before{background:#2471a3}
+.dash-sum-card.gold::before{background:#d4a017}
+.dash-sum-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.dash-sum-val{font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.dash-sum-sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;overflow:hidden}
+.dash-card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+.dash-card-title span{font-size:14px}
+
+/* Barras horizontais */
+.dash-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dash-bar-label{font-size:11px;font-weight:600;color:var(--text);min-width:50px;text-align:right}
+.dash-bar-track{flex:1;background:#e8f0ec;border-radius:4px;height:20px;overflow:hidden;position:relative}
+.dash-bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;transition:width .6s ease}
+.dash-bar-fill.green{background:linear-gradient(90deg,#1b3a2e,#2d6a4f)}
+.dash-bar-fill.red{background:linear-gradient(90deg,#922020,#c0392b)}
+.dash-bar-fill.orange{background:linear-gradient(90deg,#7a4f00,#d4a017)}
+.dash-bar-val{font-size:10px;font-weight:700;color:#fff;white-space:nowrap}
+.dash-bar-extra{font-size:10px;color:var(--muted);min-width:60px;text-align:right}
+
+/* Linha do tempo */
+.dash-timeline{display:flex;flex-direction:column;gap:6px}
+.dash-tl-item{display:flex;align-items:center;gap:10px;padding:6px 10px;background:#f5f9f6;border-radius:8px;font-size:12px}
+.dash-tl-date{color:var(--muted);min-width:80px;font-size:11px}
+.dash-tl-badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.dash-tl-p{background:#e3eef9;color:#1a4f82}
+.dash-tl-v{background:#e3f4e3;color:#1a5c1a}
+
+/* Donut chart */
+.dash-donut-wrap{display:flex;align-items:center;gap:1.5rem}
+.dash-donut-legend{display:flex;flex-direction:column;gap:8px}
+.dash-donut-leg-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.dash-donut-dot{width:10px;height:10px;border-radius:50%}
+
+/* Diff chart */
+.dash-diff-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.dash-diff-label{font-size:11px;color:var(--text);font-weight:600;min-width:50px;text-align:right}
+.dash-diff-center{position:relative;flex:1;height:20px;display:flex;align-items:center}
+.dash-diff-zero{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#c8ddd2}
+.dash-diff-bar{position:absolute;height:14px;border-radius:3px;top:3px}
+.dash-diff-val{font-size:10px;font-weight:700;color:#fff;padding:0 5px;white-space:nowrap}
+
+.dash-resumo{background:linear-gradient(135deg,#1b3a2e,#2d5a3e);border-radius:12px;padding:1.5rem;color:#fff;margin-bottom:16px}
+.dash-resumo-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7ecf9a;margin-bottom:1rem}
+.dash-resumo-text{font-size:13px;line-height:1.8;color:rgba(255,255,255,.9)}
+.dash-resumo-text strong{color:#7ecf9a}
 </style>
 </head>
 <body>
@@ -465,6 +532,7 @@ select.cont-fg-input{cursor:pointer}
     <button class="nav-tab active" onclick="switchModule('pricing')">Pricing</button>
     <button class="nav-tab" onclick="switchModule('informativo')">Informativo</button>
     <button class="nav-tab" onclick="switchModule('contratos')">Contratos</button>
+    <button class="nav-tab" onclick="switchModule('dashboard')">Dashboard</button>
   </div>
   <div class="nav-right">
     <div class="status-dot" id="statusDot"></div>
@@ -944,6 +1012,40 @@ select.cont-fg-input{cursor:pointer}
   </div>
 </div>
 </div><!-- /panel-contratos -->
+<!-- DASHBOARD -->
+<div class="panel" id="panel-dashboard">
+<div class="dash-wrap">
+  <div class="dash-header">
+    <div class="dash-title">📊 Dashboard Comercial</div>
+    <div class="dash-filters">
+      <label>De</label>
+      <input type="date" id="dash-de" class="dash-date-in" onchange="renderDashboard()">
+      <label>Até</label>
+      <input type="date" id="dash-ate" class="dash-date-in" onchange="renderDashboard()">
+      <button class="btn-dash-clear" onclick="dashClearDates()">✕ Limpar</button>
+    </div>
+  </div>
+  <div class="dash-summary">
+    <div class="dash-sum-card green"><div class="dash-sum-label">Total Compras (sacas)</div><div class="dash-sum-val" id="ds-tot-comp">—</div><div class="dash-sum-sub" id="ds-tot-comp-sub"></div></div>
+    <div class="dash-sum-card red"><div class="dash-sum-label">Avg Diff Compras</div><div class="dash-sum-val" id="ds-diff-comp">—</div><div class="dash-sum-sub">cts/lb média ponderada</div></div>
+    <div class="dash-sum-card blue"><div class="dash-sum-label">Total Vendas (sacas)</div><div class="dash-sum-val" id="ds-tot-vend">—</div><div class="dash-sum-sub" id="ds-tot-vend-sub"></div></div>
+    <div class="dash-sum-card gold"><div class="dash-sum-label">Avg Diff Vendas</div><div class="dash-sum-val" id="ds-diff-vend">—</div><div class="dash-sum-sub">cts/lb média ponderada</div></div>
+  </div>
+  <div class="dash-resumo"><div class="dash-resumo-title">✦ Resumo Executivo</div><div class="dash-resumo-text" id="ds-resumo-text">Carregando...</div></div>
+  <div class="dash-grid">
+    <div class="dash-card"><div class="dash-card-title"><span>🏆</span> Quality Mais Comprada (sacas)</div><div id="ds-quality-comp"></div></div>
+    <div class="dash-card"><div class="dash-card-title"><span>📉</span> Avg Diff por Quality (Compras)</div><div id="ds-diff-quality"></div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card"><div class="dash-card-title"><span>📅</span> Volume Mensal (sacas)</div><div id="ds-mensal"></div></div>
+    <div class="dash-card"><div class="dash-card-title"><span>🫘</span> Arábica vs Conilon</div><div id="ds-especie" style="display:flex;align-items:center;justify-content:center;padding:1rem 0;gap:2rem"></div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card"><div class="dash-card-title"><span>🔒</span> Hedge por Term (Lots)</div><div id="ds-hedge-term"></div></div>
+    <div class="dash-card"><div class="dash-card-title"><span>📈</span> Evolução Avg Diff (mês a mês)</div><div id="ds-evolucao"></div></div>
+  </div>
+</div>
+</div><!-- /panel-dashboard -->
 </div><!-- /portal-wrap -->
 
 <!-- MODAL SALVAR NEGOCIAÇÃO -->
@@ -1246,7 +1348,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-06-10-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-06-10-v3'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1415,10 +1517,11 @@ function switchModule(mod){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('panel-'+mod).classList.add('active');
-  const idx={pricing:0,informativo:1,contratos:2}[mod];
+  const idx={pricing:0,informativo:1,contratos:2,dashboard:3}[mod];
   document.querySelectorAll('.nav-tab')[idx].classList.add('active');
   if(mod==='informativo')renderInf();
   if(mod==='contratos'){renderContratos();fetchContratos();}
+  if(mod==='dashboard')renderDashboard();
   if(mod==='pricing'&&document.querySelectorAll('.p-tab-btn')[3].classList.contains('active'))fetchHist();
 }
 
@@ -2593,6 +2696,207 @@ async function confirmarDividir(){
     btn.disabled=false;btn.textContent='✓ Confirmar divisão';
   }
 }
+
+/* ── DASHBOARD ── */
+function dashClearDates(){
+  const d=document.getElementById('dash-de');if(d)d.value='';
+  const a=document.getElementById('dash-ate');if(a)a.value='';
+  renderDashboard();
+}
+
+function dashGetData(){
+  const de=document.getElementById('dash-de')?.value||'';
+  const ate=document.getElementById('dash-ate')?.value||'';
+  return infRows.filter(r=>{
+    if(de&&r.data<de)return false;
+    if(ate&&r.data>ate)return false;
+    return true;
+  });
+}
+
+function dashFmt(n){return Number(n).toLocaleString('pt-BR');}
+function dashFmtDif(v){if(v==null||isNaN(v))return'—';return(v>=0?'+':'')+Number(v).toFixed(2);}
+function dashMedW(arr){const s=arr.reduce((a,r)=>a+(Number(r.sacas)||0),0);if(!s)return null;return arr.reduce((a,r)=>a+(Number(r.dif)||0)*(Number(r.sacas)||0),0)/s;}
+function dashSumSacas(arr){return arr.reduce((a,r)=>a+(Number(r.sacas)||0),0);}
+function dashNormEsp(v){return String(v||'ARABICA').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');}
+
+function renderDashboard(){
+  const data=dashGetData();
+  const compras=data.filter(r=>r.tipo==='COMPRA');
+  const vendas=data.filter(r=>r.tipo==='VENDA');
+  const totC=dashSumSacas(compras), totV=dashSumSacas(vendas);
+  const diffC=dashMedW(compras), diffV=dashMedW(vendas);
+
+  // Cards
+  const sc=document.getElementById('ds-tot-comp');if(sc)sc.textContent=dashFmt(totC);
+  const sv=document.getElementById('ds-tot-vend');if(sv)sv.textContent=dashFmt(totV);
+  const dc=document.getElementById('ds-diff-comp');if(dc){dc.textContent=dashFmtDif(diffC);dc.style.color=diffC==null?'#888':diffC<0?'#c0392b':'#1e5c1e';}
+  const dv=document.getElementById('ds-diff-vend');if(dv){dv.textContent=dashFmtDif(diffV);dv.style.color=diffV==null?'#888':diffV<0?'#c0392b':'#1e5c1e';}
+  const scs=document.getElementById('ds-tot-comp-sub');
+  if(scs){const ar=dashSumSacas(compras.filter(r=>dashNormEsp(r.especie)==='ARABICA'));const co=dashSumSacas(compras.filter(r=>dashNormEsp(r.especie)==='CONILON'));scs.textContent='Arábica: '+dashFmt(ar)+' · Conilon: '+dashFmt(co);}
+  const svs=document.getElementById('ds-tot-vend-sub');
+  if(svs){const ar=dashSumSacas(vendas.filter(r=>dashNormEsp(r.especie)==='ARABICA'));const co=dashSumSacas(vendas.filter(r=>dashNormEsp(r.especie)==='CONILON'));svs.textContent='Arábica: '+dashFmt(ar)+' · Conilon: '+dashFmt(co);}
+
+  // Quality mais comprada
+  const qualMap={};
+  compras.forEach(r=>{const q=r.qual||'—';if(!qualMap[q])qualMap[q]=0;qualMap[q]+=(Number(r.sacas)||0);});
+  const qualSort=Object.entries(qualMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxQ=qualSort[0]?.[1]||1;
+  const qcEl=document.getElementById('ds-quality-comp');
+  if(qcEl)qcEl.innerHTML=qualSort.map(([q,s])=>`
+    <div class="dash-bar-row">
+      <div class="dash-bar-label">${q}</div>
+      <div class="dash-bar-track">
+        <div class="dash-bar-fill green" style="width:${Math.round(s/maxQ*100)}%">
+          <span class="dash-bar-val">${dashFmt(s)}</span>
+        </div>
+      </div>
+    </div>`).join('');
+
+  // Avg diff por quality
+  const diffQMap={};
+  compras.forEach(r=>{const q=r.qual||'—';if(!diffQMap[q])diffQMap[q]=[];diffQMap[q].push(r);});
+  const diffQSort=Object.entries(diffQMap).filter(([q])=>qualMap[q]>0).sort((a,b)=>qualMap[b[0]]-qualMap[a[0]]).slice(0,8);
+  const maxAbs=Math.max(...diffQSort.map(([,arr])=>Math.abs(dashMedW(arr)||0)),1);
+  const dqEl=document.getElementById('ds-diff-quality');
+  if(dqEl)dqEl.innerHTML=diffQSort.map(([q,arr])=>{
+    const d=dashMedW(arr);if(d==null)return'';
+    const pct=Math.round(Math.abs(d)/maxAbs*50);
+    const isNeg=d<0;
+    return `<div class="dash-diff-row">
+      <div class="dash-diff-label">${q}</div>
+      <div class="dash-diff-center">
+        <div class="dash-diff-zero"></div>
+        <div class="dash-diff-bar ${isNeg?'':'green'}" style="background:${isNeg?'#c0392b':'#1e5c1e'};right:${isNeg?'50%':'auto'};left:${isNeg?'auto':'50%'};width:${pct}%">
+          <span class="dash-diff-val" style="${isNeg?'position:absolute;right:4px':''}">${dashFmtDif(d)}</span>
+        </div>
+      </div>
+    </div>`;}).join('');
+
+  // Volume mensal
+  const menMap={};
+  data.forEach(r=>{
+    if(!r.data)return;
+    const m=r.data.slice(0,7);
+    if(!menMap[m])menMap[m]={c:0,v:0};
+    if(r.tipo==='COMPRA')menMap[m].c+=(Number(r.sacas)||0);
+    else menMap[m].v+=(Number(r.sacas)||0);
+  });
+  const menSort=Object.entries(menMap).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
+  const maxM=Math.max(...menSort.map(([,v])=>v.c+v.v),1);
+  const menEl=document.getElementById('ds-mensal');
+  if(menEl)menEl.innerHTML=menSort.map(([m,v])=>{
+    const [yr,mo]=m.split('-');
+    const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const label=meses[parseInt(mo)-1]+'/'+yr.slice(2);
+    const pctC=Math.round(v.c/maxM*100);const pctV=Math.round(v.v/maxM*100);
+    return `<div style="margin-bottom:6px">
+      <div style="font-size:10px;color:var(--muted);font-weight:600;margin-bottom:3px">${label}</div>
+      <div style="display:flex;gap:4px;height:16px">
+        <div style="background:#1b3a2e;border-radius:3px;width:${pctC}%;display:flex;align-items:center;padding:0 4px;min-width:${v.c?'30px':'0'}">
+          ${v.c?`<span style="font-size:9px;color:#fff;white-space:nowrap">${dashFmt(v.c)}</span>`:''}
+        </div>
+        <div style="background:#2471a3;border-radius:3px;width:${pctV}%;display:flex;align-items:center;padding:0 4px;min-width:${v.v?'30px':'0'}">
+          ${v.v?`<span style="font-size:9px;color:#fff;white-space:nowrap">${dashFmt(v.v)}</span>`:''}
+        </div>
+      </div>
+    </div>`;}).join('')+'<div style="display:flex;gap:12px;margin-top:8px;font-size:10px;color:var(--muted)"><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#1b3a2e;border-radius:2px;display:inline-block"></span>Compra</span><span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#2471a3;border-radius:2px;display:inline-block"></span>Venda</span></div>';
+
+  // Arábica vs Conilon (SVG donut)
+  const totAR=dashSumSacas(compras.filter(r=>dashNormEsp(r.especie)==='ARABICA'));
+  const totCO=dashSumSacas(compras.filter(r=>dashNormEsp(r.especie)==='CONILON'));
+  const totAll=totAR+totCO||1;
+  const pctAR=Math.round(totAR/totAll*100);const pctCO=100-pctAR;
+  const r=50,cx=60,cy=60,circ=2*Math.PI*r;
+  const dashAR=circ*pctAR/100;const dashCO=circ*pctCO/100;
+  const espEl=document.getElementById('ds-especie');
+  if(espEl)espEl.innerHTML=`
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e8f0ec" stroke-width="18"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#d4a017" stroke-width="18" stroke-dasharray="${dashCO} ${circ}" stroke-dashoffset="0" transform="rotate(-90 ${cx} ${cy})"/>
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1b3a2e" stroke-width="18" stroke-dasharray="${dashAR} ${circ}" stroke-dashoffset="${-dashCO}" transform="rotate(-90 ${cx} ${cy})"/>
+      <text x="${cx}" y="${cy-6}" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">${pctAR}%</text>
+      <text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="9" fill="#6b8c7a">Arábica</text>
+    </svg>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:12px"><span style="display:inline-block;width:12px;height:12px;background:#1b3a2e;border-radius:3px;margin-right:6px;vertical-align:middle"></span><strong>Arábica</strong><br><span style="color:var(--muted);font-size:11px">${dashFmt(totAR)} sacas · ${pctAR}%</span></div>
+      <div style="font-size:12px"><span style="display:inline-block;width:12px;height:12px;background:#d4a017;border-radius:3px;margin-right:6px;vertical-align:middle"></span><strong>Conilon</strong><br><span style="color:var(--muted);font-size:11px">${dashFmt(totCO)} sacas · ${pctCO}%</span></div>
+    </div>`;
+
+  // Hedge por Term
+  const hedgeMap={};
+  data.forEach(r=>{
+    if(!r.term||!r.lots)return;
+    const t=r.term.replace('#','');
+    if(!hedgeMap[t])hedgeMap[t]={c:0,v:0,lots_c:0,lots_v:0};
+    const lots=Number(r.lots)||0;
+    if(r.tipo==='COMPRA'){hedgeMap[t].c+=(Number(r.sacas)||0);hedgeMap[t].lots_c+=lots;}
+    else{hedgeMap[t].v+=(Number(r.sacas)||0);hedgeMap[t].lots_v+=lots;}
+  });
+  const hedgeSort=Object.entries(hedgeMap).sort((a,b)=>(b[1].lots_c+b[1].lots_v)-(a[1].lots_c+a[1].lots_v));
+  const maxH=Math.max(...hedgeSort.map(([,v])=>v.lots_c+v.lots_v),1);
+  const hedgeEl=document.getElementById('ds-hedge-term');
+  if(hedgeEl)hedgeEl.innerHTML=hedgeSort.length?hedgeSort.map(([t,v])=>{
+    const totalLots=v.lots_c+v.lots_v;
+    const pctC=totalLots?Math.round(v.lots_c/totalLots*100):0;
+    const pctV=100-pctC;
+    return`<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+        <span style="font-size:11px;font-weight:700;color:var(--text)">${t}</span>
+        <span style="font-size:10px;color:var(--muted)">${totalLots.toFixed(2)} lots · ${dashFmt(v.lots_c?v.c:0)+' / '+dashFmt(v.lots_v?v.v:0)} scs</span>
+      </div>
+      <div style="display:flex;height:16px;border-radius:4px;overflow:hidden;background:#e8f0ec">
+        ${v.lots_c?`<div style="width:${pctC}%;background:#1b3a2e;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#fff;font-weight:700">${v.lots_c.toFixed(1)}</span></div>`:''}
+        ${v.lots_v?`<div style="width:${pctV}%;background:#2471a3;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#fff;font-weight:700">${v.lots_v.toFixed(1)}</span></div>`:''}
+      </div>
+    </div>`;}).join('')+
+    '<div style="display:flex;gap:12px;margin-top:8px;font-size:10px;color:var(--muted)">'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#1b3a2e;border-radius:2px;display:inline-block"></span>Compra</span>'+
+    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#2471a3;border-radius:2px;display:inline-block"></span>Venda</span></div>'
+    :'<div style="color:var(--muted);font-size:12px;text-align:center;padding:2rem">Nenhum hedge registrado</div>';
+
+  // Evolução avg diff mês a mês
+  const evolEl=document.getElementById('ds-evolucao');
+  const evolData=menSort.map(([m])=>{
+    const mc=compras.filter(r=>r.data&&r.data.slice(0,7)===m);
+    return{m,d:dashMedW(mc)};
+  }).filter(x=>x.d!=null);
+  if(evolEl&&evolData.length){
+    const minD=Math.min(...evolData.map(x=>x.d));
+    const maxD=Math.max(...evolData.map(x=>x.d));
+    const range=maxD-minD||1;
+    const H=120,W=100;
+    const pts=evolData.map((x,i)=>{
+      const px=i*(W/(evolData.length-1||1));
+      const py=H-((x.d-minD)/range)*(H-20)-10;
+      return`${px},${py}`;
+    });
+    const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    evolEl.innerHTML=`<svg viewBox="0 0 100 140" style="width:100%;height:160px">
+      <polyline points="${pts.join(' ')}" fill="none" stroke="#1b3a2e" stroke-width="1.5" stroke-linejoin="round"/>
+      ${evolData.map((x,i)=>{
+        const px=i*(W/(evolData.length-1||1));
+        const py=H-((x.d-minD)/range)*(H-20)-10;
+        const [yr,mo]=x.m.split('-');
+        return`<circle cx="${px}" cy="${py}" r="2.5" fill="#1b3a2e"/>
+          <text x="${px}" y="${py-5}" text-anchor="middle" font-size="5" fill="#922020" font-weight="600">${x.d.toFixed(1)}</text>
+          <text x="${px}" y="135" text-anchor="middle" font-size="4.5" fill="#6b8c7a">${meses[parseInt(mo)-1].slice(0,3)}/${yr.slice(2)}</text>`;
+      }).join('')}
+    </svg>`;
+  } else if(evolEl){evolEl.innerHTML='<div style="color:var(--muted);font-size:12px;text-align:center;padding:2rem">Sem dados suficientes</div>';}
+
+  // Resumo executivo em texto
+  const qualTop=qualSort[0]?.[0]||'—';
+  const saldo=totC-totV;
+  const totalLots=Object.values(hedgeMap).reduce((a,v)=>a+v.lots_c+v.lots_v,0);
+  const termTop=hedgeSort[0]?.[0]||null;
+  const periodo=document.getElementById('dash-de')?.value&&document.getElementById('dash-ate')?.value
+    ?`de <strong>${new Date(document.getElementById('dash-de').value+'T12:00').toLocaleDateString('pt-BR')}</strong> a <strong>${new Date(document.getElementById('dash-ate').value+'T12:00').toLocaleDateString('pt-BR')}</strong>`
+    :'no período selecionado';
+  const resumoEl=document.getElementById('ds-resumo-text');
+  if(resumoEl)resumoEl.innerHTML=`No período ${periodo}, foram registradas <strong>${dashFmt(totC)} sacas compradas</strong> e <strong>${dashFmt(totV)} sacas vendidas</strong>, resultando em um saldo de <strong>${saldo>=0?'+':''}${dashFmt(saldo)} sacas</strong>. A quality mais negociada nas compras foi <strong>${qualTop}</strong>. O diff médio ponderado de compras foi de <strong>${dashFmtDif(diffC)} cts/lb</strong>${diffV!=null?' e de vendas <strong>'+dashFmtDif(diffV)+' cts/lb</strong>':''}. ${totalLots>0?'O hedge acumulado foi de <strong>'+totalLots.toFixed(2)+' lots</strong>'+(termTop?', com maior concentração no term <strong>'+termTop+'</strong>':'')+'.' :''} Arábica representou <strong>${pctAR}%</strong> das compras, com Conilon em <strong>${pctCO}%</strong>.`;
+}
+
 /* ── HISTÓRICO ── */
 let histFiltro='todos',negRows=[];
 
