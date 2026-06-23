@@ -1041,8 +1041,8 @@ select.cont-fg-input{cursor:pointer}
     <div class="dash-card"><div class="dash-card-title"><span>🫘</span> Arábica vs Conilon</div><div id="ds-especie" style="display:flex;align-items:center;justify-content:center;padding:1rem 0;gap:2rem"></div></div>
   </div>
   <div class="dash-grid">
-    <div class="dash-card"><div class="dash-card-title"><span>🔒</span> Hedge por Term (Lots)</div><div id="ds-hedge-term"></div></div>
-    <div class="dash-card"><div class="dash-card-title"><span>📈</span> Evolução Avg Diff (mês a mês)</div><div id="ds-evolucao"></div></div>
+    <div class="dash-card"><div class="dash-card-title"><span>🔒</span> Hedge por Term</div><div id="ds-hedge-term"></div></div>
+    <div class="dash-card"><div class="dash-card-title"><span>📈</span> Evolução Avg Diff por Quality (Compras)</div><div id="ds-evolucao"></div></div>
   </div>
 </div>
 </div><!-- /panel-dashboard -->
@@ -1348,7 +1348,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-06-10-v3'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-06-10-v9'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -2824,65 +2824,102 @@ function renderDashboard(){
     </div>`;
 
   // Hedge por Term
+  // Hedge por Term — só registros com term + lots + hedge_date
+  // Lógica: COMPRA café → VENDE lots na bolsa (hedge)
+  //         VENDA café  → COMPRA lots na bolsa
+  // Posição = Sacas Compradas − (Lots de registros COMPRA × 283,5)
+  // Negativo = sobrehedgeado | Positivo = subhedgeado (exposição aberta)
   const hedgeMap={};
   data.forEach(r=>{
-    if(!r.term||!r.lots)return;
+    if(!r.term||!r.lots||!r.hedge_date)return;
     const t=r.term.replace('#','');
-    if(!hedgeMap[t])hedgeMap[t]={c:0,v:0,lots_c:0,lots_v:0};
+    if(!hedgeMap[t])hedgeMap[t]={sacas_c:0,lots_hedge:0,sacas_v:0,lots_compra_bolsa:0};
     const lots=Number(r.lots)||0;
-    if(r.tipo==='COMPRA'){hedgeMap[t].c+=(Number(r.sacas)||0);hedgeMap[t].lots_c+=lots;}
-    else{hedgeMap[t].v+=(Number(r.sacas)||0);hedgeMap[t].lots_v+=lots;}
+    const sacas=Number(r.sacas)||0;
+    if(r.tipo==='COMPRA'){
+      hedgeMap[t].sacas_c+=sacas;
+      hedgeMap[t].lots_hedge+=lots; // vendeu lots na bolsa para hedgear
+    } else {
+      hedgeMap[t].sacas_v+=sacas;
+      hedgeMap[t].lots_compra_bolsa+=lots; // comprou lots na bolsa
+    }
   });
-  const hedgeSort=Object.entries(hedgeMap).sort((a,b)=>(b[1].lots_c+b[1].lots_v)-(a[1].lots_c+a[1].lots_v));
-  const maxH=Math.max(...hedgeSort.map(([,v])=>v.lots_c+v.lots_v),1);
+  const hedgeSort=Object.entries(hedgeMap).sort((a,b)=>a[0].localeCompare(b[0]));
   const hedgeEl=document.getElementById('ds-hedge-term');
-  if(hedgeEl)hedgeEl.innerHTML=hedgeSort.length?hedgeSort.map(([t,v])=>{
-    const totalLots=v.lots_c+v.lots_v;
-    const pctC=totalLots?Math.round(v.lots_c/totalLots*100):0;
-    const pctV=100-pctC;
-    return`<div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
-        <span style="font-size:11px;font-weight:700;color:var(--text)">${t}</span>
-        <span style="font-size:10px;color:var(--muted)">${totalLots.toFixed(2)} lots · ${dashFmt(v.lots_c?v.c:0)+' / '+dashFmt(v.lots_v?v.v:0)} scs</span>
-      </div>
-      <div style="display:flex;height:16px;border-radius:4px;overflow:hidden;background:#e8f0ec">
-        ${v.lots_c?`<div style="width:${pctC}%;background:#1b3a2e;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#fff;font-weight:700">${v.lots_c.toFixed(1)}</span></div>`:''}
-        ${v.lots_v?`<div style="width:${pctV}%;background:#2471a3;display:flex;align-items:center;justify-content:center"><span style="font-size:9px;color:#fff;font-weight:700">${v.lots_v.toFixed(1)}</span></div>`:''}
-      </div>
-    </div>`;}).join('')+
-    '<div style="display:flex;gap:12px;margin-top:8px;font-size:10px;color:var(--muted)">'+
-    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#1b3a2e;border-radius:2px;display:inline-block"></span>Compra</span>'+
-    '<span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#2471a3;border-radius:2px;display:inline-block"></span>Venda</span></div>'
-    :'<div style="color:var(--muted);font-size:12px;text-align:center;padding:2rem">Nenhum hedge registrado</div>';
+  if(hedgeEl)hedgeEl.innerHTML=hedgeSort.length?`
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead>
+        <tr style="border-bottom:2px solid #d0e4d8">
+          <th style="text-align:left;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Term</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;color:#1b3a2e;font-weight:600;text-transform:uppercase">Sacas Compradas</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;color:#c0392b;font-weight:600;text-transform:uppercase">Lots Vendidos (Hedge)</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;color:#c0392b;font-weight:600;text-transform:uppercase">Equiv. Hedge (scs)</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted)">Posição</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${hedgeSort.map(([t,v])=>{
+          // NY = 283,5 scs/lot | LDN = 166,67 scs/lot (10t ÷ 60kg) | BMF = 100 scs/lot
+          const sacsPorLot=t.startsWith('LDN')?166.67:t.startsWith('BMF')?100:283.5;
+          const equivHedge=v.lots_hedge*sacsPorLot;
+          const pos=v.sacas_c-equivHedge;
+          const posCol=Math.abs(pos)<10?'#2471a3':pos>0?'#1e5c1e':'#c0392b';
+          const posLabel=Math.abs(pos)<10?'Neutro':pos>0?'Subhedgeado':'Sobrehedgeado';
+          return`<tr style="border-bottom:1px solid #e8f0ec">
+            <td style="padding:7px 8px;font-weight:700;color:var(--text)">${t}</td>
+            <td style="padding:7px 8px;text-align:right;color:#1b3a2e;font-weight:600">${dashFmt(v.sacas_c)}</td>
+            <td style="padding:7px 8px;text-align:right;color:#c0392b;font-weight:600">${v.lots_hedge.toFixed(2)}</td>
+            <td style="padding:7px 8px;text-align:right;color:var(--muted)">${dashFmt(Math.round(equivHedge))}</td>
+            <td style="padding:7px 8px;text-align:right;font-weight:700;color:${posCol}">${pos>=0?'+':''}${dashFmt(Math.round(pos))}<br><span style="font-size:9px;font-weight:600">(${posLabel})</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    </div>
+    <div style="font-size:10px;color:var(--muted);margin-top:8px">* Equiv. Hedge: NY = Lots × 283,5 scs | LDN = Lots × 166,67 scs | BMF = Lots × 100 scs · Posição = Sacas Compradas − Equiv. Hedge</div>`
+    :'<div style="color:var(--muted);font-size:12px;text-align:center;padding:2rem">Nenhum hedge com data registrado</div>';
 
-  // Evolução avg diff mês a mês
+  // Evolução avg diff por quality — relatório por mês com barras horizontais
   const evolEl=document.getElementById('ds-evolucao');
-  const evolData=menSort.map(([m])=>{
-    const mc=compras.filter(r=>r.data&&r.data.slice(0,7)===m);
-    return{m,d:dashMedW(mc)};
-  }).filter(x=>x.d!=null);
-  if(evolEl&&evolData.length){
-    const minD=Math.min(...evolData.map(x=>x.d));
-    const maxD=Math.max(...evolData.map(x=>x.d));
-    const range=maxD-minD||1;
-    const H=120,W=100;
-    const pts=evolData.map((x,i)=>{
-      const px=i*(W/(evolData.length-1||1));
-      const py=H-((x.d-minD)/range)*(H-20)-10;
-      return`${px},${py}`;
-    });
-    const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    evolEl.innerHTML=`<svg viewBox="0 0 100 140" style="width:100%;height:160px">
-      <polyline points="${pts.join(' ')}" fill="none" stroke="#1b3a2e" stroke-width="1.5" stroke-linejoin="round"/>
-      ${evolData.map((x,i)=>{
-        const px=i*(W/(evolData.length-1||1));
-        const py=H-((x.d-minD)/range)*(H-20)-10;
-        const [yr,mo]=x.m.split('-');
-        return`<circle cx="${px}" cy="${py}" r="2.5" fill="#1b3a2e"/>
-          <text x="${px}" y="${py-5}" text-anchor="middle" font-size="5" fill="#922020" font-weight="600">${x.d.toFixed(1)}</text>
-          <text x="${px}" y="135" text-anchor="middle" font-size="4.5" fill="#6b8c7a">${meses[parseInt(mo)-1].slice(0,3)}/${yr.slice(2)}</text>`;
-      }).join('')}
-    </svg>`;
+  const mesesNome=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const topQ=qualSort.slice(0,6).map(([q])=>q);
+  const QCOLORS={'BC2':'#1b3a2e','BC3':'#2d6a4f','BC4':'#c0392b','BC5':'#2471a3','BC6':'#d4a017','BC9':'#6c3483','BC14':'#7a4f00','BC15':'#1a5c1a','BCSW':'#555'};
+  const getCol=(q,i)=>QCOLORS[q]||['#1b3a2e','#c0392b','#2471a3','#d4a017','#6c3483','#7a4f00'][i%6];
+
+  if(evolEl&&topQ.length&&menSort.length){
+    const allQDs=topQ.flatMap(q=>menSort.map(([m])=>{
+      const mc=compras.filter(r=>r.data&&r.data.slice(0,7)===m&&(r.qual||'—')===q);
+      return dashMedW(mc);
+    })).filter(d=>d!=null);
+    const maxAbsE=Math.max(...allQDs.map(d=>Math.abs(d)),1);
+
+    const html_meses=menSort.map(([m])=>{
+      const [yr,mo]=m.split('-');
+      const label=mesesNome[parseInt(mo)-1]+'/'+yr.slice(2);
+      const rows=topQ.map((q,qi)=>{
+        const mc=compras.filter(r=>r.data&&r.data.slice(0,7)===m&&(r.qual||'—')===q);
+        const d=dashMedW(mc);
+        if(d==null)return'';
+        const pct=Math.round(Math.abs(d)/maxAbsE*100);
+        const col=getCol(q,qi);
+        return`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span style="font-size:10px;font-weight:700;color:${col};min-width:36px;text-align:right">${q}</span>
+          <div style="flex:1;background:#e8f0ec;border-radius:3px;height:14px;overflow:hidden">
+            <div style="width:${pct}%;height:100%;background:${col};border-radius:3px;display:flex;align-items:center;padding:0 4px">
+              <span style="font-size:9px;color:#fff;font-weight:700;white-space:nowrap">${d.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      if(!rows.trim())return'';
+      return`<div style="margin-bottom:1rem;background:#f5f9f6;border-radius:8px;padding:.75rem 1rem">
+        <div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:.5rem;border-bottom:1px solid #d0e4d8;padding-bottom:4px">${label}</div>
+        ${rows}
+      </div>`;
+    }).join('');
+
+    evolEl.innerHTML=html_meses||'<div style="color:var(--muted);font-size:12px;text-align:center;padding:2rem">Sem dados suficientes</div>';
   } else if(evolEl){evolEl.innerHTML='<div style="color:var(--muted);font-size:12px;text-align:center;padding:2rem">Sem dados suficientes</div>';}
 
   // Resumo executivo em texto
