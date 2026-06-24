@@ -1348,7 +1348,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-06-10-v9'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-06-10-v10'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -2846,38 +2846,58 @@ function renderDashboard(){
   });
   const hedgeSort=Object.entries(hedgeMap).sort((a,b)=>a[0].localeCompare(b[0]));
   const hedgeEl=document.getElementById('ds-hedge-term');
-  if(hedgeEl)hedgeEl.innerHTML=hedgeSort.length?`
+  // Gerar linhas separadas por COMPRA e VENDA por term
+  const hedgeRows=[];
+  hedgeSort.forEach(([t,v])=>{
+    const sacsPorLot=t.startsWith('LDN')?166.67:t.startsWith('BMF')?100:283.5;
+    // Linha de COMPRA (vendeu lots na bolsa)
+    if(v.sacas_c>0||v.lots_hedge>0){
+      const equivC=v.lots_hedge*sacsPorLot;
+      const posC=v.sacas_c-equivC;
+      const posColC=Math.abs(posC)<10?'#2471a3':posC>0?'#1e5c1e':'#c0392b';
+      const posLblC=Math.abs(posC)<10?'Neutro':posC>0?'Subhedgeado':'Sobrehedgeado';
+      hedgeRows.push(`<tr style="border-bottom:1px solid #e8f0ec">
+        <td style="padding:7px 8px;font-weight:700;color:var(--text)">${t}</td>
+        <td style="padding:4px 8px;text-align:center"><span style="background:#e3f4e3;color:#1a5c1a;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">COMPRA</span></td>
+        <td style="padding:7px 8px;text-align:right;color:#1b3a2e;font-weight:600">${dashFmt(v.sacas_c)}</td>
+        <td style="padding:7px 8px;text-align:right;color:#c0392b;font-weight:600">${v.lots_hedge.toFixed(2)}</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${dashFmt(Math.round(equivC))}</td>
+        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${posColC}">${posC>=0?'+':''}${dashFmt(Math.round(posC))}<br><span style="font-size:9px">(${posLblC})</span></td>
+      </tr>`);
+    }
+    // Linha de VENDA (comprou lots na bolsa)
+    if(v.sacas_v>0||v.lots_compra_bolsa>0){
+      const equivV=v.lots_compra_bolsa*sacsPorLot;
+      const posV=equivV-v.sacas_v; // positivo = sobrehedgeado, negativo = subhedgeado
+      const posColV=Math.abs(posV)<10?'#2471a3':posV>0?'#c0392b':'#1e5c1e';
+      const posLblV=Math.abs(posV)<10?'Neutro':posV>0?'Sobrehedgeado':'Subhedgeado';
+      hedgeRows.push(`<tr style="border-bottom:1px solid #e8f0ec">
+        <td style="padding:7px 8px;font-weight:700;color:var(--text)">${t}</td>
+        <td style="padding:4px 8px;text-align:center"><span style="background:#e3eef9;color:#1a4f82;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">VENDA</span></td>
+        <td style="padding:7px 8px;text-align:right;color:#2471a3;font-weight:600">${dashFmt(v.sacas_v)}</td>
+        <td style="padding:7px 8px;text-align:right;color:#1b3a2e;font-weight:600">${v.lots_compra_bolsa.toFixed(2)}</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${dashFmt(Math.round(equivV))}</td>
+        <td style="padding:7px 8px;text-align:right;font-weight:700;color:${posColV}">${posV>=0?'+':''}${dashFmt(Math.round(posV))}<br><span style="font-size:9px">(${posLblV})</span></td>
+      </tr>`);
+    }
+  });
+  if(hedgeEl)hedgeEl.innerHTML=hedgeRows.length?`
     <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:11px">
       <thead>
         <tr style="border-bottom:2px solid #d0e4d8">
           <th style="text-align:left;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Term</th>
-          <th style="text-align:right;padding:6px 8px;font-size:10px;color:#1b3a2e;font-weight:600;text-transform:uppercase">Sacas Compradas</th>
-          <th style="text-align:right;padding:6px 8px;font-size:10px;color:#c0392b;font-weight:600;text-transform:uppercase">Lots Vendidos (Hedge)</th>
-          <th style="text-align:right;padding:6px 8px;font-size:10px;color:#c0392b;font-weight:600;text-transform:uppercase">Equiv. Hedge (scs)</th>
-          <th style="text-align:right;padding:6px 8px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--muted)">Posição</th>
+          <th style="text-align:center;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Tipo</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Sacas</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Lots Bolsa</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Equiv. (scs)</th>
+          <th style="text-align:right;padding:6px 8px;font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Posição</th>
         </tr>
       </thead>
-      <tbody>
-        ${hedgeSort.map(([t,v])=>{
-          // NY = 283,5 scs/lot | LDN = 166,67 scs/lot (10t ÷ 60kg) | BMF = 100 scs/lot
-          const sacsPorLot=t.startsWith('LDN')?166.67:t.startsWith('BMF')?100:283.5;
-          const equivHedge=v.lots_hedge*sacsPorLot;
-          const pos=v.sacas_c-equivHedge;
-          const posCol=Math.abs(pos)<10?'#2471a3':pos>0?'#1e5c1e':'#c0392b';
-          const posLabel=Math.abs(pos)<10?'Neutro':pos>0?'Subhedgeado':'Sobrehedgeado';
-          return`<tr style="border-bottom:1px solid #e8f0ec">
-            <td style="padding:7px 8px;font-weight:700;color:var(--text)">${t}</td>
-            <td style="padding:7px 8px;text-align:right;color:#1b3a2e;font-weight:600">${dashFmt(v.sacas_c)}</td>
-            <td style="padding:7px 8px;text-align:right;color:#c0392b;font-weight:600">${v.lots_hedge.toFixed(2)}</td>
-            <td style="padding:7px 8px;text-align:right;color:var(--muted)">${dashFmt(Math.round(equivHedge))}</td>
-            <td style="padding:7px 8px;text-align:right;font-weight:700;color:${posCol}">${pos>=0?'+':''}${dashFmt(Math.round(pos))}<br><span style="font-size:9px;font-weight:600">(${posLabel})</span></td>
-          </tr>`;
-        }).join('')}
-      </tbody>
+      <tbody>${hedgeRows.join('')}</tbody>
     </table>
     </div>
-    <div style="font-size:10px;color:var(--muted);margin-top:8px">* Equiv. Hedge: NY = Lots × 283,5 scs | LDN = Lots × 166,67 scs | BMF = Lots × 100 scs · Posição = Sacas Compradas − Equiv. Hedge</div>`
+    <div style="font-size:10px;color:var(--muted);margin-top:8px">* NY=283,5 scs/lot · LDN=166,67 scs/lot · BMF=100 scs/lot · Compra: Posição=Sacas−Equiv. · Venda: Posição=Equiv.−Sacas</div>`
     :'<div style="color:var(--muted);font-size:12px;text-align:center;padding:2rem">Nenhum hedge com data registrado</div>';
 
   // Evolução avg diff por quality — relatório por mês com barras horizontais
