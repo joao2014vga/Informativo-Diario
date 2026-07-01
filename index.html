@@ -993,6 +993,10 @@ select.cont-fg-input{cursor:pointer}
     <input type="date" id="cf-vcto-de" class="cont-filter-input" title="De" onchange="renderContratos()" style="width:130px">
     <span style="font-size:11px;color:var(--muted)">até</span>
     <input type="date" id="cf-vcto-ate" class="cont-filter-input" title="Até" onchange="renderContratos()" style="width:130px">
+    <span style="font-size:11px;color:var(--muted);white-space:nowrap;margin-left:4px">Emissão:</span>
+    <input type="date" id="cf-emissao-de" class="cont-filter-input" title="Emissão de" onchange="renderContratos()" style="width:130px">
+    <span style="font-size:11px;color:var(--muted)">até</span>
+    <input type="date" id="cf-emissao-ate" class="cont-filter-input" title="Emissão até" onchange="renderContratos()" style="width:130px">
     <button class="btn-clear-inf" onclick="limparFiltrosCont()" style="height:32px;font-size:11px">Limpar filtros</button>
   </div>
   <div class="cont-table-wrap">
@@ -1192,6 +1196,7 @@ select.cont-fg-input{cursor:pointer}
       <div><label class="cont-fg-label">Valor R$/saca</label><input type="number" id="c-valor" class="cont-fg-input" placeholder="0.00" step="0.01" style="text-transform:none"/></div>
       <div><label class="cont-fg-label">Frete</label><select id="c-frete" class="cont-fg-input" onchange="autoFillContrato()"><option value="Posto">POSTO</option><option value="Retirar">RETIRAR</option></select></div>
       <div><label class="cont-fg-label">Vencimento</label><input type="date" id="c-vencimento" class="cont-fg-input" style="text-transform:none"/></div>
+      <div><label class="cont-fg-label">Emissão</label><input type="date" id="c-emissao" class="cont-fg-input" style="text-transform:none"/></div>
     </div>
     <div class="cont-form-grid two">
       <div><label class="cont-fg-label">Status ERP</label><select id="c-status-erp" class="cont-fg-input"><option value="AGUARDANDO FECHAMENTO">AGUARDANDO FECHAMENTO</option><option value="ERP LANÇADO">ERP LANÇADO</option></select></div>
@@ -1348,7 +1353,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-06-10-v10'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-07-01-v2'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -3164,6 +3169,7 @@ async function salvarNegociacao(){
       especie:(document.getElementById('c-especie')?document.getElementById('c-especie').value:null)||null,
       quality_cont:(document.getElementById('c-quality')?document.getElementById('c-quality').value:null)||null,
       vencimento:document.getElementById('i-paydate').value||null,
+      emissao:todayStr(),
       obs_extra:'',
       status_erp:'AGUARDANDO FECHAMENTO',
       instrucao_faturamento:instrucao,
@@ -3936,13 +3942,18 @@ function contFiltered(){
     if((vctoDE||vctoATE)&&!r.vencimento)return false;
     if(vctoDE&&r.vencimento&&r.vencimento<vctoDE)return false;
     if(vctoATE&&r.vencimento&&r.vencimento>vctoATE)return false;
+    // Filtro emissão
+    const emDE=document.getElementById('cf-emissao-de')?.value;
+    const emATE=document.getElementById('cf-emissao-ate')?.value;
+    if(emDE&&(!r.emissao||r.emissao<emDE))return false;
+    if(emATE&&(!r.emissao||r.emissao>emATE))return false;
     return true;
   });
 }
 
 function limparFiltrosCont(){
   ['cf-contrato','cf-vendedor','cf-corretor'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['cf-filial','cf-frete','cf-modalidade','cf-vcto-de','cf-vcto-ate'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['cf-filial','cf-frete','cf-modalidade','cf-vcto-de','cf-vcto-ate','cf-emissao-de','cf-emissao-ate'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   renderContratos();
 }
 
@@ -3972,7 +3983,7 @@ function toggleSortContrato(){
 }
 
 function renderContratos(){
-  let data=contFiltered();
+  let data=contFiltered().slice().sort((a,b)=>b.id-a.id);
   // Ordenar por número de contrato se ativo
   if(contSortDir==='asc'){
     data=[...data].sort((a,b)=>getContNumero(a.contrato)-getContNumero(b.contrato));
@@ -4066,7 +4077,7 @@ function abrirModalContrato(id){
   contEditingId=id;
   if(id===null){
     document.getElementById('contModalTitle').textContent='Novo Contrato';
-    ['c-contrato','c-vendedor','c-corretor','c-sacas','c-valor','c-obs','c-vencimento'].forEach(x=>document.getElementById(x).value='');
+    ['c-contrato','c-vendedor','c-corretor','c-sacas','c-valor','c-obs','c-vencimento','c-emissao'].forEach(x=>document.getElementById(x).value='');
     const qEl=document.getElementById('c-quality');if(qEl)qEl.value='';
     document.getElementById('c-filial').value='MG';document.getElementById('c-tipo').value='Compra';
     document.getElementById('c-modalidade').value='Normal';document.getElementById('c-frete').value='Posto';
@@ -4080,7 +4091,7 @@ function abrirModalContrato(id){
     document.getElementById('c-vendedor').value=r.vendedor||'';document.getElementById('c-corretor').value=r.corretor||'';
     document.getElementById('c-empresa-produtor').value=r.empresa_produtor||'Empresa';
     document.getElementById('c-sacas').value=r.sacas||'';document.getElementById('c-valor').value=r.valor||'';
-    document.getElementById('c-frete').value=r.frete||'Posto';document.getElementById('c-vencimento').value=r.vencimento||'';
+    document.getElementById('c-frete').value=r.frete||'Posto';document.getElementById('c-vencimento').value=r.vencimento||'';document.getElementById('c-emissao').value=r.emissao||'';
     document.getElementById('c-obs').value=r.obs_extra||'';document.getElementById('c-status-erp').value=r.status_erp||'AGUARDANDO FECHAMENTO';
     document.getElementById('c-instrucao').value=r.instrucao_faturamento||'NÃO PRECISA';
     document.getElementById('c-email-prog').value=r.email_programacao||'ENVIAR BRC';
@@ -4110,6 +4121,7 @@ async function salvarContrato(){
     valor:parseFloat(document.getElementById('c-valor').value)||null,
     frete:document.getElementById('c-frete').value,
     vencimento:document.getElementById('c-vencimento').value||null,
+    emissao:document.getElementById('c-emissao').value||null,
     obs_extra:document.getElementById('c-obs').value.trim(),
     status_erp:document.getElementById('c-status-erp').value,
     instrucao_faturamento:document.getElementById('c-instrucao').value,
