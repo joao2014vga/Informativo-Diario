@@ -1116,6 +1116,11 @@ select.cont-fg-input{cursor:pointer}
         <input type="hidden" id="cert-modal-hidden" value="">
       </div></div>
     </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;background:#f5f9f6;border-radius:8px;padding:.6rem 1rem">
+      <span style="font-size:12px;color:var(--muted);font-weight:600">Replicar entrada:</span>
+      <input type="number" id="eRepetir" min="1" max="50" value="1" style="width:60px;border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:13px;text-align:center;font-family:inherit">
+      <span style="font-size:11px;color:var(--muted)">vez(es) — cria N registros iguais</span>
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel-m" onclick="closeInfModal()">Cancel</button>
       <button class="btn-save-edit" id="btnSaveEdit" onclick="saveInfEdit()">Save changes</button>
@@ -1353,7 +1358,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-07-01-v2'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-07-02-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -3568,6 +3573,7 @@ function openInfEdit(id){
   document.getElementById('eTerm').value=r.term||'';document.getElementById('eLots').value=r.lots||'';
   document.getElementById('eHedgeDate').value=r.hedge_date||'';
   certSetValue('cert-modal',r.certificate||'');
+  const repEl=document.getElementById('eRepetir');if(repEl)repEl.value=1;
   document.getElementById('infModalOverlay').classList.add('open');
 }
 function closeInfModal(){infEditingId=null;document.getElementById('infModalOverlay').classList.remove('open');}
@@ -3579,19 +3585,37 @@ async function saveInfEdit(){
   const dif=parseFloat(document.getElementById('eDif').value);
   const especie=document.getElementById('eEspecie').value;
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in all fields.');return;}
-  const btn=document.getElementById('btnSaveEdit');btn.disabled=true;btn.textContent='Saving...';
+  const repetir=Math.max(1,parseInt(document.getElementById('eRepetir')?.value)||1);
+  const btn=document.getElementById('btnSaveEdit');btn.disabled=true;
+  btn.textContent=repetir>1?'Saving '+repetir+'x...':'Saving...';
   try{
     const eTerm=document.getElementById('eTerm').value||null;
     const eLots=document.getElementById('eLots').value||null;
     const eHedgeDate=document.getElementById('eHedgeDate').value||null;
     const eCertificate=certGetValue('cert-modal')||null;
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots,hedge_date:eHedgeDate,certificate:eCertificate})});
-    if(!res.ok)throw new Error(await res.text());
-    const[updated]=await res.json();
-    const idx=infRows.findIndex(r=>r.id===infEditingId);if(idx!==-1)infRows[idx]=updated;
+    const payload={data,tipo,sacas,qual,dif,especie,term:eTerm,lots:eLots,hedge_date:eHedgeDate,certificate:eCertificate};
+
+    if(repetir===1){
+      // Editar o registro existente
+      const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(payload)});
+      if(!res.ok)throw new Error(await res.text());
+      const[updated]=await res.json();
+      const idx=infRows.findIndex(r=>r.id===infEditingId);if(idx!==-1)infRows[idx]=updated;
+    } else {
+      // Editar o original + criar N-1 cópias novas
+      const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${infEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(payload)});
+      if(!res.ok)throw new Error(await res.text());
+      const[updated]=await res.json();
+      const idx=infRows.findIndex(r=>r.id===infEditingId);if(idx!==-1)infRows[idx]=updated;
+      // Criar N-1 cópias novas
+      for(let i=1;i<repetir;i++){
+        const rCopy=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(payload)});
+        if(rCopy.ok){const[nova]=await rCopy.json();infRows.unshift(nova);}
+      }
+    }
     closeInfModal();renderInf();
   }catch(e){alert('Erro: '+e.message);}
-  finally{btn.disabled=false;btn.textContent='Salvar alterações';}
+  finally{btn.disabled=false;btn.textContent='Save changes';}
 }
 
 function renderQualidade(data){
