@@ -1358,7 +1358,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-07-02-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-07-06-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1592,7 +1592,7 @@ function normalizarContrato(v){
 
 
 // ── Certificate multi-select ─────────────────────────────────
-const CERT_LIST=['RAINFOREST ALLIANCE','EUDR','CAFE PRACTICES','UTZ','4C SERVICES'];
+const CERT_LIST=['RAINFOREST ALLIANCE','EUDR','CAFE PRATICES','UTZ','4C SERVICES'];
 
 function certToggle(id){
   const panel=document.getElementById(id+'-panel');
@@ -2753,15 +2753,19 @@ function renderDashboard(){
   const qualSort=Object.entries(qualMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const maxQ=qualSort[0]?.[1]||1;
   const qcEl=document.getElementById('ds-quality-comp');
-  if(qcEl)qcEl.innerHTML=qualSort.map(([q,s])=>`
+  if(qcEl)qcEl.innerHTML=qualSort.map(([q,s])=>{
+    const pct=Math.max(Math.round(s/maxQ*100),2);
+    const small=pct<20; // barra estreita: valor sai da barra (fica ao lado, com cor escura)
+    return `
     <div class="dash-bar-row">
       <div class="dash-bar-label">${q}</div>
       <div class="dash-bar-track">
-        <div class="dash-bar-fill green" style="width:${Math.round(s/maxQ*100)}%">
-          <span class="dash-bar-val">${dashFmt(s)}</span>
+        <div class="dash-bar-fill green" style="width:${pct}%">
+          ${small?'':`<span class="dash-bar-val">${dashFmt(s)}</span>`}
         </div>
+        ${small?`<span class="dash-bar-val" style="position:absolute;left:calc(${pct}% + 8px);top:50%;transform:translateY(-50%);color:var(--text)">${dashFmt(s)}</span>`:''}
       </div>
-    </div>`).join('');
+    </div>`;}).join('');
 
   // Avg diff por quality
   const diffQMap={};
@@ -2771,15 +2775,18 @@ function renderDashboard(){
   const dqEl=document.getElementById('ds-diff-quality');
   if(dqEl)dqEl.innerHTML=diffQSort.map(([q,arr])=>{
     const d=dashMedW(arr);if(d==null)return'';
-    const pct=Math.round(Math.abs(d)/maxAbs*50);
+    const pct=Math.max(Math.round(Math.abs(d)/maxAbs*50),2);
     const isNeg=d<0;
+    const barColor=isNeg?'#c0392b':'#1e5c1e';
+    const small=pct<15; // barra estreita: valor sai da barra (fica ao lado, com a cor da barra)
     return `<div class="dash-diff-row">
       <div class="dash-diff-label">${q}</div>
       <div class="dash-diff-center">
         <div class="dash-diff-zero"></div>
-        <div class="dash-diff-bar ${isNeg?'':'green'}" style="background:${isNeg?'#c0392b':'#1e5c1e'};right:${isNeg?'50%':'auto'};left:${isNeg?'auto':'50%'};width:${pct}%">
-          <span class="dash-diff-val" style="${isNeg?'position:absolute;right:4px':''}">${dashFmtDif(d)}</span>
+        <div class="dash-diff-bar ${isNeg?'':'green'}" style="background:${barColor};right:${isNeg?'50%':'auto'};left:${isNeg?'auto':'50%'};width:${pct}%">
+          ${small?'':`<span class="dash-diff-val" style="${isNeg?'position:absolute;right:4px':''}">${dashFmtDif(d)}</span>`}
         </div>
+        ${small?`<span class="dash-diff-val" style="position:absolute;${isNeg?'right':'left'}:calc(50% + ${pct}% + 6px);top:50%;transform:translateY(-50%);color:${barColor};padding:0">${dashFmtDif(d)}</span>`:''}
       </div>
     </div>`;}).join('');
 
