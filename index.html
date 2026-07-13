@@ -291,6 +291,10 @@ select.fg-input{cursor:pointer}
 .inf-watermark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;opacity:.04}
 .inf-watermark img{width:240px;height:240px;object-fit:contain}
 .tbl-wrap{overflow-x:auto;position:relative;z-index:1}
+/* Coluna de ações (excluir/editar) fixa na direita nessa tabela também */
+.inf-table-card th:last-child,.inf-table-card td:last-child{position:sticky;right:0;z-index:2;white-space:nowrap;background:#fff}
+.inf-table-card thead th:last-child{background:#f5f9f6;z-index:3}
+.inf-table-card tbody tr:hover td:last-child{background:#fafcfb}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead tr{background:#f5f9f6}
 th{padding:9px 14px;text-align:left;font-size:11px;font-weight:600;color:#5a7a68;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid #dde8e2;white-space:nowrap}
@@ -338,7 +342,7 @@ tbody tr:hover{background:#fafcfb}
 /* CONTRATOS */
 #panel-contratos{padding:1.25rem 1.5rem}
 #panel-dashboard{padding:0}
-.cont-wrap{max-width:1400px;margin:0 auto}
+.cont-wrap{max-width:1900px;margin:0 auto}
 .cont-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
 .btn-novo-contrato{background:#2d4a3e;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600}
 .btn-export-cont{background:#fff;border:1px solid #c8ddd2;border-radius:8px;padding:7px 14px;font-size:12px;font-family:inherit;color:#2d4a3e;cursor:pointer;font-weight:600}
@@ -360,6 +364,13 @@ tbody tr:hover{background:#fafcfb}
 .cont-table td{padding:8px 10px;border-bottom:1px solid #edf3ef;color:#1a1a1a;font-size:12px;vertical-align:middle}
 .cont-table tbody tr:last-child td{border-bottom:none}
 .cont-table tbody tr:hover{background:#fafcfb}
+/* Coluna de ações (editar/excluir) fixa na direita, sempre visível mesmo rolando a tabela */
+.cont-table th:last-child,.cont-table td:last-child{position:sticky;right:0;z-index:2;white-space:nowrap}
+.cont-table thead th:last-child{background:#f5f9f6;z-index:3}
+.cont-table tbody td:last-child{background:#fff;box-shadow:-6px 0 8px -6px rgba(0,0,0,.12)}
+.cont-table tbody tr:hover td:last-child{background:#fafcfb}
+.cont-table tbody tr.cont-row-finalizado td:last-child{background:inherit}
+.cont-table tbody tr.cont-row-dividido td:last-child{background:inherit}
 .status-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
 .pill-erp{background:#e3f4e3;color:#1a5c1a}
 .pill-aguardando{background:#fff3cd;color:#856404}
@@ -1358,7 +1369,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-07-06-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-07-09-v3'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1475,12 +1486,17 @@ async function fetchPerfil(email){
   try{
     const res=await fetchComTimeout(`${SUPA_URL}/rest/v1/perfis?select=role&email=eq.${encodeURIComponent(email)}`,{headers:authH()},8000);
     if(res.ok){const d=await res.json();if(d.length)userRole=d[0].role;}
-  }catch(e){}
+    else console.warn('fetchPerfil: resposta não OK ao buscar role',res.status,await res.text().catch(()=>''));
+  }catch(e){console.warn('fetchPerfil: falha ao buscar role',e);}
   const isAdmin=userRole==='admin';
   document.getElementById('roleBadge').textContent=isAdmin?'Admin':'Viewer';
   document.getElementById('roleBadge').style.background=isAdmin?'#2d4a3e':'#6b8c7a';
   document.getElementById('formInfLancamento').style.display=isAdmin?'block':'none';
   if(!isAdmin){document.getElementById('btnNovoContrato').style.display='none';}
+  // Se o role só foi confirmado depois que as listas já tinham sido desenhadas
+  // (ex: conexão lenta -> retry), re-renderiza pra os botões de editar aparecerem.
+  try{if(typeof renderContratos==='function')renderContratos();}catch(e){}
+  try{if(typeof renderInf==='function')renderInf();}catch(e){}
 }
 
 function doLogout(){
