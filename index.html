@@ -3370,12 +3370,12 @@ function setValColor(id,val){
 }
 
 // ── Term code → mês/ano (ex: #NYU26 → Sep-26) ───────────────
-const TERM_MONTH_MAP={K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
+const TERM_MONTH_MAP={F:'Jan',G:'Feb',K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
 function termToMonthYear(term){
   if(!term)return null;
   const t=term.toUpperCase().replace('#','');
-  // ex: NYU26, LDNU26, BMFU26
-  const m=t.match(/([A-Z]+)([KNUZHX])(\d{2})$/);
+  // ex: NYU26, LDNU26, BMFU26, LDNF27
+  const m=t.match(/([A-Z]+)([FGKNUZHX])(\d{2})$/);
   if(!m)return null;
   const mon=TERM_MONTH_MAP[m[2]]||m[2];
   return mon+'-'+m[3]; // ex: Sep-26
@@ -3832,11 +3832,11 @@ async function salvarImagemInformativo(){
       });
       if(!valid.length)return '';
       const MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const TMAP={K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
+      const TMAP={F:'Jan',G:'Feb',K:'May',N:'Jul',U:'Sep',Z:'Dec',H:'Mar',X:'Nov'};
       const compraData={};const vendaData={};const allM=new Set();
       valid.forEach(h=>{
         const t=(h.term||'').toUpperCase().replace('#','');
-        const m=t.match(/([A-Z]+)([KNUZHX])(\d{2})$/);
+        const m=t.match(/([A-Z]+)([FGKNUZHX])(\d{2})$/);
         if(!m)return;
         const my=(TMAP[m[2]]||m[2])+'-'+m[3];
         const div=t.includes('NY')?283.50:t.includes('LDN')?166.66:t.includes('BMF')?100:0;
