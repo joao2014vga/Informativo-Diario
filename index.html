@@ -1086,7 +1086,7 @@ tbody tr:hover{background:#fafcfb}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-10-11-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-10-12-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1110,7 +1110,9 @@ function recarregarComLogout(){
   localStorage.removeItem('sb-access-token');
   localStorage.removeItem('sb-refresh-token');
   // Limpar todos os itens do supabase no localStorage
+  // (exceto a sessão do Portal BI, que fica no mesmo endereço)
   Object.keys(localStorage).forEach(k=>{
+    if(k===PORTAL_KEY)return;
     if(k.startsWith('sb-')||k.includes('supabase'))localStorage.removeItem(k);
   });
   // Limpar variáveis de sessão em memória
@@ -1148,7 +1150,17 @@ const SUPA_URL='https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
 let accessToken=null,refreshToken=null,userRole='visualizador';
 let valDiffsLocked=false;
-function authH(x={}){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(accessToken||SUPA_KEY),...x}}
+/* ── PORTAL BI ──
+   Quando o Informativo abre dentro do Portal BI (iframe, mesmo endereço),
+   usa o login de lá: lê o token que o Portal BI guarda e mantém atualizado.
+   Nesse modo o Informativo nunca renova o token por conta própria — renovar
+   aqui invalidaria a sessão do Portal BI. */
+const PORTAL_KEY='sb-cfrvnsnwdldnflowxqbs-auth-token';
+const EMBUTIDO=window.self!==window.top;
+function sessaoPortal(){try{return JSON.parse(localStorage.getItem(PORTAL_KEY));}catch(e){return null;}}
+function tokenPortal(){const s=sessaoPortal();accessToken=s&&s.access_token||null;return accessToken;}
+
+function authH(x={}){if(EMBUTIDO)tokenPortal();return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(accessToken||SUPA_KEY),...x}}
 
 /* ── AUTH ── */
 async function doLogin(){
@@ -1214,6 +1226,8 @@ async function fetchPerfil(email){
 }
 
 function doLogout(){
+  // Dentro do Portal BI a sessão é dele: recarrega o portal, que pede login se preciso
+  if(EMBUTIDO){window.top.location.reload();return;}
   accessToken=null;refreshToken=null;
   ['bc_token','bc_refresh','bc_email'].forEach(k=>sessionStorage.removeItem(k));
   document.getElementById('portalWrap').style.display='none';
@@ -1222,6 +1236,7 @@ function doLogout(){
 }
 
 async function renovarToken(){
+  if(EMBUTIDO)return !!tokenPortal();
   if(!refreshToken)return false;
   try{
     const res=await fetchComTimeout(`${SUPA_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPA_KEY},body:JSON.stringify({refresh_token:refreshToken})},8000);
@@ -1235,6 +1250,16 @@ async function renovarToken(){
 setInterval(async()=>{if(accessToken)await renovarToken();},45*60*1000);
 
 (async function(){
+  if(EMBUTIDO){
+    const s=sessaoPortal();
+    if(s&&s.access_token&&s.user&&s.user.email){
+      await null; // deixa o restante do script carregar antes de abrir o portal
+      accessToken=s.access_token;
+      document.querySelector('.btn-logout').style.display='none';
+      showPortal(s.user.email);
+      return;
+    }
+  }
   const t=sessionStorage.getItem('bc_token'),r=sessionStorage.getItem('bc_refresh'),e=sessionStorage.getItem('bc_email');
   if(!t||!e)return;
   accessToken=t;refreshToken=r;
