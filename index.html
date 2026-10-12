@@ -1086,7 +1086,7 @@ tbody tr:hover{background:#fafcfb}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-10-12-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-10-12-v2'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1256,6 +1256,9 @@ setInterval(async()=>{if(accessToken)await renovarToken();},45*60*1000);
       await null; // deixa o restante do script carregar antes de abrir o portal
       accessToken=s.access_token;
       document.querySelector('.btn-logout').style.display='none';
+      // No Portal BI só o Informativo fica disponível (sem Pricing e Dashboard)
+      document.querySelector('.nav-tabs').style.display='none';
+      switchModule('informativo');
       showPortal(s.user.email);
       return;
     }
