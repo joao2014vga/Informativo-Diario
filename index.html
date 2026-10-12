@@ -339,109 +339,14 @@ tbody tr:hover{background:#fafcfb}
 .btn-cancel-m{background:transparent;border:1px solid #c8ddd2;border-radius:8px;padding:8px 18px;font-size:13px;font-family:inherit;color:#6b8c7a;cursor:pointer}
 .btn-save-edit{background:#2d4a3e;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600}
 
-/* CONTRATOS */
-#panel-contratos{padding:1.25rem 1.5rem}
 #panel-dashboard{padding:0}
-.cont-wrap{max-width:1900px;margin:0 auto}
-.cont-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
-.btn-novo-contrato{background:#2d4a3e;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600}
-.btn-export-cont{background:#fff;border:1px solid #c8ddd2;border-radius:8px;padding:7px 14px;font-size:12px;font-family:inherit;color:#2d4a3e;cursor:pointer;font-weight:600}
-.cont-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
-.cont-stat{background:#fff;border:1px solid #dde8e2;border-radius:10px;padding:12px 1rem}
-.cont-stat-label{font-size:10px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
-.cont-stat-val{font-size:20px;font-weight:600;color:#1a1a1a}
-.cont-stat-val.alert{color:#922020}
-.cont-stat-val.warn{color:#c17d00}
-.cont-table-wrap{background:#fff;border:1px solid #dde8e2;border-radius:12px;overflow:hidden}
-.cont-table{width:100%;border-collapse:collapse;font-size:12px}
-.cont-table thead tr{background:#f5f9f6}
-.cont-table th{padding:9px 10px;text-align:left;font-size:10px;font-weight:600;color:#5a7a68;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #dde8e2;white-space:nowrap}
-.cont-th-sort{cursor:pointer;user-select:none}
-.cont-th-sort:hover{color:#1b4332;background:#edf3ef}
-.cont-th-sort::after{content:' ⇅';font-size:9px;opacity:.5}
-.cont-th-sort.asc::after{content:' ↑';opacity:1;color:#1b4332}
-.cont-th-sort.desc::after{content:' ↓';opacity:1;color:#1b4332}
-.cont-table td{padding:8px 10px;border-bottom:1px solid #edf3ef;color:#1a1a1a;font-size:12px;vertical-align:middle}
-.cont-table tbody tr:last-child td{border-bottom:none}
-.cont-table tbody tr:hover{background:#fafcfb}
-/* Coluna de ações (editar/excluir) fixa na direita, sempre visível mesmo rolando a tabela */
-.cont-table th:last-child,.cont-table td:last-child{position:sticky;right:0;z-index:2;white-space:nowrap}
-.cont-table thead th:last-child{background:#f5f9f6;z-index:3}
-.cont-table tbody td:last-child{background:#fff;box-shadow:-6px 0 8px -6px rgba(0,0,0,.12)}
-.cont-table tbody tr:hover td:last-child{background:#fafcfb}
-.cont-table tbody tr.cont-row-finalizado td:last-child{background:inherit}
-.cont-table tbody tr.cont-row-dividido td:last-child{background:inherit}
-.status-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
-.pill-erp{background:#e3f4e3;color:#1a5c1a}
-.pill-aguardando{background:#fff3cd;color:#856404}
-.pill-pendente{background:#fde8e8;color:#922020}
-.pill-enviado{background:#e3f4e3;color:#1a5c1a}
-.pill-nao-precisa{background:#f0f4f2;color:#6b8c7a}
-.pill-alerta{background:#fde8e8;color:#922020}
-.cont-action-btn{background:transparent;border:1px solid #dde8e2;border-radius:6px;padding:3px 8px;font-size:10px;font-family:inherit;color:#5a7a68;cursor:pointer;white-space:nowrap;margin-top:3px;display:inline-block}
-.cont-action-btn.confirm{border-color:#4caf7d;color:#1a5c1a;background:#e3f4e3}
-.btn-edit-cont,.btn-del-cont{background:transparent;border:none;color:#aac4b4;cursor:pointer;font-size:13px;padding:2px 5px;border-radius:4px}
-.btn-edit-cont:hover{color:#2d4a3e;background:#e8f5ee}
-.btn-del-cont:hover{color:#922020;background:#fdf0f0}
-.cont-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;padding:1rem}
-.cont-modal-overlay.open{display:flex}
-.cont-modal-box{background:#fff;border-radius:14px;padding:1.5rem;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
-.cont-modal-title{font-size:15px;font-weight:600;color:#2d4a3e;margin-bottom:1.25rem}
-.cont-form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:.75rem}
-.cont-form-grid.two{grid-template-columns:1fr 1fr}
-.cont-form-grid.four{grid-template-columns:1fr 1fr 1fr 1fr}
-.cont-fg-label{font-size:10px;color:#6b8c7a;font-weight:600;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
-.cont-fg-input{width:100%;border:1px solid #c8ddd2;border-radius:8px;padding:7px 9px;font-size:12.5px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;text-transform:uppercase;height:36px}
-.cont-fg-input[type=date],.cont-fg-input[type=number]{text-transform:none}
-.cont-fg-input:focus{border-color:#2d4a3e}
-select.cont-fg-input{cursor:pointer}
-.cont-section-label{font-size:10px;font-weight:600;color:#4a7a60;text-transform:uppercase;letter-spacing:.08em;margin:1rem 0 .5rem;padding-top:.5rem;border-top:1px solid #dde8e2}
-.cont-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:1px solid #dde8e2}
-.btn-cancel-cont{background:transparent;border:1px solid #c8ddd2;border-radius:8px;padding:8px 18px;font-size:13px;font-family:inherit;color:#6b8c7a;cursor:pointer}
-.btn-save-cont{background:#2d4a3e;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600}
-.cont-filter-input{border:1px solid #c8ddd2;border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;height:32px;min-width:130px}
-.cont-filter-input:focus{border-color:#2d4a3e}
-.cont-filter-select{border:1px solid #c8ddd2;border-radius:8px;padding:5px 8px;font-size:12px;font-family:inherit;color:#1a1a1a;background:#fff;outline:none;height:32px;cursor:pointer}
-.cont-filter-select:focus{border-color:#2d4a3e}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:900px){
-  .cont-form-grid{grid-template-columns:1fr 1fr}
-  .cont-form-grid.four{grid-template-columns:1fr 1fr}
-  .cont-stats{grid-template-columns:1fr 1fr}
   .metrics-bar{grid-template-columns:repeat(3,1fr)}
   .mbar-item:nth-child(3){border-right:none}
   .mbar-item:nth-child(4){border-top:1px solid #dde8e2}
   .form-row{grid-template-columns:1fr 1fr}
 }
-.cont-row-finalizado{opacity:0.32!important;filter:grayscale(0.7)!important;background:#ebebeb!important}
-.cont-row-finalizado td,.cont-row-finalizado strong,.cont-row-finalizado span{color:#aaa!important;font-style:italic}
-#cont-print-frame{position:fixed;left:-9999px;top:0;width:900px;background:#fff;padding:2rem;font-family:'Segoe UI',Arial,sans-serif;z-index:-1}
-#cont-preview-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto}
-#cont-preview-modal.open{display:flex}
-.cont-preview-box{background:#fff;border-radius:14px;overflow:hidden;max-width:960px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25)}
-.cont-preview-toolbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;background:#1b3a2e;gap:10px}
-.cont-preview-toolbar span{color:rgba(255,255,255,.8);font-size:13px}
-.cont-preview-actions{display:flex;gap:8px}
-.btn-preview-save{background:#4caf50;border:none;border-radius:7px;padding:6px 16px;font-size:12px;color:#fff;cursor:pointer;font-weight:600}
-.btn-preview-close{background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:7px;padding:6px 14px;font-size:12px;color:#fff;cursor:pointer}
-.cont-preview-content{padding:1.5rem;background:#f0f4f2;min-height:400px;display:flex;align-items:flex-start;justify-content:center}
-.cont-preview-content img{max-width:100%;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12)}
-.cp-header{background:#1b3a2e;color:#fff;padding:1rem 1.25rem;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:0}
-.cp-header-title{font-size:15px;font-weight:700;letter-spacing:.04em}
-.cp-header-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
-.cp-table{width:100%;border-collapse:collapse;font-size:12px}
-.cp-table th{background:#f0f4f2;color:#3a6b52;font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:7px 10px;text-align:left;border-bottom:2px solid #d0e4d8}
-.cp-table td{padding:8px 10px;border-bottom:1px solid #e8f0ec;vertical-align:middle}
-.cp-table tr:nth-child(even) td{background:#f9fbf9}
-.cp-badge-c{background:#fde8e8;color:#922020;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700}
-.cp-badge-v{background:#e8f5e9;color:#1a5c1a;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700}
-.cp-totais{display:flex;gap:16px;padding:1rem 1.25rem;background:#f5f9f6;border-top:2px solid #d0e4d8;border-radius:0 0 8px 8px;justify-content:flex-end}
-.cp-tot-card{text-align:right}
-.cp-tot-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#6b8c7a;font-weight:600}
-.cp-tot-val{font-size:18px;font-weight:700;margin-top:2px}
-.cp-tot-pag{color:#c0392b}
-.cp-tot-rec{color:#1a5c1a}
-.cp-footer{font-size:9px;color:#8aab97;text-align:center;margin-top:.75rem}
 
 /* Banner nova versão */
 #version-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#1b3a2e;color:#fff;padding:.75rem 1.5rem;align-items:center;justify-content:space-between;gap:1rem;box-shadow:0 2px 12px rgba(0,0,0,.3);animation:slideDown .4s ease}
@@ -542,7 +447,6 @@ select.cont-fg-input{cursor:pointer}
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchModule('pricing')">Pricing</button>
     <button class="nav-tab" onclick="switchModule('informativo')">Informativo</button>
-    <button class="nav-tab" onclick="switchModule('contratos')">Contratos</button>
     <button class="nav-tab" onclick="switchModule('dashboard')">Dashboard</button>
   </div>
   <div class="nav-right">
@@ -952,81 +856,6 @@ select.cont-fg-input{cursor:pointer}
 </div>
 </div><!-- /panel-informativo -->
 
-<!-- PAINEL CONTRATOS -->
-<div class="panel" id="panel-contratos">
-<div class="cont-wrap">
-  <div class="cont-stats">
-    <div class="cont-stat"><div class="cont-stat-label">Total contratos</div><div class="cont-stat-val" id="csTot">—</div></div>
-    <div class="cont-stat"><div class="cont-stat-label">Aguardando ERP</div><div class="cont-stat-val warn" id="csErp">—</div></div>
-    <div class="cont-stat"><div class="cont-stat-label">E-mails pendentes</div><div class="cont-stat-val alert" id="csEmail">—</div></div>
-    <div class="cont-stat"><div class="cont-stat-label">Vencendo em 7 dias</div><div class="cont-stat-val alert" id="csVenc">—</div></div>
-  </div>
-  <div class="cont-toolbar">
-    <button class="btn-novo-contrato" id="btnNovoContrato" onclick="abrirModalContrato(null)">+ Novo Contrato</button>
-    <div class="seg" id="segContTipo">
-      <button class="seg-btn active" data-v="todos" onclick="setContFiltro(this,'tipo')">Todos</button>
-      <button class="seg-btn" data-v="Compra" onclick="setContFiltro(this,'tipo')">Compra</button>
-      <button class="seg-btn" data-v="Venda" onclick="setContFiltro(this,'tipo')">Venda</button>
-    </div>
-    <div class="seg" id="segContStatus">
-      <button class="seg-btn active" data-v="todos" onclick="setContFiltro(this,'status')">Todos</button>
-      <button class="seg-btn" data-v="AGUARDANDO FECHAMENTO" onclick="setContFiltro(this,'status')">Aguardando</button>
-      <button class="seg-btn" data-v="ERP LANÇADO" onclick="setContFiltro(this,'status')">ERP Lançado</button>
-    </div>
-    <button class="btn-export-cont" onclick="exportContExcel()">↓ Excel</button>
-    <button class="btn-export-cont" onclick="exportContImagem()" id="btnContImg">👁 Visualizar relatório</button>
-    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer;margin-left:4px">
-      <input type="checkbox" id="chkMostrarFinalizados" onchange="exportContImagem()" style="accent-color:#1b3a2e;width:14px;height:14px">
-      Incluir finalizados
-    </label>
-  </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;align-items:center">
-    <input type="text" id="cf-contrato" class="cont-filter-input" placeholder="Contrato..." oninput="renderContratos()"/>
-    <input type="text" id="cf-vendedor" class="cont-filter-input" placeholder="Vendedor..." oninput="renderContratos()"/>
-    <input type="text" id="cf-corretor" class="cont-filter-input" placeholder="Corretor..." oninput="renderContratos()"/>
-    <select id="cf-filial" class="cont-filter-select" onchange="renderContratos()">
-      <option value="">Todas filiais</option>
-      <option value="MG">MG</option>
-      <option value="SP">SP</option>
-      <option value="ES">ES</option>
-    </select>
-    <select id="cf-frete" class="cont-filter-select" onchange="renderContratos()">
-      <option value="">Posto / Retirar</option>
-      <option value="Posto">Posto</option>
-      <option value="Retirar">Retirar</option>
-    </select>
-    <select id="cf-modalidade" class="cont-filter-select" onchange="renderContratos()">
-      <option value="">Normal / Futuro</option>
-      <option value="Normal">Normal</option>
-      <option value="Futuro">Futuro</option>
-    </select>
-    <span style="font-size:11px;color:var(--muted);white-space:nowrap">Vencimento:</span>
-    <input type="date" id="cf-vcto-de" class="cont-filter-input" title="De" onchange="renderContratos()" style="width:130px">
-    <span style="font-size:11px;color:var(--muted)">até</span>
-    <input type="date" id="cf-vcto-ate" class="cont-filter-input" title="Até" onchange="renderContratos()" style="width:130px">
-    <span style="font-size:11px;color:var(--muted);white-space:nowrap;margin-left:4px">Emissão:</span>
-    <input type="date" id="cf-emissao-de" class="cont-filter-input" title="Emissão de" onchange="renderContratos()" style="width:130px">
-    <span style="font-size:11px;color:var(--muted)">até</span>
-    <input type="date" id="cf-emissao-ate" class="cont-filter-input" title="Emissão até" onchange="renderContratos()" style="width:130px">
-    <button class="btn-clear-inf" onclick="limparFiltrosCont()" style="height:32px;font-size:11px">Limpar filtros</button>
-  </div>
-  <div class="cont-table-wrap">
-    <div style="overflow-x:auto">
-      <table class="cont-table">
-        <thead><tr>
-          <th style="min-width:130px;white-space:nowrap" class="cont-th-sort" id="thContrato" onclick="toggleSortContrato()">Contrato</th><th>Filial</th><th>Tipo</th><th>Modalidade</th>
-          <th>Vendedor</th><th>Corretor</th><th>Sacas</th><th>Variety</th><th>Quality</th><th>Valor</th><th>Frete</th>
-          <th>Status ERP</th><th>Instr. Fat.</th><th>E-mail Prog.</th><th>Cont. Futuro</th>
-          <th>Vencimento</th><th style="width:70px"></th>
-        </tr></thead>
-        <tbody id="contBody"></tbody>
-      </table>
-      <div id="contLoading" style="text-align:center;color:#8aab97;padding:2rem;font-size:13px">Carregando...</div>
-      <div id="contEmpty" style="text-align:center;color:#8aab97;padding:2rem;font-size:13px;display:none">Nenhum contrato encontrado.</div>
-    </div>
-  </div>
-</div>
-</div><!-- /panel-contratos -->
 <!-- DASHBOARD -->
 <div class="panel" id="panel-dashboard">
 <div class="dash-wrap">
@@ -1070,18 +899,10 @@ select.cont-fg-input{cursor:pointer}
     <div class="p-modal-resumo" id="modal-resumo-text"></div>
 
     <div style="margin:.75rem 0;padding:.75rem;background:var(--green-light);border:1px solid var(--green-dim);border-radius:8px;font-size:11px;color:var(--green)">
-      Esta negociação será salva como <strong>Finalizada</strong> e criará automaticamente um lançamento no <strong>Informativo</strong> e um registro no <strong>Controle de Contratos</strong>.
+      Esta negociação será salva como <strong>Finalizada</strong> e criará automaticamente um lançamento no <strong>Informativo</strong>.
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:.75rem 0">
-      <div>
-        <div class="modal-label" style="margin-bottom:5px">Filial</div>
-        <select id="modal-filial" style="width:100%;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;color:var(--text);background:var(--surface);outline:none;height:36px">
-          <option value="MG">MG</option>
-          <option value="SP">SP</option>
-          <option value="ES">ES</option>
-        </select>
-      </div>
+    <div style="margin:.75rem 0">
       <div>
         <div class="modal-label" style="margin-bottom:5px">Variety</div>
         <select id="modal-especie" style="width:100%;border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;color:var(--text);background:var(--surface);outline:none;height:36px">
@@ -1135,109 +956,6 @@ select.cont-fg-input{cursor:pointer}
     <div class="modal-actions">
       <button class="btn-cancel-m" onclick="closeInfModal()">Cancel</button>
       <button class="btn-save-edit" id="btnSaveEdit" onclick="saveInfEdit()">Save changes</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL CONTRATO -->
-<!-- Modal Preview Contratos -->
-<div id="cont-preview-modal">
-  <div class="cont-preview-box">
-    <div class="cont-preview-toolbar">
-      <span id="cont-preview-label">Relatório de Contratos</span>
-      <div class="cont-preview-actions">
-        <button class="btn-preview-save" onclick="salvarContImagem()">⬇ Salvar imagem</button>
-        <button class="btn-preview-close" onclick="document.getElementById('cont-preview-modal').classList.remove('open')">✕ Fechar</button>
-      </div>
-    </div>
-    <div class="cont-preview-content" id="cont-preview-content">
-      <div style="color:#6b8c7a;font-size:13px">Gerando preview...</div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Dividir Contrato -->
-<div class="cont-modal-overlay" id="contDividirOverlay" style="z-index:600">
-  <div class="cont-modal-box" style="max-width:560px">
-    <div class="cont-modal-title">✂️ Dividir Contrato — <span id="dividir-cont-nome" style="color:#3a6b52;font-size:14px"></span></div>
-    <div style="font-size:12px;color:#6b8c7a;margin-bottom:1rem;background:#f5f9f6;border-radius:8px;padding:.6rem 1rem">
-      Total original: <strong id="dividir-total" style="color:#1b3a2e"></strong> sacas · Distribua entre as duas partes
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-      <div style="background:#f5f9f6;border:1px solid #d0e4d8;border-radius:10px;padding:1rem">
-        <div style="font-size:11px;font-weight:700;color:#3a6b52;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Parte A</div>
-        <label class="cont-fg-label">Contrato</label>
-        <input class="cont-fg-input" id="div-cont-a" placeholder="ex: BRV-0040/26 A" style="margin-bottom:.75rem">
-        <label class="cont-fg-label">Sacas</label>
-        <input class="cont-fg-input" id="div-sacas-a" type="number" placeholder="0" oninput="dividirCalcSaldo()" style="margin-bottom:.75rem">
-        <label class="cont-fg-label">Vencimento</label>
-        <input class="cont-fg-input" id="div-vcto-a" type="date">
-      </div>
-      <div style="background:#f5f9f6;border:1px solid #d0e4d8;border-radius:10px;padding:1rem">
-        <div style="font-size:11px;font-weight:700;color:#3a6b52;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Parte B</div>
-        <label class="cont-fg-label">Contrato</label>
-        <input class="cont-fg-input" id="div-cont-b" placeholder="ex: BRV-0040/26 B" style="margin-bottom:.75rem">
-        <label class="cont-fg-label">Sacas (saldo automático)</label>
-        <input class="cont-fg-input" id="div-sacas-b" type="number" style="margin-bottom:.75rem;background:#e8f0ec" readonly>
-        <label class="cont-fg-label">Vencimento</label>
-        <input class="cont-fg-input" id="div-vcto-b" type="date">
-      </div>
-    </div>
-    <div class="cont-modal-actions">
-      <button class="cont-btn-cancel" onclick="fecharDividir()">Cancelar</button>
-      <button class="cont-btn-save" onclick="confirmarDividir()">✓ Confirmar divisão</button>
-    </div>
-  </div>
-</div>
-
-<div class="cont-modal-overlay" id="contModalOverlay">
-  <div class="cont-modal-box">
-    <div class="cont-modal-title" id="contModalTitle">Novo Contrato</div>
-    <div class="cont-section-label" style="margin-top:0;border-top:none;padding-top:0">Identificação</div>
-    <div class="cont-form-grid four">
-      <div><label class="cont-fg-label">Contrato</label><input type="text" id="c-contrato" class="cont-fg-input" placeholder="BRC-0000.26"/></div>
-      <div><label class="cont-fg-label">Filial</label><select id="c-filial" class="cont-fg-input"><option value="MG">MG</option><option value="SP">SP</option><option value="ES">ES</option></select></div>
-      <div><label class="cont-fg-label">Type</label><select id="c-tipo" class="cont-fg-input" onchange="autoFillContrato()"><option value="Compra">COMPRA</option><option value="Venda">VENDA</option></select></div>
-      <div><label class="cont-fg-label">Modalidade</label><select id="c-modalidade" class="cont-fg-input" onchange="autoFillContrato()"><option value="Normal">NORMAL</option><option value="Futuro">FUTURO</option></select></div>
-    </div>
-    <div class="cont-form-grid">
-      <div><label class="cont-fg-label">Vendedor</label><input type="text" id="c-vendedor" class="cont-fg-input" placeholder="NOME DO VENDEDOR"/></div>
-      <div><label class="cont-fg-label">Corretor</label><input type="text" id="c-corretor" class="cont-fg-input" placeholder="EX: VB"/></div>
-      <div><label class="cont-fg-label">Empresa / Produtor</label><select id="c-empresa-produtor" class="cont-fg-input" onchange="autoFillContrato()"><option value="Empresa">EMPRESA</option><option value="Produtor">PRODUTOR</option></select></div>
-    </div>
-    <div class="cont-form-grid four">
-      <div><label class="cont-fg-label">Bags</label><input type="number" id="c-sacas" class="cont-fg-input" placeholder="0" style="text-transform:none"/></div>
-      <div><label class="cont-fg-label">Variety</label><select id="c-especie" class="cont-fg-input"><option value="ARÁBICA">ARÁBICA</option><option value="CONILON">CONILON</option></select></div>
-      <div><label class="cont-fg-label">Quality</label><input type="text" id="c-quality" class="cont-fg-input" placeholder="ex: BC4, BC15..." style="text-transform:uppercase"></div>
-      <div><label class="cont-fg-label">Valor R$/saca</label><input type="number" id="c-valor" class="cont-fg-input" placeholder="0.00" step="0.01" style="text-transform:none"/></div>
-      <div><label class="cont-fg-label">Frete</label><select id="c-frete" class="cont-fg-input" onchange="autoFillContrato()"><option value="Posto">POSTO</option><option value="Retirar">RETIRAR</option></select></div>
-      <div><label class="cont-fg-label">Vencimento</label><input type="date" id="c-vencimento" class="cont-fg-input" style="text-transform:none"/></div>
-      <div><label class="cont-fg-label">Emissão</label><input type="date" id="c-emissao" class="cont-fg-input" style="text-transform:none"/></div>
-    </div>
-    <div class="cont-form-grid two">
-      <div><label class="cont-fg-label">Status ERP</label><select id="c-status-erp" class="cont-fg-input"><option value="AGUARDANDO FECHAMENTO">AGUARDANDO FECHAMENTO</option><option value="ERP LANÇADO">ERP LANÇADO</option></select></div>
-      <div><label class="cont-fg-label">Obs. Extra</label><input type="text" id="c-obs" class="cont-fg-input" placeholder="OBSERVAÇÃO EXTRA"/></div>
-    </div>
-    <div style="margin:.5rem 0;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text);font-weight:600">
-        <input type="checkbox" id="c-finalizado" style="width:17px;height:17px;accent-color:#c0392b;cursor:pointer">
-        Finalizado
-      </label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#7a5aaa;font-weight:600">
-        <input type="checkbox" id="c-dividido" style="width:17px;height:17px;accent-color:#7a5aaa;cursor:pointer" disabled>
-        Dividido
-      </label>
-      <button onclick="abrirDividir()" style="background:transparent;border:1px solid #d0e4d8;border-radius:7px;padding:4px 12px;font-size:11px;color:#3a6b52;cursor:pointer;font-family:var(--mono);text-transform:uppercase" id="btnDividirCont">✂️ Dividir contrato</button>
-    </div>
-    <div class="cont-section-label">Ações automáticas (editáveis)</div>
-    <div class="cont-form-grid">
-      <div><label class="cont-fg-label">Instrução Faturamento</label><select id="c-instrucao" class="cont-fg-input"><option value="NÃO PRECISA">NÃO PRECISA</option><option value="PRECISA ENVIAR">PRECISA ENVIAR</option><option value="ENVIADO">ENVIADO</option></select></div>
-      <div><label class="cont-fg-label">E-mail Programação</label><select id="c-email-prog" class="cont-fg-input"><option value="ENVIAR BRC">ENVIAR BRC</option><option value="ENVIAR PROGRAMAÇÃO">ENVIAR PROGRAMAÇÃO</option><option value="ENVIADO BRC">ENVIADO BRC</option><option value="ENVIADO PROGRAMAÇÃO">ENVIADO PROGRAMAÇÃO</option></select></div>
-      <div><label class="cont-fg-label">Contrato Futuro</label><select id="c-futuro" class="cont-fg-input"><option value="NÃO PRECISA ENVIAR">NÃO PRECISA ENVIAR</option><option value="PENDENTE">PENDENTE</option><option value="ENVIADO">ENVIADO</option></select></div>
-    </div>
-    <div class="cont-modal-actions">
-      <button class="btn-cancel-cont" onclick="fecharModalContrato()">Cancelar</button>
-      <button class="btn-save-cont" id="btnSaveCont" onclick="salvarContrato()">Salvar</button>
     </div>
   </div>
 </div>
@@ -1316,7 +1034,6 @@ select.cont-fg-input{cursor:pointer}
   <div class="pf-footer">Brascof · Fator fixo: 1,3228 · Milling Loss: 0,25% · Dry Mill: USD 3/saca · Juros: 11% a.a.</div>
 </div>
 <!-- FRAME PRINT INFORMATIVO -->
-<div id="cont-print-frame"></div>
 <div id="inf-print-frame" style="position:fixed;left:-9999px;top:0;width:1100px;background:#f0f4f2;padding:1.5rem;font-family:'Segoe UI',Arial,sans-serif;z-index:-1">
 
   <!-- Header -->
@@ -1369,7 +1086,7 @@ select.cont-fg-input{cursor:pointer}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-07-09-v3'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-10-11-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1431,7 +1148,6 @@ const SUPA_URL='https://cfrvnsnwdldnflowxqbs.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcnZuc253ZGxkbmZsb3d4cWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMTUyOTgsImV4cCI6MjA5Mjg5MTI5OH0.E89BcKeiQtJHPFVU-IYTGgKee3ieV-LMZjCOzsWC2YQ';
 let accessToken=null,refreshToken=null,userRole='visualizador';
 let valDiffsLocked=false;
-let contSortDir=null; // null=padrão, 'asc'=crescente, 'desc'=decrescente
 function authH(x={}){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(accessToken||SUPA_KEY),...x}}
 
 /* ── AUTH ── */
@@ -1478,7 +1194,7 @@ async function showPortal(email){
       catch(e2){setStatus(false,'connection failed — refresh the page');}
     },5000);
   }
-  fetchInfRows();fetchContratos();populateCidades();
+  fetchInfRows();populateCidades();
   calc();calcDiff();calcPreco();
 }
 
@@ -1492,10 +1208,8 @@ async function fetchPerfil(email){
   document.getElementById('roleBadge').textContent=isAdmin?'Admin':'Viewer';
   document.getElementById('roleBadge').style.background=isAdmin?'#2d4a3e':'#6b8c7a';
   document.getElementById('formInfLancamento').style.display=isAdmin?'block':'none';
-  if(!isAdmin){document.getElementById('btnNovoContrato').style.display='none';}
   // Se o role só foi confirmado depois que as listas já tinham sido desenhadas
   // (ex: conexão lenta -> retry), re-renderiza pra os botões de editar aparecerem.
-  try{if(typeof renderContratos==='function')renderContratos();}catch(e){}
   try{if(typeof renderInf==='function')renderInf();}catch(e){}
 }
 
@@ -1543,10 +1257,9 @@ function switchModule(mod){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('panel-'+mod).classList.add('active');
-  const idx={pricing:0,informativo:1,contratos:2,dashboard:3}[mod];
+  const idx={pricing:0,informativo:1,dashboard:2}[mod];
   document.querySelectorAll('.nav-tab')[idx].classList.add('active');
   if(mod==='informativo')renderInf();
-  if(mod==='contratos'){renderContratos();fetchContratos();}
   if(mod==='dashboard')renderDashboard();
   if(mod==='pricing'&&document.querySelectorAll('.p-tab-btn')[3].classList.contains('active'))fetchHist();
 }
@@ -1592,18 +1305,6 @@ function calcFOB(usd){
   const packing=PACKING_SACA/F/usd;
   const totalCts=thc+bl+swb+seal+isps+elf+scan+phyto+phyto2+qual+peso+mercosur+fum+ico1+ico2+forwarder+courier+prestack+freight+packing;
   return totalCts*F;
-}
-
-function normalizarContrato(v){
-  if(!v)return v;
-  // Aceita: BRC-318.26, BRC-0318.26, BRV-41/26, BRC-0324.26 etc.
-  // Saída:  BRC-0318/26, BRV-0041/26
-  const m=v.toUpperCase().trim().match(/^(BR[A-Z])-?0*(\d+)[./\-](\d{2})$/);
-  if(!m)return v.toUpperCase().trim();
-  const prefix=m[1];
-  const num=m[2].padStart(4,'0');
-  const ano=m[3];
-  return `${prefix}-${num}/${ano}`;
 }
 
 
@@ -2617,112 +2318,6 @@ function limparPricing(){
   if(typeof calcLots==='function')calcLots();
 }
 
-
-/* ── DIVIDIR CONTRATO ── */
-let _dividirOriginal=null;
-
-function abrirDividir(){
-  const contrato=document.getElementById('c-contrato').value||'';
-  const sacas=parseFloat(document.getElementById('c-sacas').value)||0;
-  const vcto=document.getElementById('c-vencimento').value||'';
-  if(!sacas){alert('Informe as sacas antes de dividir.');return;}
-  _dividirOriginal={
-    id: contEditingId,
-    contrato, sacas, vcto,
-    filial_val: document.getElementById('c-filial')?.value||'',
-    tipo: document.getElementById('c-tipo')?.value||'',
-    modalidade: document.getElementById('c-modalidade')?.value||'',
-    vendedor: document.getElementById('c-vendedor')?.value||'',
-    corretor: document.getElementById('c-corretor')?.value||'',
-    empresa_produtor: document.getElementById('c-empresa-produtor')?.value||'',
-    especie: document.getElementById('c-especie')?.value||'ARÁBICA',
-    valor: document.getElementById('c-valor')?.value||'',
-    frete: document.getElementById('c-frete')?.value||'',
-    status_erp: document.getElementById('c-status-erp')?.value||'',
-    obs_extra: document.getElementById('c-obs')?.value||'',
-    instrucao_faturamento: document.getElementById('c-instrucao')?.value||'',
-    email_programacao: document.getElementById('c-email-prog')?.value||'',
-    contrato_futuro: document.getElementById('c-futuro')?.value||'',
-  };
-  // Preencher modal
-  document.getElementById('dividir-cont-nome').textContent=contrato;
-  document.getElementById('dividir-total').textContent=sacas.toLocaleString('pt-BR');
-  document.getElementById('div-cont-a').value=contrato+' A';
-  document.getElementById('div-cont-b').value=contrato+' B';
-  document.getElementById('div-sacas-a').value='';
-  document.getElementById('div-sacas-b').value=sacas;
-  document.getElementById('div-vcto-a').value=vcto;
-  document.getElementById('div-vcto-b').value='';
-  document.getElementById('contDividirOverlay').classList.add('open');
-}
-
-function fecharDividir(){
-  document.getElementById('contDividirOverlay').classList.remove('open');
-}
-
-function dividirCalcSaldo(){
-  const total=_dividirOriginal?.sacas||0;
-  const a=parseFloat(document.getElementById('div-sacas-a').value)||0;
-  const saldo=Math.max(0,total-a);
-  document.getElementById('div-sacas-b').value=saldo||'';
-}
-
-async function confirmarDividir(){
-  const o=_dividirOriginal;
-  if(!o){return;}
-  const contA=document.getElementById('div-cont-a').value.trim();
-  const contB=document.getElementById('div-cont-b').value.trim();
-  const sacasA=parseFloat(document.getElementById('div-sacas-a').value)||0;
-  const sacasB=parseFloat(document.getElementById('div-sacas-b').value)||0;
-  const vctoA=document.getElementById('div-vcto-a').value;
-  const vctoB=document.getElementById('div-vcto-b').value;
-  if(!contA||!contB||!sacasA||!sacasB){alert('Preencha todos os campos.');return;}
-  if(sacasA+sacasB!==o.sacas){
-    if(!confirm(`Atenção: ${sacasA}+${sacasB}=${sacasA+sacasB} ≠ ${o.sacas} sacas originais. Continuar mesmo assim?`))return;
-  }
-  const btn=document.querySelector('#contDividirOverlay .cont-btn-save');
-  btn.disabled=true;btn.textContent='Salvando...';
-
-  const base={
-    filial:o.filial_val,tipo:o.tipo,modalidade:o.modalidade,
-    vendedor:o.vendedor,corretor:o.corretor,empresa_produtor:o.empresa_produtor,
-    especie:o.especie,valor:o.valor,frete:o.frete,status_erp:o.status_erp,
-    obs_extra:o.obs_extra,instrucao_faturamento:o.instrucao_faturamento,
-    email_programacao:o.email_programacao,contrato_futuro:o.contrato_futuro,
-  };
-
-  try{
-    // 1. Marcar original como dividido
-    await fetch(`${SUPA_URL}/rest/v1/contratos?id=eq.${o.id}`,{
-      method:'PATCH',headers:authH(),
-      body:JSON.stringify({dividido:true,finalizado:false})
-    });
-
-    // 2. Criar Parte A
-    await fetch(`${SUPA_URL}/rest/v1/contratos`,{
-      method:'POST',headers:authH({'Prefer':'return=representation'}),
-      body:JSON.stringify({...base,contrato:contA,sacas:sacasA,vencimento:vctoA||null})
-    });
-
-    // 3. Criar Parte B
-    await fetch(`${SUPA_URL}/rest/v1/contratos`,{
-      method:'POST',headers:authH({'Prefer':'return=representation'}),
-      body:JSON.stringify({...base,contrato:contB,sacas:sacasB,vencimento:vctoB||null})
-    });
-
-    fecharDividir();
-    document.getElementById('contModalOverlay').classList.remove('open');
-    alert('Contrato dividido com sucesso!');
-    // Recarregar contratos
-    const res=await fetch(`${SUPA_URL}/rest/v1/contratos?order=id.desc&limit=500`,{headers:authH()});
-    if(res.ok){contRows=await res.json();renderContratos();}
-  }catch(e){
-    alert('Erro ao dividir: '+e.message);
-  }finally{
-    btn.disabled=false;btn.textContent='✓ Confirmar divisão';
-  }
-}
-
 /* ── DASHBOARD ── */
 function dashClearDates(){
   const d=document.getElementById('dash-de');if(d)d.value='';
@@ -3139,7 +2734,6 @@ function fecharModal(){
 }
 
 async function salvarNegociacao(){
-  const filial=document.getElementById('modal-filial').value;
   const especie=document.getElementById('modal-especie').value;
   const obs=document.getElementById('modal-obs').value.trim();
   const snap=snapshot();
@@ -3173,49 +2767,11 @@ async function salvarNegociacao(){
     const resInf=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(infPayload)});
     if(resInf.ok){const[novoInf]=await resInf.json();infRows.unshift(novoInf);}
 
-    // 3. Criar contrato
-    const cidade=document.getElementById('v-cidade').value;
-    const frete=cidade==='POSTO'?'Posto':'Retirar';
-    const producer=document.getElementById('v-producer').value==='Y'?'Produtor':'Empresa';
-    const modalidade=(document.getElementById('i-modalidade').value||'NORMAL')==='FUTURO'?'Futuro':'Normal';
-    // Regras automáticas
-    const emailProg=frete==='Posto'?'ENVIAR BRC':'ENVIAR PROGRAMAÇÃO';
-    const instrucao=producer==='Produtor'?'PRECISA ENVIAR':'NÃO PRECISA';
-    const contFuturo=modalidade==='Futuro'?'PENDENTE':'NÃO PRECISA ENVIAR';
-
-    const contPayload={
-      filial:filial,
-      tipo:'Compra',
-      modalidade:modalidade,
-      contrato:'BRC',
-      vendedor:(snap.produtor||'').toUpperCase(),
-      corretor:(snap.corretor||'').toUpperCase(),
-      empresa_produtor:producer,
-      sacas:parseInt(snap.bags)||null,
-      valor:parseFloat(snap.brl)||null,
-      frete:frete,
-      especie:(document.getElementById('c-especie')?document.getElementById('c-especie').value:null)||null,
-      quality_cont:(document.getElementById('c-quality')?document.getElementById('c-quality').value:null)||null,
-      vencimento:document.getElementById('i-paydate').value||null,
-      emissao:todayStr(),
-      obs_extra:'',
-      status_erp:'AGUARDANDO FECHAMENTO',
-      instrucao_faturamento:instrucao,
-      email_programacao:emailProg,
-      status_email:'PENDENTE',
-      contrato_futuro:contFuturo,
-      status_futuro:'PENDENTE',
-      negociacao_id:novoNeg.id
-    };
-    const resCont=await fetch(`${SUPA_URL}/rest/v1/contratos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(contPayload)});
-    if(resCont.ok){const[novoCont]=await resCont.json();contRows.unshift(novoCont);}
-
-    // 4. Mostrar sucesso
+    // 3. Mostrar sucesso
     document.getElementById('modal-success').style.display='block';
     btnConf.style.display='none';
     btnCanc.textContent='Fechar';
     renderInf();
-    renderContratos();
 
   }catch(e){
     alert('Error saving: '+e.message);
@@ -3954,527 +3510,6 @@ function exportInfExcel(){
   wsRes['!cols']=[{wch:28},{wch:14},{wch:14}];wsRes['!merges']=[{s:{r:0,c:0},e:{r:0,c:2}}];
   XLSX.utils.book_append_sheet(wb,ws,'Records');XLSX.utils.book_append_sheet(wb,wsRes,'Summary');
   XLSX.writeFile(wb,`Brascof_Informativo_${todayStr().replace(/-/g,'')}.xlsx`);
-}
-
-/* ── CONTRATOS ── */
-let contRows=[],contFiltroTipo='todos',contFiltroStatus='todos',contEditingId=null;
-
-async function fetchContratos(){
-  try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/contratos?select=*&order=criado_em.desc`,{headers:authH()});
-    if(res.ok){contRows=await res.json();document.getElementById('contLoading').style.display='none';renderContratos();}
-  }catch(e){}
-}
-
-function contFiltered(){
-  const fContrato=(document.getElementById('cf-contrato')?.value||'').toUpperCase();
-  const fVendedor=(document.getElementById('cf-vendedor')?.value||'').toUpperCase();
-  const fCorretor=(document.getElementById('cf-corretor')?.value||'').toUpperCase();
-  const fFilial=document.getElementById('cf-filial')?.value||'';
-  const fFrete=document.getElementById('cf-frete')?.value||'';
-  const fModalidade=document.getElementById('cf-modalidade')?.value||'';
-  // filtro email removido
-  return contRows.filter(r=>{
-    if(contFiltroTipo!=='todos'&&r.tipo!==contFiltroTipo)return false;
-    if(contFiltroStatus!=='todos'&&r.status_erp!==contFiltroStatus)return false;
-    if(fContrato&&!(r.contrato||'').toUpperCase().includes(fContrato))return false;
-    if(fVendedor&&!(r.vendedor||'').toUpperCase().includes(fVendedor))return false;
-    if(fCorretor&&!(r.corretor||'').toUpperCase().includes(fCorretor))return false;
-    if(fFilial&&r.filial!==fFilial)return false;
-    if(fFrete&&r.frete!==fFrete)return false;
-    if(fModalidade&&r.modalidade!==fModalidade)return false;
-    const vctoDE=document.getElementById('cf-vcto-de')?.value;
-    const vctoATE=document.getElementById('cf-vcto-ate')?.value;
-    // Se filtro de datas ativo e contrato sem vencimento → excluir
-    if((vctoDE||vctoATE)&&!r.vencimento)return false;
-    if(vctoDE&&r.vencimento&&r.vencimento<vctoDE)return false;
-    if(vctoATE&&r.vencimento&&r.vencimento>vctoATE)return false;
-    // Filtro emissão
-    const emDE=document.getElementById('cf-emissao-de')?.value;
-    const emATE=document.getElementById('cf-emissao-ate')?.value;
-    if(emDE&&(!r.emissao||r.emissao<emDE))return false;
-    if(emATE&&(!r.emissao||r.emissao>emATE))return false;
-    return true;
-  });
-}
-
-function limparFiltrosCont(){
-  ['cf-contrato','cf-vendedor','cf-corretor'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  ['cf-filial','cf-frete','cf-modalidade','cf-vcto-de','cf-vcto-ate','cf-emissao-de','cf-emissao-ate'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  renderContratos();
-}
-
-function setContFiltro(btn,kind){
-  btn.closest('.seg').querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  if(kind==='tipo')contFiltroTipo=btn.dataset.v;
-  else contFiltroStatus=btn.dataset.v;
-  renderContratos();
-}
-
-
-function getContNumero(contrato){
-  // Extrai número entre - e / ex: "BRC-0356/26" → 356
-  const m=String(contrato||'').match(/-(\d+)\//);
-  return m?parseInt(m[1],10):999999;
-}
-
-function toggleSortContrato(){
-  if(contSortDir===null||contSortDir==='desc') contSortDir='asc';
-  else if(contSortDir==='asc') contSortDir='desc';
-  else contSortDir=null;
-  // Atualizar classe do th
-  const th=document.getElementById('thContrato');
-  if(th){th.className='cont-th-sort'+(contSortDir?' '+contSortDir:'');}
-  renderContratos();
-}
-
-function renderContratos(){
-  let data=contFiltered().slice().sort((a,b)=>b.id-a.id);
-  // Ordenar por número de contrato se ativo
-  if(contSortDir==='asc'){
-    data=[...data].sort((a,b)=>getContNumero(a.contrato)-getContNumero(b.contrato));
-  } else if(contSortDir==='desc'){
-    data=[...data].sort((a,b)=>getContNumero(b.contrato)-getContNumero(a.contrato));
-  }
-  const today=new Date(todayStr());
-  const in7=contRows.filter(r=>{if(!r.vencimento)return false;const d=new Date(r.vencimento);const diff=(d-today)/(1000*60*60*24);return diff>=0&&diff<=7;}).length;
-  const aguardando=contRows.filter(r=>r.status_erp==='AGUARDANDO FECHAMENTO').length;
-  const emailPend=contRows.filter(r=>r.email_programacao==='ENVIAR BRC'||r.email_programacao==='ENVIAR PROGRAMAÇÃO').length;
-  document.getElementById('csTot').textContent=contRows.length;
-  document.getElementById('csErp').textContent=aguardando;
-  document.getElementById('csEmail').textContent=emailPend;
-  document.getElementById('csVenc').textContent=in7;
-  const tbody=document.getElementById('contBody');tbody.innerHTML='';
-  document.getElementById('contEmpty').style.display=data.length?'none':'block';
-  const isAdmin=userRole==='admin';
-  data.forEach(r=>{
-    const today2=new Date(todayStr());
-    let vencStr='—',vencAlert=false;
-    if(r.vencimento){const vd=new Date(r.vencimento);const diff=Math.round((vd-today2)/(1000*60*60*24));const[y,m,d]=r.vencimento.split('-');vencStr=`${d}/${m}/${y}`;if(diff>=0&&diff<=7)vencAlert=true;}
-    const pillErp=r.status_erp==='ERP LANÇADO'?'pill-erp':'pill-aguardando';
-    const pillEmail=r.email_programacao?.includes('ENVIADO')?'pill-enviado':(r.email_programacao?.includes('ENVIAR')?'pill-pendente':'pill-nao-precisa');
-    const pillFut=r.contrato_futuro==='ENVIADO'?'pill-enviado':(r.contrato_futuro==='PENDENTE'?'pill-pendente':'pill-nao-precisa');
-    const pillInst=r.instrucao_faturamento==='PRECISA ENVIAR'?'pill-pendente':(r.instrucao_faturamento==='ENVIADO'?'pill-enviado':'pill-nao-precisa');
-    const editBtns=isAdmin?'<button class="btn-edit-cont" onclick="abrirModalContrato('+r.id+')">✎</button><button class="btn-del-cont" onclick="delContrato('+r.id+')">✕</button>':'';
-    const tr=document.createElement('tr');
-    if(r.finalizado)tr.classList.add('cont-row-finalizado');
-    if(r.dividido)tr.classList.add('cont-row-dividido');
-    tr.innerHTML=`<td style="min-width:130px;white-space:nowrap"><strong>${r.contrato||'—'}</strong></td>
-      <td>${r.filial||'—'}</td><td>${r.tipo||'—'}</td><td>${r.modalidade||'—'}</td>
-      <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.vendedor||''}">${r.vendedor||'—'}</td>
-      <td>${r.corretor||'—'}</td><td>${r.sacas||'—'}</td>
-      <td><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${(r.especie||'ARABICA')==='CONILON'?'#f0e8ff':'#fef3e2'};color:${(r.especie||'ARABICA')==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
-      <td style="font-size:11px;font-weight:600;color:#1b3a2e;text-align:center">${r.quality_cont||'—'}</td>
-      <td>${r.valor?'R$ '+Number(r.valor).toLocaleString('pt-BR',{minimumFractionDigits:0}):'—'}</td>
-      <td>${r.frete||'—'}</td>
-      <td><span class="status-pill ${pillErp}">${r.status_erp||'—'}</span></td>
-      <td><span class="status-pill ${pillInst}">${r.instrucao_faturamento||'—'}</span></td>
-      <td>
-        <span class="status-pill ${pillEmail}">${r.email_programacao||'—'}</span>
-
-      </td>
-      <td>
-        <span class="status-pill ${pillFut}">${r.contrato_futuro||'—'}</span>
-
-      </td>
-      <td><span class="status-pill ${vencAlert?'pill-alerta':''}" style="${!vencAlert?'background:transparent;color:#6b8c7a;font-size:11px':''}">${vencStr}</span></td>
-      <td>${editBtns}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-async function confirmarEmail(id,tipo){
-  const novoStatus=tipo.includes('BRC')?'ENVIADO BRC':'ENVIADO PROGRAMAÇÃO';
-  await fetch(`${SUPA_URL}/rest/v1/contratos?id=eq.${id}`,{method:'PATCH',headers:authH(),body:JSON.stringify({email_programacao:novoStatus,status_email:'ENVIADO'})});
-  const r=contRows.find(x=>x.id===id);if(r){r.email_programacao=novoStatus;r.status_email='ENVIADO';}renderContratos();
-}
-async function confirmarFuturo(id){
-  await fetch(`${SUPA_URL}/rest/v1/contratos?id=eq.${id}`,{method:'PATCH',headers:authH(),body:JSON.stringify({contrato_futuro:'ENVIADO'})});
-  const r=contRows.find(x=>x.id===id);if(r)r.contrato_futuro='ENVIADO';renderContratos();
-}
-async function delContrato(id){
-  if(!confirm('Excluir este contrato?'))return;
-  await fetch(`${SUPA_URL}/rest/v1/contratos?id=eq.${id}`,{method:'DELETE',headers:authH()});
-  contRows=contRows.filter(r=>r.id!==id);renderContratos();
-}
-
-async function updateContField(id, field, value){
-  try{
-    const extra={};
-    if(field==='email_programacao') extra.status_email=value.includes('ENVIADO')?'ENVIADO':'PENDENTE';
-    if(field==='contrato_futuro') extra.status_futuro=value==='ENVIADO'?'ENVIADO':'PENDENTE';
-    await fetch(`${SUPA_URL}/rest/v1/contratos?id=eq.${id}`,{method:'PATCH',headers:authH(),body:JSON.stringify({[field]:value,...extra})});
-    const r=contRows.find(x=>x.id===id);
-    if(r){r[field]=value;Object.assign(r,extra);}
-    renderContratos();
-  }catch(e){alert('Erro ao atualizar.');}
-}
-
-function autoFillContrato(){
-  const modalidade=document.getElementById('c-modalidade').value;
-  const frete=document.getElementById('c-frete').value;
-  const ep=document.getElementById('c-empresa-produtor').value;
-  document.getElementById('c-email-prog').value=frete==='Posto'?'ENVIAR BRC':'ENVIAR PROGRAMAÇÃO';
-  document.getElementById('c-instrucao').value=ep==='Produtor'?'PRECISA ENVIAR':'NÃO PRECISA';
-  document.getElementById('c-futuro').value=modalidade==='Futuro'?'PENDENTE':'NÃO PRECISA ENVIAR';
-}
-
-function abrirModalContrato(id){
-  contEditingId=id;
-  if(id===null){
-    document.getElementById('contModalTitle').textContent='Novo Contrato';
-    ['c-contrato','c-vendedor','c-corretor','c-sacas','c-valor','c-obs','c-vencimento','c-emissao'].forEach(x=>document.getElementById(x).value='');
-    const qEl=document.getElementById('c-quality');if(qEl)qEl.value='';
-    document.getElementById('c-filial').value='MG';document.getElementById('c-tipo').value='Compra';
-    document.getElementById('c-modalidade').value='Normal';document.getElementById('c-frete').value='Posto';
-    document.getElementById('c-empresa-produtor').value='Empresa';document.getElementById('c-status-erp').value='AGUARDANDO FECHAMENTO';
-    autoFillContrato();
-  }else{
-    const r=contRows.find(x=>x.id===id);if(!r)return;
-    document.getElementById('contModalTitle').textContent='Editar Contrato';
-    document.getElementById('c-contrato').value=r.contrato||'';document.getElementById('c-filial').value=r.filial||'MG';
-    document.getElementById('c-tipo').value=r.tipo||'Compra';document.getElementById('c-modalidade').value=r.modalidade||'Normal';
-    document.getElementById('c-vendedor').value=r.vendedor||'';document.getElementById('c-corretor').value=r.corretor||'';
-    document.getElementById('c-empresa-produtor').value=r.empresa_produtor||'Empresa';
-    document.getElementById('c-sacas').value=r.sacas||'';document.getElementById('c-valor').value=r.valor||'';
-    document.getElementById('c-frete').value=r.frete||'Posto';document.getElementById('c-vencimento').value=r.vencimento||'';document.getElementById('c-emissao').value=r.emissao||'';
-    document.getElementById('c-obs').value=r.obs_extra||'';document.getElementById('c-status-erp').value=r.status_erp||'AGUARDANDO FECHAMENTO';
-    document.getElementById('c-instrucao').value=r.instrucao_faturamento||'NÃO PRECISA';
-    document.getElementById('c-email-prog').value=r.email_programacao||'ENVIAR BRC';
-    document.getElementById('c-finalizado').checked=r.finalizado||false;
-    document.getElementById('c-dividido').checked=r.dividido||false;
-    document.getElementById('c-futuro').value=r.contrato_futuro||'NÃO PRECISA ENVIAR';
-    document.getElementById('c-especie').value=r.especie||'ARABICA';
-    document.getElementById('c-quality').value=r.quality_cont||'';
-  }
-  document.getElementById('contModalOverlay').classList.add('open');
-}
-function fecharModalContrato(){contEditingId=null;document.getElementById('contModalOverlay').classList.remove('open');}
-
-async function salvarContrato(){
-  ['c-contrato','c-vendedor','c-corretor','c-obs'].forEach(id=>{const e=document.getElementById(id);if(e&&e.type!=='date'&&e.type!=='number')e.value=e.value.toUpperCase();});
-  const cEl=document.getElementById('c-contrato');if(cEl)cEl.value=normalizarContrato(cEl.value);
-  const payload={
-    contrato:document.getElementById('c-contrato').value.trim(),
-    filial:document.getElementById('c-filial').value,
-    tipo:document.getElementById('c-tipo').value,
-    modalidade:document.getElementById('c-modalidade').value,
-    vendedor:document.getElementById('c-vendedor').value.trim(),
-    corretor:document.getElementById('c-corretor').value.trim(),
-    empresa_produtor:document.getElementById('c-empresa-produtor').value,
-    sacas:parseInt(document.getElementById('c-sacas').value)||null,
-    especie:document.getElementById('c-especie').value||'ARÁBICA',
-    valor:parseFloat(document.getElementById('c-valor').value)||null,
-    frete:document.getElementById('c-frete').value,
-    vencimento:document.getElementById('c-vencimento').value||null,
-    emissao:document.getElementById('c-emissao').value||null,
-    obs_extra:document.getElementById('c-obs').value.trim(),
-    status_erp:document.getElementById('c-status-erp').value,
-    instrucao_faturamento:document.getElementById('c-instrucao').value,
-    email_programacao:document.getElementById('c-email-prog').value,
-      finalizado:document.getElementById('c-finalizado').checked,
-      dividido:document.getElementById('c-dividido').checked,
-    status_email:document.getElementById('c-email-prog').value.includes('ENVIADO')?'ENVIADO':'PENDENTE',
-    contrato_futuro:document.getElementById('c-futuro').value,
-    status_futuro:document.getElementById('c-futuro').value==='ENVIADO'?'ENVIADO':'PENDENTE',
-    quality_cont:(document.getElementById('c-quality')?.value||'').toUpperCase()||null,
-  };
-  const btn=document.getElementById('btnSaveCont');btn.disabled=true;btn.textContent='Saving...';
-  try{
-    if(contEditingId===null){
-      const res=await fetch(`${SUPA_URL}/rest/v1/contratos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(payload)});
-      if(!res.ok)throw new Error(await res.text());
-      const[novo]=await res.json();contRows.unshift(novo);
-    }else{
-      const res=await fetch(`${SUPA_URL}/rest/v1/contratos?id=eq.${contEditingId}`,{method:'PATCH',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify(payload)});
-      if(!res.ok)throw new Error(await res.text());
-      const[updated]=await res.json();const idx=contRows.findIndex(r=>r.id===contEditingId);if(idx!==-1)contRows[idx]=updated;
-    }
-    fecharModalContrato();renderContratos();
-  }catch(e){alert('Erro: '+e.message);}
-  finally{btn.disabled=false;btn.textContent='Salvar';}
-}
-
-const PLANILHA_HISTORICA = [{"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0272.26", "status_erp": "ERP LANÇADO", "vendedor": "CULTUR COMERCIAL DE GRAO", "corretor": "PORTAL", "sacas": 800, "valor": 1830.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0273.26", "status_erp": "ERP LANÇADO", "vendedor": "CATUAI", "corretor": "FINE", "sacas": 370, "valor": 1800.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-0274.26", "status_erp": "ERP LANÇADO", "vendedor": "JOSE CARLOS SCHIMIT", "corretor": "VB", "sacas": 200, "valor": 1610.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": "INSTRUÇÃO DE FATURAMENTO SÓ SETEMBRO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-275.26", "status_erp": "ERP LANÇADO", "vendedor": "LONDE & RIBEIRO AGRONEGÓCIOS LTDA.", "corretor": "LESSA", "sacas": 500, "valor": 1790.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-276.26", "status_erp": "ERP LANÇADO", "vendedor": "NAYME COMERCIO DE CAFE", "corretor": "LESSA", "sacas": 550, "valor": 1855.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-277.26", "status_erp": "ERP LANÇADO", "vendedor": "HENRIQUE DIAS CAMBRAIA E OUTROS(SII)", "corretor": "SANCAFÉ", "sacas": 735, "valor": 1600.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-278.26", "status_erp": "ERP LANÇADO", "vendedor": "JOSE CARLOS SCHIMIT", "corretor": "VB", "sacas": 300, "valor": 1610.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": "INSTRUÇÃO DE FATURAMENTO SÓ SETEMBRO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-279.26", "status_erp": "ERP LANÇADO", "vendedor": "VALE FORTE", "corretor": "PORTAL", "sacas": 530, "valor": 1600.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-280.26", "status_erp": "ERP LANÇADO", "vendedor": "MUNDO NOVO", "corretor": "CAIO", "sacas": 3000, "valor": 1790.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-281.26", "status_erp": "ERP LANÇADO", "vendedor": "OURO MINAS", "corretor": "CAIO", "sacas": 1000, "valor": 1790.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-282.26", "status_erp": "ERP LANÇADO", "vendedor": "NAYME", "corretor": "LESSA", "sacas": 1100, "valor": 1780.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-283.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPERCAP", "corretor": "PORTAL", "sacas": 230, "valor": 1800.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRV-0037.26", "status_erp": "ERP LANÇADO", "vendedor": "BRASCOF", "corretor": "", "sacas": 1000, "valor": 1580.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0284..26", "status_erp": "ERP LANÇADO", "vendedor": "COMERCIANTE", "corretor": "FINE", "sacas": 240, "valor": 1620.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": "FECHAMENTO  PELO WHATS"}, {"filial": "SP", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-0287.26", "status_erp": "ERP LANÇADO", "vendedor": "SERRA NEGRA", "corretor": "PORTAL", "sacas": 1260, "valor": 1780.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-286.26", "status_erp": "ERP LANÇADO", "vendedor": "RAIZ FORTE", "corretor": "PORTAL", "sacas": 530, "valor": 1700.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-285.26", "status_erp": "ERP LANÇADO", "vendedor": "SANCOFFEE", "corretor": "SANCAFÉ", "sacas": 140, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-288.26", "status_erp": "ERP LANÇADO", "vendedor": "AGROFORTE", "corretor": "FINE", "sacas": 10000, "valor": 1590.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-15", "obs_extra": "LANÇAR COMO FUTURO/SAFRA 26/27"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-289.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPERCAM", "corretor": "ALEXANDRE", "sacas": 1120, "valor": 1925.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-290.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPSAN", "corretor": "SANCAFÉ", "sacas": 200, "valor": 1915.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-291.26", "status_erp": "ERP LANÇADO", "vendedor": "BERNARDES", "corretor": "ALEXANDRE", "sacas": 500, "valor": 1930.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-295.26", "status_erp": "ERP LANÇADO", "vendedor": "MARCHETTI", "corretor": "ALEXANDRE", "sacas": 32, "valor": 1600.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-294.26", "status_erp": "ERP LANÇADO", "vendedor": "PRIMAVERA", "corretor": "-", "sacas": 5000, "valor": 1420.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-09-30", "obs_extra": "CONFIRMAR FORNECEDOR/FUTURO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-293.26", "status_erp": "ERP LANÇADO", "vendedor": "ILCEU", "corretor": "FINE", "sacas": 2000, "valor": 1530.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-30", "obs_extra": "FUTURO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-299.26", "status_erp": "ERP LANÇADO", "vendedor": "HERMAS CAIXETA BARBOSA JUNIOR", "corretor": "GLOBAL", "sacas": 298, "valor": 1472.08, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": "INTRUÇÃO DE FATURAAMENTO"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-300.26", "status_erp": "ERP LANÇADO", "vendedor": "NT COFFEE", "corretor": "GLOBAL", "sacas": 250, "valor": 1500.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-302.26", "status_erp": "ERP LANÇADO", "vendedor": "JOAO EMILIO", "corretor": "VB", "sacas": 3000, "valor": 1605.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-301.26", "status_erp": "ERP LANÇADO", "vendedor": "JOSE SEVERINO", "corretor": "VB", "sacas": 300, "valor": 1605.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-303.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "FAVAROS", "sacas": 1060, "valor": 1490.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-304.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "FAVAROS", "sacas": 1060, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-305.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "FAVAROS", "sacas": 1590, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-306.26", "status_erp": "ERP LANÇADO", "vendedor": "PEDRO DE MELO RIBEIRO", "corretor": "VB", "sacas": 300, "valor": 1600.0, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-307.26", "status_erp": "ERP LANÇADO", "vendedor": "MARIA LIDIA", "corretor": "ALEXANDRE", "sacas": 1000, "valor": 1700.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-308.26", "status_erp": "ERP LANÇADO", "vendedor": "LEANDRO CAFÉ", "corretor": "FAVAROS", "sacas": 500, "valor": 1550.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-06-05", "obs_extra": "ALTERAÇÃO NO ESPELHO DO FECHAMENTO, SEGUIR CONTRATO (GUSTAVO)"}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-309.26", "status_erp": "ERP LANÇADO", "vendedor": "MIGUEL SABIA NETO", "corretor": "VB", "sacas": 100, "valor": 1646.84, "frete": "Posto", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "ENVIADO", "status_futuro": "ENVIADO", "vencimento": "2026-09-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-311.26", "status_erp": "ERP LANÇADO", "vendedor": "COOPERBELO", "corretor": "MINAS COMISSÁRIA", "sacas": 1500, "valor": 1625.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-08-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-310.26", "status_erp": "ERP LANÇADO", "vendedor": "PRIMAVERA", "corretor": "-", "sacas": 5000, "valor": 1460.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2027-08-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRV-0038.26", "status_erp": "ERP LANÇADO", "vendedor": "CULTUR COMERCIAL DE GRAO", "corretor": "PORTAL", "sacas": 500, "valor": 1000.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2027-05-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRV-0039.26", "status_erp": "ERP LANÇADO", "vendedor": "CAFÉ LEM", "corretor": "VCC", "sacas": 854, "valor": 1000.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-04-28", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Normal", "contrato": "BRC-312.26", "status_erp": "ERP LANÇADO", "vendedor": "OLIVEIRA COMERCIO", "corretor": "AGROTRADE", "sacas": 280, "valor": 1410.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": null, "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-313.26", "status_erp": "ERP LANÇADO", "vendedor": "LUIS CARLOS", "corretor": "FINE", "sacas": 500, "valor": 1600.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2027-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-315.26", "status_erp": "ERP LANÇADO", "vendedor": "ALISSON ASSUNÇÃO", "corretor": "FINE", "sacas": 2000, "valor": 1600.0, "frete": "Retirar", "empresa_produtor": "Produtor", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-07-31", "obs_extra": ""}, {"filial": "MG", "tipo": "Compra", "modalidade": "Futuro", "contrato": "BRC-316.26", "status_erp": "ERP LANÇADO", "vendedor": "ILCEU", "corretor": "FINE", "sacas": 1000, "valor": 1550.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-07-30", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Futuro", "contrato": "BRV-0040/26", "status_erp": "ERP LANÇADO", "vendedor": "ODEBRECHT", "corretor": "FINE", "sacas": 1433, "valor": 950.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-06-05", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Futuro", "contrato": "BRC-317.26", "status_erp": "ERP LANÇADO", "vendedor": "AGROFORTE", "corretor": "FINE", "sacas": 7500, "valor": 1580.0, "frete": "Retirar", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-06-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Normal", "contrato": "BRC-319.26", "status_erp": "ERP LANÇADO", "vendedor": "GARDINGO", "corretor": "ZÉ", "sacas": 1590, "valor": 1490.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "NÃO PRECISA", "email_programacao": "ENVIADO PROGRAMAÇÃO", "status_email": "ENVIADO", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-05-15", "obs_extra": ""}, {"filial": "MG", "tipo": "Venda", "modalidade": "Futuro", "contrato": "BRC-318.26", "status_erp": "ERP LANÇADO", "vendedor": "TIAGO CAPELINHA", "corretor": "FINE", "sacas": 600, "valor": 1550.0, "frete": "Posto", "empresa_produtor": "Empresa", "instrucao_faturamento": "PRECISA ENVIAR", "email_programacao": "ENVIAR PROGRAMAÇÃO", "status_email": "PENDENTE", "contrato_futuro": "NÃO PRECISA ENVIAR", "status_futuro": "PENDENTE", "vencimento": "2026-07-30", "obs_extra": ""}];
-
-async function importarPlanilha(){
-  const btn=document.getElementById('btnImportPlanilha');
-  if(!confirm('Importar 47 contratos da planilha histórica para o Supabase?\n\nEsta ação não pode ser desfeita. Continuar?'))return;
-  btn.disabled=true;btn.textContent='Importando...';
-  let ok=0,err=0;
-  for(const rec of PLANILHA_HISTORICA){
-    try{
-      const res=await fetch(`${SUPA_URL}/rest/v1/contratos`,{method:'POST',headers:authH(),body:JSON.stringify(rec)});
-      if(res.ok)ok++;else err++;
-    }catch(e){err++;}
-  }
-  btn.disabled=false;btn.textContent='📥 Importar planilha histórica';
-  alert(`Importação concluída!\n✅ Importados: ${ok}\n❌ Erros: ${err}`);
-  if(ok>0){await fetchContratos();btn.style.display='none';}
-}
-
-async function exportContImagem(){
-  const inclFin=document.getElementById('chkMostrarFinalizados')?.checked;
-  const data=contFiltered()
-    .filter(r=>r.vencimento&&r.vencimento.trim()!==''&&(inclFin||!r.finalizado))
-    .sort((a,b)=>{
-      const getN=c=>{const m=String(c||'').match(/-(\d+)\//);return m?parseInt(m[1],10):0;};
-      return getN(b.contrato)-getN(a.contrato); // decrescente
-    });
-  if(!data.length){alert('Nenhum contrato com vencimento preenchido.');return;}
-  const btn=document.getElementById('btnContImg');
-  btn.disabled=true;btn.textContent='Gerando...';
-
-  // Calcular totais
-  let totalPagSacas=0,totalPagVal=0,totalRecSacas=0,totalRecVal=0;
-  data.forEach(r=>{
-    const sacas=parseFloat(r.sacas)||0;
-    const valor=parseFloat(String(r.valor||'').replace(/[^0-9.,]/g,'').replace(',','.'))||0;
-    const total=sacas*valor;
-    if((r.contrato||'').toUpperCase().startsWith('BRC')){
-      totalPagSacas+=sacas; totalPagVal+=total;
-    } else {
-      totalRecSacas+=sacas; totalRecVal+=total;
-    }
-  });
-
-  const fmtMoeda=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const fmtNum=v=>v.toLocaleString('pt-BR');
-  const hoje=new Date().toLocaleDateString('pt-BR');
-
-  // Montar linhas da tabela
-  const linhas=data.map(r=>{
-    const sacas=parseFloat(r.sacas)||0;
-    const valor=parseFloat(String(r.valor||'').replace(/[^0-9.,]/g,'').replace(',','.'))||0;
-    const total=sacas*valor;
-    const isBRC=(r.contrato||'').toUpperCase().startsWith('BRC');
-    return `<tr>
-      <td><strong>${r.contrato||'—'}</strong></td>
-      <td><span class="${isBRC?'cp-badge-c':'cp-badge-v'}">${isBRC?'PURCHASE':'SALE'}</span></td>
-      <td style="font-weight:600;color:#1b3a2e">${r.quality_cont||'—'}</td>
-      <td style="text-align:right">${fmtNum(sacas)}</td>
-      <td style="text-align:right">R$ ${valor.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
-      <td style="text-align:right;font-weight:600">${fmtMoeda(total)}</td>
-      <td>${r.vencimento?new Date(r.vencimento+'T00:00:00').toLocaleDateString('pt-BR'):'—'}</td>
-    </tr>`;
-  }).join('');
-
-  // Totais linha
-  const totaisHtml=`
-    ${totalPagSacas>0?`<div class="cp-tot-card">
-      <div class="cp-tot-label">Total Approx. Payment (BRC)</div>
-      <div class="cp-tot-val cp-tot-pag">${fmtMoeda(totalPagVal)}</div>
-      <div style="font-size:10px;color:#c0392b;margin-top:2px">${fmtNum(totalPagSacas)} sacas</div>
-    </div>`:''}
-    ${totalRecSacas>0?`<div class="cp-tot-card">
-      <div class="cp-tot-label">Total Approx. Receipt (BRV)</div>
-      <div class="cp-tot-val cp-tot-rec">${fmtMoeda(totalRecVal)}</div>
-      <div style="font-size:10px;color:#1a5c1a;margin-top:2px">${fmtNum(totalRecSacas)} sacas</div>
-    </div>`:''}`;
-
-  const frame=document.getElementById('cont-print-frame');
-  frame.innerHTML=`
-    <div class="cp-header">
-      <div>
-        <div class="cp-header-title">☕ COMMERCIAL CONTROL — COFFEE CONTRACTS</div>
-        <div class="cp-header-sub">${(()=>{
-        const de=document.getElementById('cf-vcto-de')?.value;
-        const ate=document.getElementById('cf-vcto-ate')?.value;
-        const fmtD=v=>v?new Date(v+'T00:00:00').toLocaleDateString('pt-BR'):'';
-        if(de&&ate)return 'Filter '+fmtD(de)+' to '+fmtD(ate);
-        if(de)return 'Filter from '+fmtD(de);
-        if(ate)return 'Filter to '+fmtD(ate);
-        return 'Generated on '+hoje+' · '+data.length+' contract(s)';
-      })()}</div>
-      </div>
-      <img src="https://joao2014vga.github.io/Informativo-Diario/brascof-logo.png" style="height:36px;opacity:.9" onerror="this.style.display='none'">
-    </div>
-    <table class="cp-table">
-      <thead><tr>
-        <th>Contract</th><th>Type</th><th>Quality</th><th style="text-align:right">Bags</th>
-        <th style="text-align:right">Value/Bag</th><th style="text-align:right">Total Payment</th><th>Due Date</th>
-      </tr></thead>
-      <tbody>${linhas}</tbody>
-    </table>
-    <div class="cp-totais">${totaisHtml}</div>
-    <div class="cp-footer">Brascof · Relatório gerado automaticamente · ${hoje}</div>`;
-
-  // Quality Analysis — agrupar por quality_cont
-  const qGrupos={};
-  data.forEach(r=>{
-    const q=(r.quality_cont||'').toUpperCase();
-    if(!q)return;
-    const isBRC=(r.contrato||'').toUpperCase().startsWith('BRC');
-    const sacas=parseFloat(r.sacas)||0;
-    if(!qGrupos[q])qGrupos[q]={purchase:0,sale:0};
-    if(isBRC)qGrupos[q].purchase+=sacas;
-    else qGrupos[q].sale+=sacas;
-  });
-  const qKeys=Object.keys(qGrupos).sort((a,b)=>{
-    const na=a.match(/[0-9]+/),nb=b.match(/[0-9]+/);
-    if(na&&nb){const d=parseInt(na[0])-parseInt(nb[0]);if(d)return d;}
-    return a.localeCompare(b);
-  });
-  if(qKeys.length){
-    const totalP=qKeys.reduce((s,q)=>s+qGrupos[q].purchase,0);
-    const totalS=qKeys.reduce((s,q)=>s+qGrupos[q].sale,0);
-    const cards=qKeys.map(q=>{
-      const g=qGrupos[q];
-      const pctP=totalP?Math.round((g.purchase/totalP)*100):0;
-      const pctS=totalS?Math.round((g.sale/totalS)*100):0;
-      const hasP=g.purchase>0, hasS=g.sale>0;
-      return '<div style="background:#fff;border:1px solid #dde8e2;border-radius:10px;padding:.75rem 1rem;min-width:180px">'+
-        '<div style="font-size:12px;font-weight:700;color:#1a1a1a;margin-bottom:.6rem">'+q+'</div>'+
-        (hasP?'<div style="margin-bottom:6px">'+
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
-          '<span style="background:#e3eef9;color:#1a4f82;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">PURCHASE</span>'+
-          '<span style="font-size:9px;color:#6b8c7a">Bags <strong>'+g.purchase.toLocaleString('pt-BR')+'</strong></span></div>'+
-          '<div style="background:#e8f0ec;border-radius:3px;height:6px;overflow:hidden">'+
-          '<div style="width:'+pctP+'%;height:100%;background:#1a4f82;border-radius:3px"></div></div></div>':'')+
-        (hasP&&hasS?'<div style="height:1px;background:#e8f0ec;margin:6px 0"></div>':'')+
-        (hasS?'<div>'+
-          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
-          '<span style="background:#e3f4e3;color:#1a5c1a;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">SALE</span>'+
-          '<span style="font-size:9px;color:#6b8c7a">Bags <strong>'+g.sale.toLocaleString('pt-BR')+'</strong></span></div>'+
-          '<div style="background:#e8f0ec;border-radius:3px;height:6px;overflow:hidden">'+
-          '<div style="width:'+pctS+'%;height:100%;background:#1a5c1a;border-radius:3px"></div></div></div>':'')+
-        '</div>';
-    }).join('');
-    const qaDiv=document.createElement('div');
-    qaDiv.style.cssText='padding:1rem 1.25rem;background:#f5f9f6;border-top:2px solid #d0e4d8';
-    qaDiv.innerHTML='<div style="font-size:10px;font-weight:700;color:#3a6b52;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem">Quality Analysis</div>'+
-      '<div style="display:flex;flex-wrap:wrap;gap:10px">'+cards+'</div>';
-    frame.appendChild(qaDiv);
-  }
-
-  frame.style.left='-9999px';
-  document.body.appendChild(frame);
-
-  try{
-    await new Promise(r=>setTimeout(r,300));
-    const canvas=await html2canvas(frame,{scale:2,useCORS:true,backgroundColor:'#fff',logging:false,width:900,windowWidth:900});
-    _contPreviewCanvas=canvas;
-    // Mostrar no modal de preview
-    const img=document.createElement('img');
-    img.src=canvas.toDataURL('image/png');
-    img.style.cssText='max-width:100%;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12)';
-    const content=document.getElementById('cont-preview-content');
-    content.innerHTML='';content.appendChild(img);
-    // Label do modal
-    const de=document.getElementById('cf-vcto-de')?.value;
-    const ate=document.getElementById('cf-vcto-ate')?.value;
-    const fmtD=v=>v?new Date(v+'T00:00:00').toLocaleDateString('pt-BR'):'';
-    const label=de&&ate?'Filter '+fmtD(de)+' to '+fmtD(ate):'Relatório · '+data.length+' contrato(s)';
-    document.getElementById('cont-preview-label').textContent=label;
-    document.getElementById('cont-preview-modal').classList.add('open');
-  }catch(e){alert('Erro ao gerar preview: '+e.message);}
-  finally{
-    frame.style.left='-9999px';
-    btn.disabled=false;btn.textContent='👁 Visualizar relatório';
-  }
-}
-
-let _contPreviewCanvas=null;
-function salvarContImagem(){
-  if(!_contPreviewCanvas){alert('Gere o preview primeiro.');return;}
-  const de=document.getElementById('cf-vcto-de')?.value||'';
-  const ate=document.getElementById('cf-vcto-ate')?.value||'';
-  const nome='contratos'+(de?'_'+de:'')+(ate?'_'+ate:'')+'.png';
-  const link=document.createElement('a');
-  link.download=nome.replace(/\//g,'-');
-  link.href=_contPreviewCanvas.toDataURL('image/png');
-  link.click();
-}
-
-function exportContExcel(){
-  const data=contFiltered();
-  if(!data.length){alert('Nenhum contrato para exportar.');return;}
-
-  // Título + cabeçalho igual à planilha original
-  const titulo='☕  COMMERCIAL CONTROL — COFFEE CONTRACTS';
-  const cabecalho=['MG/SP','TIPO','MODALIDADE','OBSERVAÇÃO EXTRA','CONTRATO','STATUS','VENDEDOR','CORRETOR','SACAS','VALOR','MODALIDADE','CNPJ/CPF','INSTRUÇÃO DE\nFATURAMENTO','E-MAIL DE\nPROGRAMAÇÃO','CONTRATO DE\nCOMPRA E VENDA\nFUTURO','VENCIMENTO','FINALIZADO'];
-
-  const linhas=data.map(r=>[
-    r.filial||'',
-    r.tipo||'',
-    r.modalidade||'',
-    r.obs_extra||'',
-    r.contrato||'',
-    r.status_erp==='ERP LANÇADO'?'ERP Lançado':'Aguardando Fechamento',
-    r.vendedor||'',
-    r.corretor||'',
-    r.sacas||'',
-    r.valor||'',
-    r.frete||'',
-    r.empresa_produtor||'',
-    r.instrucao_faturamento||'',
-    r.email_programacao||'',
-    r.contrato_futuro||'',
-    r.vencimento||'',
-    r.finalizado?'Sim':'Não'
-  ]);
-
-  const ws=XLSX.utils.aoa_to_sheet([[titulo],...[cabecalho],...linhas]);
-
-  // Merge da linha de título (A1:P1)
-  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:16}}];
-
-  // Larguras iguais à planilha original
-  ws['!cols']=[
-    {wch:10},{wch:8},{wch:17},{wch:44},{wch:15},{wch:24},
-    {wch:33},{wch:16},{wch:9},{wch:13},{wch:10},{wch:12},
-    {wch:15},{wch:15},{wch:15},{wch:12}
-  ];
-
-  // Altura das linhas
-  ws['!rows']=[{hpt:22},{hpt:30}];
-
-  // Estilo do título — fundo azul escuro, texto branco, negrito
-  const titleStyle={
-    font:{name:'Calibri',sz:13,bold:true,color:{rgb:'FFFFFF'}},
-    fill:{fgColor:{rgb:'1B3A5C'}},
-    alignment:{horizontal:'center',vertical:'center'}
-  };
-  // Estilo do cabeçalho
-  const headerStyle={
-    font:{name:'Calibri',sz:9,bold:true,color:{rgb:'FFFFFF'}},
-    fill:{fgColor:{rgb:'1B3A5C'}},
-    alignment:{horizontal:'center',vertical:'center',wrapText:true}
-  };
-  // Estilo das linhas de dados
-  const dataStyle={
-    font:{name:'Calibri',sz:9},
-    fill:{fgColor:{rgb:'F4F7FB'}},
-    alignment:{horizontal:'center',vertical:'center'}
-  };
-
-  // Aplicar estilos
-  const cols='ABCDEFGHIJKLMNOP'.split('');
-
-  // Título
-  if(!ws['A1'])ws['A1']={v:titulo,t:'s'};
-  ws['A1'].s=titleStyle;
-
-  // Cabeçalho linha 2
-  cols.forEach((col,i)=>{
-    const ref=col+'2';
-    if(!ws[ref])ws[ref]={v:cabecalho[i],t:'s'};
-    ws[ref].s=headerStyle;
-  });
-
-  // Dados linha 3+
-  linhas.forEach((linha,ri)=>{
-    cols.forEach((col,ci)=>{
-      const ref=col+(ri+3);
-      if(!ws[ref])ws[ref]={v:linha[ci],t:'s'};
-      ws[ref].s=dataStyle;
-    });
-  });
-
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'Controle');
-  XLSX.writeFile(wb,'Brascof_Controle_Contratos_'+todayStr().replace(/-/g,'')+'.xlsx');
 }
 </script>
 </body>
