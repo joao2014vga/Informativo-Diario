@@ -252,6 +252,8 @@ details summary span.det-line{flex:1;height:1px;background:var(--green-light)}
 /* INFORMATIVO */
 #panel-informativo{padding:1.25rem 1.5rem}
 .inf-wrap{max-width:1280px;margin:0 auto}
+/* Dentro do Portal BI: ocupa a largura toda da tela */
+.embutido .inf-wrap{max-width:none}
 .metrics-bar{background:#fff;display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #dde8e2;border-radius:12px;margin-bottom:1rem;overflow:hidden}
 .mbar-item{padding:12px 1rem;border-right:1px solid #dde8e2}
 .mbar-item:last-child{border-right:none}
@@ -1086,7 +1088,7 @@ tbody tr:hover{background:#fafcfb}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-10-12-v2'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-10-13-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1258,6 +1260,7 @@ setInterval(async()=>{if(accessToken)await renovarToken();},45*60*1000);
       document.querySelector('.btn-logout').style.display='none';
       // No Portal BI só o Informativo fica disponível (sem Pricing e Dashboard)
       document.querySelector('.nav-tabs').style.display='none';
+      document.body.classList.add('embutido');
       switchModule('informativo');
       showPortal(s.user.email);
       return;
