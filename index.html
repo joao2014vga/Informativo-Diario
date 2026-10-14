@@ -21,6 +21,8 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f2;color:#1a1a1a;mi
 .btn-login{background:#2d4a3e;border:none;border-radius:8px;padding:11px;font-size:14px;font-family:inherit;color:#fff;cursor:pointer;font-weight:600;width:100%;margin-top:.5rem}
 .btn-login:disabled{background:#7a9e8a;cursor:not-allowed}
 .login-error{background:#fdf0f0;border:1px solid #f0c8c8;border-radius:8px;padding:10px 12px;font-size:12.5px;color:#922020;margin-top:1rem;display:none}
+.login-error a,.login-aviso a{color:inherit;font-weight:600}
+.login-aviso{background:#e8f0ec;border-radius:8px;padding:10px 12px;font-size:12.5px;color:#2d4a3e;margin-top:1rem;text-align:center}
 .portal-wrap{display:none}
 .nav{background:#2d4a3e;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 .nav-brand{font-size:14px;font-weight:600;color:#e8f0ec}
@@ -439,6 +441,8 @@ tbody tr:hover{background:#fafcfb}
     <div class="login-field"><label class="login-label">Senha</label><input type="password" id="lSenha" class="login-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <button class="btn-login" id="btnLogin" onclick="doLogin()">Entrar</button>
     <div class="login-error" id="loginError"></div>
+    <div class="login-aviso">The Daily Report is now available only in the
+      <a href="https://joao2014vga.github.io/portal-bi/">BI Portal</a>.</div>
   </div>
 </div>
 
@@ -1088,7 +1092,7 @@ tbody tr:hover{background:#fafcfb}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-10-13-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-10-14-v1'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1162,6 +1166,23 @@ const EMBUTIDO=window.self!==window.top;
 function sessaoPortal(){try{return JSON.parse(localStorage.getItem(PORTAL_KEY));}catch(e){return null;}}
 function tokenPortal(){const s=sessaoPortal();accessToken=s&&s.access_token||null;return accessToken;}
 
+/* ── ACESSO DIRETO ──
+   Fora do Portal BI (link direto) só o Pricing fica disponível, e só para
+   estes e-mails. O Informativo é acessado apenas pelo Portal BI. */
+const PORTAL_BI_URL='https://joao2014vga.github.io/portal-bi/';
+const ACESSO_DIRETO=['jsouza@brascof.com','joao2014vga@gmail.com'];
+function podeAcessoDireto(email){return ACESSO_DIRETO.includes(String(email||'').trim().toLowerCase());}
+function negarAcessoDireto(){
+  accessToken=null;refreshToken=null;
+  ['bc_token','bc_refresh','bc_email'].forEach(k=>sessionStorage.removeItem(k));
+  document.getElementById('portalWrap').style.display='none';
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('lSenha').value='';
+  const err=document.getElementById('loginError');
+  err.innerHTML=`Direct access has been disabled. Please use the <a href="${PORTAL_BI_URL}">BI Portal</a>.`;
+  err.style.display='block';
+}
+
 function authH(x={}){if(EMBUTIDO)tokenPortal();return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(accessToken||SUPA_KEY),...x}}
 
 /* ── AUTH ── */
@@ -1191,6 +1212,12 @@ async function fetchComTimeout(url,opts={},ms=8000){
 }
 
 async function showPortal(email){
+  if(!EMBUTIDO){
+    if(!podeAcessoDireto(email)){negarAcessoDireto();return;}
+    // link direto: só o Pricing (Informativo fica no Portal BI; Dashboard saiu do ar)
+    document.querySelectorAll('.nav-tab').forEach((t,i)=>{if(i>0)t.style.display='none';});
+    switchModule('pricing');
+  }
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('portalWrap').style.display='block';
   document.getElementById('userEmail').textContent=email;
