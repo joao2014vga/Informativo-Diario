@@ -1092,7 +1092,7 @@ tbody tr:hover{background:#fafcfb}
 /* ── SUPABASE ── */
 
 /* ── VERSIONAMENTO ── */
-const APP_VERSION = '2026-10-14-v1'; // ← Atualizar este valor a cada deploy
+const APP_VERSION = '2026-10-14-v2'; // ← Atualizar este valor a cada deploy
 
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
@@ -1288,6 +1288,9 @@ setInterval(async()=>{if(accessToken)await renovarToken();},45*60*1000);
       // No Portal BI só o Informativo fica disponível (sem Pricing e Dashboard)
       document.querySelector('.nav-tabs').style.display='none';
       document.body.classList.add('embutido');
+      // No Portal BI abre filtrado no dia de hoje ("Clear" mostra tudo)
+      document.getElementById('fDtDe').value=todayStr();
+      document.getElementById('fDtAte').value=todayStr();
       switchModule('informativo');
       showPortal(s.user.email);
       return;
@@ -2940,7 +2943,8 @@ function exportarHistExcel(){
 
 /* ── INFORMATIVO ── */
 let infRows=[],infFilterTipo='todos',infFilterEspecie='todos',infEditingId=null;
-const todayStr=()=>new Date().toISOString().slice(0,10);
+// data local (Brasil); toISOString() usa UTC e virava o dia seguinte depois das 21h
+const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const fmtDate=s=>{const p=s.split('-');return p[2]+'/'+p[1]+'/'+p[0];};
 const fmt2=v=>v!=null?((v>=0?'+':'')+Number(v).toFixed(2)):'—';
 const sumQ=arr=>arr.reduce((a,r)=>a+Number(r.sacas),0);
