@@ -582,7 +582,7 @@ tbody tr:hover{background:#fafcfb}
     <div class="icard" style="position:relative">
       <label class="ilabel">Term</label>
       <input type="text" id="v-term" placeholder="ex: u26, nyk27" autocomplete="off"
-        oninput="termSearch(this.value)" onkeydown="termKeyNav(event)" onfocus="termSearch(this.value)" onblur="setTimeout(termHide,150)"
+        oninput="termSearch(this.value)" onkeydown="termKeyNav(event)" onfocus="termSearch(this.value)" onblur="setTimeout(()=>{termHide();termFixar(this)},150)"
         style="width:100%;box-sizing:border-box">
       <div id="term-dropdown" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);max-height:220px;overflow-y:auto;margin-top:2px"></div>
     </div>
@@ -757,7 +757,7 @@ tbody tr:hover{background:#fafcfb}
       <div><label class="fg-label">Variety</label><select id="fEspecie" class="fg-input"><option value="ARÁBICA">ARÁBICA</option><option value="CONILON">CONILON</option></select></div>
       <div style="position:relative"><label class="fg-label">Term</label>
         <input type="text" id="fTerm" class="fg-input" placeholder="ex: nyu26" autocomplete="off"
-          oninput="termSearchInf(this.value)" onkeydown="termKeyNavInf(event)" onfocus="termSearchInf(this.value)" onblur="setTimeout(termHideInf,150)">
+          oninput="termSearchInf(this.value)" onkeydown="termKeyNavInf(event)" onfocus="termSearchInf(this.value)" onblur="setTimeout(()=>{termHideInf();termFixar(this)},150)">
         <div id="term-dropdown-inf" style="display:none;position:fixed;z-index:99999;background:#fff;border:1px solid #c8dbd0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);max-height:220px;overflow-y:auto;min-width:160px"></div>
       </div>
       <div><label class="fg-label">Lots</label>
@@ -945,7 +945,7 @@ tbody tr:hover{background:#fafcfb}
       <div><label class="fg-label">Quality</label><input type="text" id="eQual" class="fg-input"/></div>
       <div><label class="fg-label">Diff</label><input type="number" id="eDif" class="fg-input" step="0.01" style="text-transform:none"/></div>
       <div><label class="fg-label">Variety</label><select id="eEspecie" class="fg-input"><option value="ARÁBICA">ARÁBICA</option><option value="CONILON">CONILON</option></select></div>
-      <div><label class="fg-label">Term</label><input type="text" id="eTerm" class="fg-input" placeholder="ex: #NYU26"/></div>
+      <div><label class="fg-label">Term</label><select id="eTerm" class="fg-input"></select></div>
       <div><label class="fg-label">Lots</label><input type="number" id="eLots" class="fg-input" step="0.5" placeholder="—"/></div>
       <div><label class="fg-label">Hedge Date</label><input type="date" id="eHedgeDate" class="fg-input" style="text-transform:none" title="Data do hedge na bolsa"/></div>
       <div><label class="fg-label">Certificate</label><div class="cert-drop">
@@ -1605,10 +1605,33 @@ function copiarResumo(){
 const TERM_LIST=[
   {label:'#NYU26',group:'NY'},{label:'#NYZ26',group:'NY'},
   {label:'#NYH27',group:'NY'},{label:'#NYK27',group:'NY'},{label:'#NYN27',group:'NY'},{label:'#NYU27',group:'NY'},
-  {label:'#NYZ27',group:'NY'},{label:'#NYH28',group:'NY'},{label:'#NYK28',group:'NY'},{label:'#NYU28',group:'NY'},
+  {label:'#NYZ27',group:'NY'},{label:'#NYH28',group:'NY'},{label:'#NYK28',group:'NY'},{label:'#NYN28',group:'NY'},{label:'#NYU28',group:'NY'},{label:'#NYZ28',group:'NY'},
   {label:'#LDNK26',group:'LDN'},{label:'#LDNN26',group:'LDN'},{label:'#LDNU26',group:'LDN'},{label:'#LDNX26',group:'LDN'},{label:'#LDNF27',group:'LDN'},{label:'#LDNH27',group:'LDN'},
-  {label:'#BMFK26',group:'BMF'},{label:'#BMFN26',group:'BMF'},{label:'#BMFU26',group:'BMF'},{label:'#BMFZ26',group:'BMF'}
+  {label:'#LDNK27',group:'LDN'},{label:'#LDNN27',group:'LDN'},{label:'#LDNU27',group:'LDN'},{label:'#LDNX27',group:'LDN'},
+  {label:'#BMFK26',group:'BMF'},{label:'#BMFN26',group:'BMF'},{label:'#BMFU26',group:'BMF'},{label:'#BMFZ26',group:'BMF'},
+  {label:'#BMFH27',group:'BMF'},{label:'#BMFK27',group:'BMF'},{label:'#BMFN27',group:'BMF'},{label:'#BMFU27',group:'BMF'},{label:'#BMFZ27',group:'BMF'}
 ];
+// Só vale Term cadastrado: "nyz26" vira "#NYZ26"; qualquer outra coisa volta null
+function termValido(v){
+  const s=String(v||'').trim().toUpperCase().replace(/^#/,'');
+  return s?(TERM_LIST.find(t=>t.label==='#'+s)?.label||null):'';
+}
+// Campo digitado (com autocomplete): ao sair, fica o Term cadastrado ou limpa
+function termFixar(el){
+  const v=termValido(el.value);
+  if(v===null){el.value='';el.style.borderColor='#c0392b';el.title='Choose a registered term';setTimeout(()=>{el.style.borderColor='';el.title='';},2500);}
+  else el.value=v;
+}
+// <select> com os Terms cadastrados; um valor antigo fora da lista aparece marcado para ser trocado
+function termOptions(atual){
+  const a=String(atual||'').trim(),ok=termValido(a);
+  let html=`<option value="">—</option>`;
+  if(ok===null)html+=`<option value="${a.replace(/"/g,'&quot;')}" selected>${a.replace(/</g,'&lt;')} (not registered)</option>`;
+  ['NY','LDN','BMF'].forEach(g=>{
+    html+=`<optgroup label="${g}">`+TERM_LIST.filter(t=>t.group===g).map(t=>`<option value="${t.label}"${ok===t.label?' selected':''}>${t.label}</option>`).join('')+`</optgroup>`;
+  });
+  return html;
+}
 let termIdx=-1;
 
 function termSearch(q){
@@ -2740,7 +2763,7 @@ async function editarNeg(h){
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">KC</label>
       <input id="en-kc-${id}" value="${h.kc||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Term</label>
-      <input id="en-term-${id}" value="${h.term||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <select id="en-term-${id}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px">${termOptions(h.term)}</select></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Lots</label>
       <input id="en-lots-${id}" value="${h.lots||''}" type="number" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Obs</label>
@@ -2754,6 +2777,7 @@ async function editarNeg(h){
 
 async function salvarEditNeg(id){
   const g=s=>document.getElementById(s)?.value||'';
+  if(termValido(g(`en-term-${id}`))===null){alert('Choose a registered Term from the list.');return;}
   const patch={
     produtor:g(`en-prod-${id}`),corretor:g(`en-corr-${id}`),quality:g(`en-qual-${id}`),
     safra:g(`en-safra-${id}`),bags:g(`en-bags-${id}`),brl:g(`en-brl-${id}`),
@@ -2772,7 +2796,7 @@ async function salvarEditNeg(id){
 
 function snapshot(){
   const get=id=>{const e=document.getElementById(id);return e?(e.value||e.textContent||''):''};
-  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),certificate:certGetValue('cert-pricing'),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),term:get('v-term'),lots:get('v-lots'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
+  return{data:new Date().toLocaleString('pt-BR'),produtor:get('i-producer').trim(),corretor:get('i-broker-name').trim(),quality:get('i-quality').trim(),safra:get('i-crop').trim(),certificate:certGetValue('cert-pricing'),bags:get('v-bags'),brl:get('v-preco'),usd:get('v-dolar'),kc:get('v-kc'),term:termValido(get('v-term'))||'',lots:get('v-lots'),p1718:get('v-p1718'),premio:get('v-premio'),off:get('v-off'),freight:document.getElementById('v-cidade').value,producer:document.getElementById('v-producer').value,modalidade:document.getElementById('i-modalidade').value,bica_diff:document.getElementById('o-bicadiff').textContent,d1416:document.getElementById('o-d1416').textContent,d1718:document.getElementById('o-d1718').textContent,resumo:document.getElementById('resumo-text').textContent};
 }
 
 function abrirModal(){
@@ -3178,14 +3202,15 @@ async function addInfRow(){
   const qual=document.getElementById('fQual').value.trim().toUpperCase();
   const dif=parseFloat(document.getElementById('fDif').value);
   const especie=document.getElementById('fEspecie').value;
-  const fTermVal=document.getElementById('fTerm')?.value||null;
+  const fTermVal=termValido(document.getElementById('fTerm')?.value);
+  if(fTermVal===null){alert('Choose a registered Term from the list.');return;}
   const fLotsVal=document.getElementById('fLots')?.value||null;
   const fHedgeDateVal=document.getElementById('fHedgeDate')?.value||null;
   const fCertVal=certGetValue('cert-inf')||null;
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in Date, Bags and Diff.');return;}
   const btn=document.getElementById('btnAddInf');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:fTermVal,lots:fLotsVal,hedge_date:fHedgeDateVal,certificate:fCertVal})});
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos`,{method:'POST',headers:authH({'Prefer':'return=representation'}),body:JSON.stringify({data,tipo,sacas,qual,dif,especie,term:fTermVal||null,lots:fLotsVal,hedge_date:fHedgeDateVal,certificate:fCertVal})});
     if(!res.ok)throw new Error(await res.text());
     const[novo]=await res.json();infRows.unshift(novo);
     document.getElementById('fSacas').value='';document.getElementById('fQual').value='';document.getElementById('fDif').value='';document.getElementById('fEspecie').value='ARABICA';
@@ -3211,7 +3236,7 @@ function openInfEdit(id){
   document.getElementById('eData').value=r.data;document.getElementById('eTipo').value=r.tipo;
   document.getElementById('eSacas').value=r.sacas;document.getElementById('eQual').value=r.qual||'';
   document.getElementById('eDif').value=r.dif;document.getElementById('eEspecie').value=r.especie||'ARABICA';
-  document.getElementById('eTerm').value=r.term||'';document.getElementById('eLots').value=r.lots||'';
+  document.getElementById('eTerm').innerHTML=termOptions(r.term);document.getElementById('eLots').value=r.lots||'';
   document.getElementById('eHedgeDate').value=r.hedge_date||'';
   certSetValue('cert-modal',r.certificate||'');
   const repEl=document.getElementById('eRepetir');if(repEl)repEl.value=1;
@@ -3226,6 +3251,7 @@ async function saveInfEdit(){
   const dif=parseFloat(document.getElementById('eDif').value);
   const especie=document.getElementById('eEspecie').value;
   if(!data||isNaN(sacas)||sacas<=0||isNaN(dif)){alert('Please fill in all fields.');return;}
+  if(termValido(document.getElementById('eTerm').value)===null){alert('Choose a registered Term from the list.');return;}
   const repetir=Math.max(1,parseInt(document.getElementById('eRepetir')?.value)||1);
   const btn=document.getElementById('btnSaveEdit');btn.disabled=true;
   btn.textContent=repetir>1?'Saving '+repetir+'x...':'Saving...';
