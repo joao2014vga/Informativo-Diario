@@ -1951,7 +1951,7 @@ async function valExtrair(){
   try{
     const resp=await fetch(VERCEL_URL+'/api/extrair-espelho',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(EMBUTIDO?tokenPortal():accessToken)},
       body:JSON.stringify({image:base64,mediaType:f.type})
     });
     if(!resp.ok){const t=await resp.text();throw new Error('API '+resp.status+': '+t.slice(0,200));}
