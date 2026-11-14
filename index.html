@@ -1094,6 +1094,9 @@ tbody tr:hover{background:#fafcfb}
 /* ── VERSIONAMENTO ── */
 const APP_VERSION = '2026-10-14-v2'; // ← Atualizar este valor a cada deploy
 
+/* ── ESCAPE HTML ── usar em todo dado (banco, Digisul, Claude, API) que entra em innerHTML */
+function esc(v){return v==null?'':String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 function checkVersion(){
   const stored = localStorage.getItem('brascof_version');
   if(stored && stored !== APP_VERSION){
@@ -1533,7 +1536,7 @@ function calc(){
   const bf=document.getElementById('o-bicafot');if(bf){bf.textContent=fmt(bicaFot,2);bf.className='rval '+cc(bicaDiff);}
   const vLots=document.getElementById('v-lots');
   const displayLots=vLots&&vLots.value?vLots.value:fmt(nyLots,2);
-  sv('o-lgfob','USD '+fmt(lgFobEq,2));sv('o-p1416',fmt(p1416,2)+'%');sv('o-nylots',displayLots);
+  sv('o-lgfob','USD '+fmt(lgFobEq,2));sv('o-p1416',fmt(p1416,2)+'%');sv('o-nylots',esc(displayLots));
   sv('o-lgcalc','LG calculado: R$ '+fmt(lgBrl,2));
   document.getElementById('v-frete-badge').textContent='R$ '+fmt(freteRs,2)+' / saca';
   document.getElementById('t-cidade') && (document.getElementById('t-cidade').textContent='— '+cidade);
@@ -1626,7 +1629,7 @@ function termFixar(el){
 function termOptions(atual){
   const a=String(atual||'').trim(),ok=termValido(a);
   let html=`<option value="">—</option>`;
-  if(ok===null)html+=`<option value="${a.replace(/"/g,'&quot;')}" selected>${a.replace(/</g,'&lt;')} (not registered)</option>`;
+  if(ok===null)html+=`<option value="${esc(a)}" selected>${esc(a)} (not registered)</option>`;
   ['NY','LDN','BMF'].forEach(g=>{
     html+=`<optgroup label="${g}">`+TERM_LIST.filter(t=>t.group===g).map(t=>`<option value="${t.label}"${ok===t.label?' selected':''}>${t.label}</option>`).join('')+`</optgroup>`;
   });
@@ -1926,7 +1929,7 @@ function valOnFileChange(e){
   reader.onload=ev=>{
     prev.src=ev.target.result;
     prev.style.display='block';
-    label.innerHTML='<strong>'+f.name+'</strong> · clique para trocar';
+    label.innerHTML='<strong>'+esc(f.name)+'</strong> · clique para trocar';
   };
   reader.readAsDataURL(f);
   document.getElementById('valExtractBtn').disabled=false;
@@ -2088,15 +2091,15 @@ function valRenderConferencia(){
     const espDisp=c.tipo==='ignorar'?'—':(c.tipo==='safra'?normSafra(String(espVal)):espVal);
     const digInput=c.tipo==='ignorar'
       ?`<span style="color:var(--muted);font-size:10px">—</span>`
-      :`<input value="${digDisplay}" onchange="valEditDig(${c.col},this.value)" oninput="valEditDig(${c.col},this.value)" placeholder="—">`;
+      :`<input value="${esc(digDisplay)}" onchange="valEditDig(${c.col},this.value)" oninput="valEditDig(${c.col},this.value)" placeholder="—">`;
 
     tbody.insertAdjacentHTML('beforeend',`
       <tr>
-        <td class="val-td-campo">${c.l}</td>
-        <td class="val-td-esp">${espDisp!==undefined&&espDisp!==''?espDisp:'—'}</td>
+        <td class="val-td-campo">${esc(c.l)}</td>
+        <td class="val-td-esp">${espDisp!==undefined&&espDisp!==''?esc(espDisp):'—'}</td>
         <td class="val-td-dig">${digInput}</td>
         <td class="val-td-status">${badgeHtml}</td>
-        <td class="val-td-obs"><input value="${obsVal}" placeholder="motivo da edição..." onchange="valEditObs(${c.col},this.value)"></td>
+        <td class="val-td-obs"><input value="${esc(obsVal)}" placeholder="motivo da edição..." onchange="valEditObs(${c.col},this.value)"></td>
       </tr>`);
   });
   valAtualizarResumo();
@@ -2453,7 +2456,7 @@ function renderDashboard(){
     const small=pct<20; // barra estreita: valor sai da barra (fica ao lado, com cor escura)
     return `
     <div class="dash-bar-row">
-      <div class="dash-bar-label">${q}</div>
+      <div class="dash-bar-label">${esc(q)}</div>
       <div class="dash-bar-track">
         <div class="dash-bar-fill green" style="width:${pct}%">
           ${small?'':`<span class="dash-bar-val">${dashFmt(s)}</span>`}
@@ -2475,7 +2478,7 @@ function renderDashboard(){
     const barColor=isNeg?'#c0392b':'#1e5c1e';
     const small=pct<15; // barra estreita: valor sai da barra (fica ao lado, com a cor da barra)
     return `<div class="dash-diff-row">
-      <div class="dash-diff-label">${q}</div>
+      <div class="dash-diff-label">${esc(q)}</div>
       <div class="dash-diff-center">
         <div class="dash-diff-zero"></div>
         <div class="dash-diff-bar ${isNeg?'':'green'}" style="background:${barColor};right:${isNeg?'50%':'auto'};left:${isNeg?'auto':'50%'};width:${pct}%">
@@ -2569,7 +2572,7 @@ function renderDashboard(){
       const posColC=Math.abs(posC)<10?'#2471a3':posC>0?'#1e5c1e':'#c0392b';
       const posLblC=Math.abs(posC)<10?'Neutro':posC>0?'Subhedgeado':'Sobrehedgeado';
       hedgeRows.push(`<tr style="border-bottom:1px solid #e8f0ec">
-        <td style="padding:7px 8px;font-weight:700;color:var(--text)">${t}</td>
+        <td style="padding:7px 8px;font-weight:700;color:var(--text)">${esc(t)}</td>
         <td style="padding:4px 8px;text-align:center"><span style="background:#e3f4e3;color:#1a5c1a;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">COMPRA</span></td>
         <td style="padding:7px 8px;text-align:right;color:#1b3a2e;font-weight:600">${dashFmt(v.sacas_c)}</td>
         <td style="padding:7px 8px;text-align:right;color:#c0392b;font-weight:600">${v.lots_hedge.toFixed(2)}</td>
@@ -2584,7 +2587,7 @@ function renderDashboard(){
       const posColV=Math.abs(posV)<10?'#2471a3':posV>0?'#c0392b':'#1e5c1e';
       const posLblV=Math.abs(posV)<10?'Neutro':posV>0?'Sobrehedgeado':'Subhedgeado';
       hedgeRows.push(`<tr style="border-bottom:1px solid #e8f0ec">
-        <td style="padding:7px 8px;font-weight:700;color:var(--text)">${t}</td>
+        <td style="padding:7px 8px;font-weight:700;color:var(--text)">${esc(t)}</td>
         <td style="padding:4px 8px;text-align:center"><span style="background:#e3eef9;color:#1a4f82;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700">VENDA</span></td>
         <td style="padding:7px 8px;text-align:right;color:#2471a3;font-weight:600">${dashFmt(v.sacas_v)}</td>
         <td style="padding:7px 8px;text-align:right;color:#1b3a2e;font-weight:600">${v.lots_compra_bolsa.toFixed(2)}</td>
@@ -2636,7 +2639,7 @@ function renderDashboard(){
         const pct=Math.round(Math.abs(d)/maxAbsE*100);
         const col=getCol(q,qi);
         return`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-          <span style="font-size:10px;font-weight:700;color:${col};min-width:36px;text-align:right">${q}</span>
+          <span style="font-size:10px;font-weight:700;color:${col};min-width:36px;text-align:right">${esc(q)}</span>
           <div style="flex:1;background:#e8f0ec;border-radius:3px;height:14px;overflow:hidden">
             <div style="width:${pct}%;height:100%;background:${col};border-radius:3px;display:flex;align-items:center;padding:0 4px">
               <span style="font-size:9px;color:#fff;font-weight:700;white-space:nowrap">${d.toFixed(2)}</span>
@@ -2663,7 +2666,7 @@ function renderDashboard(){
     ?`de <strong>${new Date(document.getElementById('dash-de').value+'T12:00').toLocaleDateString('pt-BR')}</strong> a <strong>${new Date(document.getElementById('dash-ate').value+'T12:00').toLocaleDateString('pt-BR')}</strong>`
     :'no período selecionado';
   const resumoEl=document.getElementById('ds-resumo-text');
-  if(resumoEl)resumoEl.innerHTML=`No período ${periodo}, foram registradas <strong>${dashFmt(totC)} sacas compradas</strong> e <strong>${dashFmt(totV)} sacas vendidas</strong>, resultando em um saldo de <strong>${saldo>=0?'+':''}${dashFmt(saldo)} sacas</strong>. A quality mais negociada nas compras foi <strong>${qualTop}</strong>. O diff médio ponderado de compras foi de <strong>${dashFmtDif(diffC)} cts/lb</strong>${diffV!=null?' e de vendas <strong>'+dashFmtDif(diffV)+' cts/lb</strong>':''}. ${totalLots>0?'O hedge acumulado foi de <strong>'+totalLots.toFixed(2)+' lots</strong>'+(termTop?', com maior concentração no term <strong>'+termTop+'</strong>':'')+'.' :''} Arábica representou <strong>${pctAR}%</strong> das compras, com Conilon em <strong>${pctCO}%</strong>.`;
+  if(resumoEl)resumoEl.innerHTML=`No período ${periodo}, foram registradas <strong>${dashFmt(totC)} sacas compradas</strong> e <strong>${dashFmt(totV)} sacas vendidas</strong>, resultando em um saldo de <strong>${saldo>=0?'+':''}${dashFmt(saldo)} sacas</strong>. A quality mais negociada nas compras foi <strong>${esc(qualTop)}</strong>. O diff médio ponderado de compras foi de <strong>${dashFmtDif(diffC)} cts/lb</strong>${diffV!=null?' e de vendas <strong>'+dashFmtDif(diffV)+' cts/lb</strong>':''}. ${totalLots>0?'O hedge acumulado foi de <strong>'+totalLots.toFixed(2)+' lots</strong>'+(termTop?', com maior concentração no term <strong>'+esc(termTop)+'</strong>':'')+'.' :''} Arábica representou <strong>${pctAR}%</strong> das compras, com Conilon em <strong>${pctCO}%</strong>.`;
 }
 
 /* ── HISTÓRICO ── */
@@ -2688,39 +2691,53 @@ function renderHist(){
   const itens=histFiltro==='todos'?negRows:negRows.filter(h=>h.tipo===histFiltro);
   if(!itens.length){lista.innerHTML='<div class="hist-vazio">Nenhuma negociação encontrada.</div>';return;}
   lista.innerHTML=itens.map(h=>{
-    const[bc,bl]=BADGE[h.tipo]||['badge-simulacao','Simulação'];
+    const[bc,bl]=(Object.prototype.hasOwnProperty.call(BADGE,h.tipo)&&BADGE[h.tipo])||['badge-simulacao','Simulação'];
     const nome=[h.produtor,h.quality,h.bags?h.bags+' sacas':''].filter(Boolean).join(' · ')||'Negociação';
-    const diffs=`Bica: ${h.bica_diff||'—'} · 14/16: ${h.d1416||'—'} · 17/18: ${h.d1718||'—'}`;
-    const obs=h.obs?`<div class="hist-obs">${h.obs}</div>`:'';
-    const mod=h.modalidade?` · ${h.modalidade}`:'';
-    return `<div class="hist-card" data-neg-id="${h.id}">
+    const diffs=`Bica: ${esc(h.bica_diff||'—')} · 14/16: ${esc(h.d1416||'—')} · 17/18: ${esc(h.d1718||'—')}`;
+    const obs=h.obs?`<div class="hist-obs">${esc(h.obs)}</div>`:'';
+    const mod=h.modalidade?` · ${esc(h.modalidade)}`:'';
+    const hid=Number(h.id);
+    return `<div class="hist-card" data-neg-id="${hid}">
       <div><span class="hist-badge ${bc}">${bl}</span></div>
-      <div class="hist-info"><strong>${nome}${mod}</strong>
-        <div>R$ ${h.brl||'—'} · USD ${h.usd||'—'} · KC ${h.kc||'—'} · ${h.freight||'—'}</div>
+      <div class="hist-info"><strong>${esc(nome)}${mod}</strong>
+        <div>R$ ${esc(h.brl||'—')} · USD ${esc(h.usd||'—')} · KC ${esc(h.kc||'—')} · ${esc(h.freight||'—')}</div>
         <div class="hist-res">${diffs}</div>${obs}
-        <div class="hist-date">${h.data||''}</div>
+        <div class="hist-date">${esc(h.data||'')}</div>
       </div>
       <div class="hist-actions">
-        <select class="hist-btn hist-status-btn" onchange="alterarTipoNeg(${h.id},this.value)">
+        <select class="hist-btn hist-status-btn" onchange="alterarTipoNeg(${hid},this.value)">
           <option value="simulacao"${h.tipo==='simulacao'?' selected':''}>Simulação</option>
           <option value="oferta"${h.tipo==='oferta'?' selected':''}>Oferta</option>
           <option value="demanda"${h.tipo==='demanda'?' selected':''}>Demanda</option>
           <option value="finalizada"${h.tipo==='finalizada'?' selected':''}>Finalizada</option>
         </select>
-        <button class="hist-btn" onclick='editarNeg(${JSON.stringify(h)})'>✏ Edit</button>
-        <button class="hist-btn del" onclick="excluirNeg(${h.id})">Excluir</button>
+        <button class="hist-btn" onclick="editarNeg(${hid})">✏ Edit</button>
+        <button class="hist-btn del" onclick="excluirNeg(${hid})">Excluir</button>
       </div>
     </div>`;
   }).join('');
 }
 
 async function alterarTipoNeg(id,tipo){
-  await fetch(`${SUPA_URL}/rest/v1/negociacoes?id=eq.${id}`,{method:'PATCH',headers:authH(),body:JSON.stringify({tipo})});
+  try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/negociacoes?id=eq.${id}`,{method:'PATCH',headers:authH(),body:JSON.stringify({tipo})});
+    if(!res.ok){const t=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+(t?': '+t.slice(0,200):''));}
+  }catch(e){
+    alert('Não foi possível alterar o status: '+e.message);
+    renderHist(); // volta o select para o valor anterior
+    return;
+  }
   const n=negRows.find(h=>h.id===id);if(n)n.tipo=tipo;renderHist();
 }
 async function excluirNeg(id){
   if(!confirm('Excluir esta negociação?'))return;
-  await fetch(`${SUPA_URL}/rest/v1/negociacoes?id=eq.${id}`,{method:'DELETE',headers:authH()});
+  try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/negociacoes?id=eq.${id}`,{method:'DELETE',headers:authH()});
+    if(!res.ok){const t=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+(t?': '+t.slice(0,200):''));}
+  }catch(e){
+    alert('Não foi possível excluir: '+e.message);
+    return;
+  }
   negRows=negRows.filter(h=>h.id!==id);renderHist();
 }
 function carregarNeg(h){
@@ -2735,9 +2752,11 @@ function carregarNeg(h){
 }
 
 
-async function editarNeg(h){
-  // Abre modal de edição inline na hist-card
-  const id=h.id;
+async function editarNeg(negId){
+  // Abre modal de edição inline na hist-card (recebe só o id; o registro vem de negRows)
+  const h=negRows.find(n=>Number(n.id)===Number(negId));
+  if(!h)return;
+  const id=Number(h.id);
   const existing=document.getElementById('edit-neg-'+id);
   if(existing){existing.remove();return;}
   const card=document.querySelector(`[data-neg-id="${id}"]`);
@@ -2747,27 +2766,27 @@ async function editarNeg(h){
   div.style.cssText='margin-top:10px;padding:12px;background:#f5f9f6;border-radius:8px;border:1px solid #dde8e2;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px';
   div.innerHTML=`
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Produtor</label>
-      <input id="en-prod-${id}" value="${h.produtor||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-prod-${id}" value="${esc(h.produtor||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Corretor</label>
-      <input id="en-corr-${id}" value="${h.corretor||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-corr-${id}" value="${esc(h.corretor||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Quality</label>
-      <input id="en-qual-${id}" value="${h.quality||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-qual-${id}" value="${esc(h.quality||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Safra</label>
-      <input id="en-safra-${id}" value="${h.safra||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-safra-${id}" value="${esc(h.safra||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Bags</label>
-      <input id="en-bags-${id}" value="${h.bags||''}" type="number" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-bags-${id}" value="${esc(h.bags||'')}" type="number" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">BRL Price</label>
-      <input id="en-brl-${id}" value="${h.brl||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-brl-${id}" value="${esc(h.brl||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">USD BRL</label>
-      <input id="en-usd-${id}" value="${h.usd||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-usd-${id}" value="${esc(h.usd||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">KC</label>
-      <input id="en-kc-${id}" value="${h.kc||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-kc-${id}" value="${esc(h.kc||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Term</label>
       <select id="en-term-${id}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px">${termOptions(h.term)}</select></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Lots</label>
-      <input id="en-lots-${id}" value="${h.lots||''}" type="number" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-lots-${id}" value="${esc(h.lots||'')}" type="number" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div><label style="font-size:9px;color:#6b8c7a;font-weight:600;text-transform:uppercase">Obs</label>
-      <input id="en-obs-${id}" value="${h.obs||''}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
+      <input id="en-obs-${id}" value="${esc(h.obs||'')}" style="width:100%;box-sizing:border-box;border:1px solid #c8dbd0;border-radius:6px;padding:4px 8px;font-size:11px"></div>
     <div style="display:flex;align-items:flex-end;gap:6px">
       <button onclick="salvarEditNeg(${id})" style="flex:1;background:#2d4a3e;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">Salvar</button>
       <button onclick="document.getElementById('edit-neg-${id}').remove()" style="flex:1;background:#f0f4f2;color:#4a7a60;border:1px solid #c8dbd0;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">Cancel</button>
@@ -3182,16 +3201,17 @@ function renderInf(){
     const tr=document.createElement('tr');
     const d=Number(r.dif);
     const espBadge=r.especie==='CONILON'?'badge-esp-c':'badge-esp-a';
-    tr.innerHTML=`<td>${fmtDate(r.data)}</td>
+    const rid=Number(r.id);
+    tr.innerHTML=`<td>${esc(fmtDate(r.data))}</td>
       <td><span class="badge ${r.tipo==='COMPRA'?'badge-c':'badge-v'}">${r.tipo==='COMPRA'?'PURCHASE':'SALE'}</span></td>
-      <td>${r.sacas}</td><td>${r.qual||'—'}</td>
-      <td><span class="badge ${espBadge}">${r.especie||'ARABICA'}</span></td>
+      <td>${esc(r.sacas)}</td><td>${esc(r.qual||'—')}</td>
+      <td><span class="badge ${espBadge}">${esc(r.especie||'ARABICA')}</span></td>
       <td class="${d<0?'dif-neg':'dif-pos'}">${fmt2(d)}</td>
-      <td style="font-size:10px;color:#2d4a3e;font-weight:500">${r.certificate||'—'}</td>
-      <td style="font-size:11px;color:#4a7a60">${r.term||'—'}</td>
-      <td style="font-size:11px;text-align:center">${r.lots||'—'}</td>
-      <td style="font-size:11px;color:#7a5a00">${r.hedge_date?fmtDate(r.hedge_date):'—'}</td>
-      <td>${isAdmin?`<button class="btn-edit-inf" onclick="openInfEdit(${r.id})">✎</button><button class="btn-del" onclick="delInfRow(${r.id})">✕</button>`:''}</td>`;
+      <td style="font-size:10px;color:#2d4a3e;font-weight:500">${esc(r.certificate||'—')}</td>
+      <td style="font-size:11px;color:#4a7a60">${esc(r.term||'—')}</td>
+      <td style="font-size:11px;text-align:center">${esc(r.lots||'—')}</td>
+      <td style="font-size:11px;color:#7a5a00">${r.hedge_date?esc(fmtDate(r.hedge_date)):'—'}</td>
+      <td>${isAdmin?`<button class="btn-edit-inf" onclick="openInfEdit(${rid})">✎</button><button class="btn-del" onclick="delInfRow(${rid})">✕</button>`:''}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -3226,7 +3246,13 @@ async function addInfRow(){
 
 async function delInfRow(id){
   if(!confirm('Remove this entry?'))return;
-  await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${id}`,{method:'DELETE',headers:authH()});
+  try{
+    const res=await fetch(`${SUPA_URL}/rest/v1/lancamentos?id=eq.${id}`,{method:'DELETE',headers:authH()});
+    if(!res.ok){const t=await res.text().catch(()=>'');throw new Error('HTTP '+res.status+(t?': '+t.slice(0,200):''));}
+  }catch(e){
+    alert('Could not remove the entry: '+e.message);
+    return;
+  }
   infRows=infRows.filter(r=>r.id!==id);renderInf();
 }
 
@@ -3325,7 +3351,7 @@ function renderQualidade(data){
     const colDif=v=>v==null?'#8aab97':v<0?'#922020':'#1e5c1e';
     const hasC=g.compra.sacas>0, hasV=g.venda.sacas>0;
     return `<div class="qual-card">
-      <div class="qual-card-title"><span class="qual-badge-title">${q}</span></div>
+      <div class="qual-card-title"><span class="qual-badge-title">${esc(q)}</span></div>
       ${hasC?`<div class="qual-row">
         <div class="qual-row-label">
           <div class="qual-row-type"><span class="badge badge-c">PURCHASE</span></div>
@@ -3435,7 +3461,7 @@ async function salvarImagemInformativo(){
       const pV=totV?Math.round(g.venda.sacas/totV*100):0;
       const hasC=g.compra.sacas>0,hasV=g.venda.sacas>0;
       return `<div style="background:#fff;border:1px solid #dde8e2;border-radius:10px;padding:.75rem .9rem">
-        <div style="font-size:12px;font-weight:700;color:#2d4a3e;background:#f5f9f6;border:1px solid #dde8e2;border-radius:5px;padding:2px 8px;display:inline-block;margin-bottom:.5rem">${q}</div>
+        <div style="font-size:12px;font-weight:700;color:#2d4a3e;background:#f5f9f6;border:1px solid #dde8e2;border-radius:5px;padding:2px 8px;display:inline-block;margin-bottom:.5rem">${esc(q)}</div>
         ${hasC?`<div style="margin-bottom:.4rem">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
             <span style="background:#e3eef9;color:#1a4f82;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600">PURCHASE</span>
@@ -3550,16 +3576,16 @@ async function salvarImagemInformativo(){
         const d=Number(r.dif);
         const bg=i%2===0?'#fff':'#fafcfb';
         return `<tr style="background:${bg}">
-          <td style="${tdStyle}">${fmtDate(r.data)}</td>
-          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo==='COMPRA'?'PURCHASE':r.tipo==='VENDA'?'SALE':r.tipo}</span></td>
-          <td style="${tdStyle}">${r.sacas}</td>
-          <td style="${tdStyle}">${r.qual||'—'}</td>
-          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.especie==='CONILON'?'#f0e8ff':'#fef3e2'};color:${r.especie==='CONILON'?'#4a1a7a':'#7a4f00'}">${r.especie||'ARABICA'}</span></td>
+          <td style="${tdStyle}">${esc(fmtDate(r.data))}</td>
+          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.tipo==='COMPRA'?'#e3eef9':'#e3f4e3'};color:${r.tipo==='COMPRA'?'#1a4f82':'#1a5c1a'}">${r.tipo==='COMPRA'?'PURCHASE':r.tipo==='VENDA'?'SALE':esc(r.tipo)}</span></td>
+          <td style="${tdStyle}">${esc(r.sacas)}</td>
+          <td style="${tdStyle}">${esc(r.qual||'—')}</td>
+          <td style="${tdStyle}"><span style="padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;background:${r.especie==='CONILON'?'#f0e8ff':'#fef3e2'};color:${r.especie==='CONILON'?'#4a1a7a':'#7a4f00'}">${esc(r.especie||'ARABICA')}</span></td>
           <td style="${tdStyle};font-weight:500;color:${d<0?'#922020':'#1e5c1e'}">${fmt2(d)}</td>
-          <td style="${tdStyle};color:#2d4a3e;font-weight:500">${r.certificate||'—'}</td>
-          <td style="${tdStyle};color:#4a7a60">${r.term||'—'}</td>
-          <td style="${tdStyle};text-align:center">${r.lots||'—'}</td>
-          <td style="${tdStyle};color:#7a5a00">${r.hedge_date?fmtDate(r.hedge_date):'—'}</td>
+          <td style="${tdStyle};color:#2d4a3e;font-weight:500">${esc(r.certificate||'—')}</td>
+          <td style="${tdStyle};color:#4a7a60">${esc(r.term||'—')}</td>
+          <td style="${tdStyle};text-align:center">${esc(r.lots||'—')}</td>
+          <td style="${tdStyle};color:#7a5a00">${r.hedge_date?esc(fmtDate(r.hedge_date)):'—'}</td>
         </tr>`;
       }).join('')}</tbody>`;
 
